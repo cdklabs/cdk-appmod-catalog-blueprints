@@ -1,0 +1,363 @@
+openapi: 3.0.3
+info:
+  title: Insurance Claims Processing API
+  description: API for agentic document processing pipeline with AI-powered insurance claims analysis
+  version: 1.0.0
+  contact:
+    name: AppMod Use Case Blueprints
+    url: https://github.com/aws-samples/appmod-usecase-blueprints
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: http://localhost:3000/v1
+    description: Development server
+
+paths:
+  /documents/upload:
+    post:
+      summary: Upload document for processing
+      description: Upload insurance claim, policy, or supporting documents to the processing pipeline
+      operationId: uploadDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - documentType
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file (PDF, JPG, PNG)
+                documentType:
+                  type: string
+                  enum: [claim, policy, supporting]
+                  description: Type of document being uploaded
+                policyNumber:
+                  type: string
+                  description: Policy number (required for supporting documents)
+                  example: "GTI-2024-789456"
+      responses:
+        '200':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          description: Bad request - invalid file or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /documents/{documentId}/status:
+    get:
+      summary: Get document processing status
+      description: Retrieve the current processing status of a document
+      operationId: getDocumentStatus
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique document identifier
+          example: "travel-claim-1756401373049"
+      responses:
+        '200':
+          description: Document status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /documents/{documentId}/results:
+    get:
+      summary: Get document processing results
+      description: Retrieve the AI analysis results for a processed document
+      operationId: getDocumentResults
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique document identifier
+          example: "travel-claim-1756401373049"
+      responses:
+        '200':
+          description: Processing results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultsResponse'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '202':
+          description: Document still processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessingResponse'
+
+  /documents:
+    get:
+      summary: List documents
+      description: Retrieve a paginated list of uploaded documents
+      operationId: listDocuments
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [processing, completed, failed]
+          description: Filter by processing status
+        - name: documentType
+          in: query
+          schema:
+            type: string
+            enum: [claim, policy, supporting]
+          description: Filter by document type
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Number of documents to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Number of documents to skip
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentListResponse'
+
+components:
+  schemas:
+    UploadResponse:
+      type: object
+      required:
+        - documentId
+        - s3Location
+        - uploadStatus
+      properties:
+        documentId:
+          type: string
+          description: Unique identifier for the uploaded document
+          example: "travel-claim-1756401373049"
+        s3Location:
+          type: string
+          description: S3 location where the document is stored
+          example: "s3://bucket/raw/travel_claim.pdf"
+        uploadStatus:
+          type: string
+          enum: [success, failed]
+          description: Status of the upload operation
+        processingTriggered:
+          type: boolean
+          description: Whether document processing was triggered (true for claims)
+          example: true
+
+    StatusResponse:
+      type: object
+      required:
+        - documentId
+        - status
+        - startTime
+      properties:
+        documentId:
+          type: string
+          example: "travel-claim-1756401373049"
+        status:
+          type: string
+          enum: [processing, completed, failed]
+          description: Current processing status
+        executionArn:
+          type: string
+          description: Step Functions execution ARN (for claims)
+          example: "arn:aws:states:us-east-1:123456789012:execution:WorkflowName:execution-name"
+        startTime:
+          type: string
+          format: date-time
+          description: When processing started
+          example: "2025-08-28T17:16:13.418Z"
+        endTime:
+          type: string
+          format: date-time
+          description: When processing completed
+          example: "2025-08-28T17:17:01.257Z"
+
+    ResultsResponse:
+      type: object
+      required:
+        - documentId
+        - classificationResult
+        - processingResult
+      properties:
+        documentId:
+          type: string
+          example: "travel-claim-1756401373049"
+        classificationResult:
+          type: object
+          required:
+            - documentClassification
+          properties:
+            documentClassification:
+              type: string
+              description: AI-classified document type
+              example: "INSURANCE_CLAIM"
+        processingResult:
+          type: object
+          required:
+            - result
+          properties:
+            result:
+              type: object
+              required:
+                - claim_approved
+                - justification
+              properties:
+                claim_approved:
+                  type: boolean
+                  description: Whether the claim was approved
+                  example: false
+                justification:
+                  type: string
+                  description: Detailed explanation of the decision
+                  example: "While most of the claim is valid and within policy limits, there is missing documentation for the ground transportation expenses ($25.00)."
+        executionDetails:
+          type: object
+          description: Additional Step Functions execution details
+          properties:
+            executionArn:
+              type: string
+            duration:
+              type: string
+              description: Processing duration
+              example: "47.839s"
+
+    ProcessingResponse:
+      type: object
+      required:
+        - documentId
+        - status
+        - message
+      properties:
+        documentId:
+          type: string
+          example: "travel-claim-1756401373049"
+        status:
+          type: string
+          enum: [processing]
+        message:
+          type: string
+          example: "Document is still being processed. Please check back later."
+        estimatedCompletion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+
+    DocumentListResponse:
+      type: object
+      required:
+        - documents
+        - total
+        - limit
+        - offset
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentSummary'
+        total:
+          type: integer
+          description: Total number of documents matching the filter
+          example: 25
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+
+    DocumentSummary:
+      type: object
+      required:
+        - documentId
+        - filename
+        - documentType
+        - status
+        - uploadTime
+      properties:
+        documentId:
+          type: string
+          example: "travel-claim-1756401373049"
+        filename:
+          type: string
+          example: "travel_claim.pdf"
+        documentType:
+          type: string
+          enum: [claim, policy, supporting]
+        status:
+          type: string
+          enum: [processing, completed, failed]
+        uploadTime:
+          type: string
+          format: date-time
+          example: "2025-08-28T17:15:50.407Z"
+        processingResult:
+          type: object
+          description: Processing results (only present if status is completed)
+          properties:
+            claim_approved:
+              type: boolean
+            justification:
+              type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "INVALID_DOCUMENT_TYPE"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Document type must be one of: claim, policy, supporting"
+        details:
+          type: object
+          description: Additional error details

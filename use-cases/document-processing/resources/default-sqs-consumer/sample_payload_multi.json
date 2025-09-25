@@ -1,0 +1,24 @@
+{
+  "Records": [
+    {
+      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+      "receiptHandle": "MessageReceiptHandle1",
+      "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2024-01-15T10:30:00.000Z\",\"eventName\":\"ObjectCreated:Put\",\"s3\":{\"s3SchemaVersion\":\"1.0\",\"bucket\":{\"name\":\"my-document-bucket\"},\"object\":{\"key\":\"raw/receipt-scan.jpg\",\"size\":2048}}}]}",
+      "attributes": {
+        "ApproximateReceiveCount": "1"
+      },
+      "eventSource": "aws:sqs",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "29dd0b57-b21e-4ac1-bd88-01bbb068cb79",
+      "receiptHandle": "MessageReceiptHandle2", 
+      "body": "{\"Records\":[{\"eventVersion\":\"2.1\",\"eventSource\":\"aws:s3\",\"awsRegion\":\"us-east-1\",\"eventTime\":\"2024-01-15T10:31:00.000Z\",\"eventName\":\"ObjectCreated:Put\",\"s3\":{\"s3SchemaVersion\":\"1.0\",\"bucket\":{\"name\":\"my-document-bucket\"},\"object\":{\"key\":\"raw/contract%20document.pdf\",\"size\":4096}}}]}",
+      "attributes": {
+        "ApproximateReceiveCount": "1"
+      },
+      "eventSource": "aws:sqs",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

@@ -24,6 +24,49 @@
         }
       ]
     },
+    "build:fast": {
+      "name": "build:fast",
+      "description": "Fast build without documentation generation",
+      "steps": [
+        {
+          "spawn": "default"
+        },
+        {
+          "spawn": "pre-compile"
+        },
+        {
+          "spawn": "compile"
+        },
+        {
+          "spawn": "post-compile"
+        },
+        {
+          "spawn": "test"
+        },
+        {
+          "spawn": "package:js"
+        }
+      ]
+    },
+    "bump": {
+      "name": "bump",
+      "description": "Bumps version based on latest git tag and generates a changelog entry",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12",
+        "RELEASABLE_COMMITS": "git log --no-merges --oneline $LATEST_TAG..HEAD -E --grep \"^(feat|fix){1}(\\([^()[:space:]]+\\))?(!)?:[[:blank:]]+.+\""
+      },
+      "steps": [
+        {
+          "builtin": "release/bump-version"
+        }
+      ],
+      "condition": "git log --oneline -1 | grep -qv \"chore(release):\""
+    },
     "clobber": {
       "name": "clobber",
       "description": "hard resets to HEAD of origin and cleans the local repo",
@@ -112,7 +155,7 @@
       },
       "steps": [
         {
-          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern $@ src test build-tools projenrc .projenrc.ts",
+          "exec": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern $@ use-cases test build-tools projenrc .projenrc.ts",
           "receiveArgs": true
         }
       ]
@@ -160,6 +203,9 @@
       "description": "Creates the distribution package",
       "steps": [
         {
+          "exec": "NODE_OPTIONS=\"--max-old-space-size=8192\""
+        },
+        {
           "spawn": "package:js",
           "condition": "node -e \"if (!process.env.CI) process.exit(1)\""
         },
@@ -202,6 +248,9 @@
     "package:go": {
       "name": "package:go",
       "description": "Create go language bindings",
+      "env": {
+        "GOPROXY": "direct"
+      },
       "steps": [
         {
           "exec": "jsii-pacmak -v --target go"
@@ -244,6 +293,22 @@
         },
         {
           "spawn": "rosetta:extract"
+        },
+        {
+          "exec": "cp -R use-cases/document-processing/resources lib/document-processing/",
+          "name": "Copy custom resources needed by Document Processing"
+        },
+        {
+          "exec": "cp -R use-cases/utilities/data-loader-lambda lib/utilities/",
+          "name": "Copy custom resource needed by the Data Loader"
+        },
+        {
+          "exec": "cp -R use-cases/utilities/lambda_layers lib/utilities/",
+          "name": "Copy Lambda layers files"
+        },
+        {
+          "exec": "cp -R use-cases/utilities/observability/resources lib/utilities/observability/",
+          "name": "Copy custom resource needed by Observability"
         }
       ]
     },
@@ -254,6 +319,30 @@
     "pre-compile": {
       "name": "pre-compile",
       "description": "Prepare the project for compilation"
+    },
+    "release": {
+      "name": "release",
+      "description": "Prepare a release from \"main\" branch",
+      "env": {
+        "RELEASE": "true"
+      },
+      "steps": [
+        {
+          "exec": "rm -fr dist"
+        },
+        {
+          "spawn": "bump"
+        },
+        {
+          "spawn": "build"
+        },
+        {
+          "spawn": "unbump"
+        },
+        {
+          "exec": "git diff --ignore-space-at-eol --exit-code"
+        }
+      ]
     },
     "rosetta:extract": {
       "name": "rosetta:extract",
@@ -280,12 +369,129 @@
         }
       ]
     },
+    "test:cdk-nag:all": {
+      "name": "test:cdk-nag:all",
+      "description": "Run all CDK Nag security tests",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\".*nag\\.test\\.(ts|js)$\" --verbose"
+        }
+      ]
+    },
+    "test:cdk-nag:document-processing": {
+      "name": "test:cdk-nag:document-processing",
+      "description": "Run CDK Nag security tests for document processing use case",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"document-processing.*nag\\.test\\.(ts|js)$\" --verbose"
+        }
+      ]
+    },
+    "test:cdk-nag:webapp": {
+      "name": "test:cdk-nag:webapp",
+      "description": "Run CDK Nag security tests for webapp use case",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"webapp.*nag\\.test\\.(ts|js)$\" --verbose"
+        }
+      ]
+    },
+    "test:document-processing": {
+      "name": "test:document-processing",
+      "description": "Run all document processing use case tests",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/document-processing/tests/.*\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:document-processing:unit": {
+      "name": "test:document-processing:unit",
+      "description": "Run document processing unit tests (excluding nag tests)",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/document-processing/tests/.*\\.test\\.(ts|js)$\" --testPathIgnorePatterns=\".*nag\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:security": {
+      "name": "test:security",
+      "description": "Run security-focused tests including CDK Nag analysis",
+      "steps": [
+        {
+          "spawn": "test:cdk-nag:all"
+        }
+      ]
+    },
     "test:watch": {
       "name": "test:watch",
       "description": "Run jest in watch mode",
       "steps": [
         {
           "exec": "jest --watch"
+        }
+      ]
+    },
+    "test:webapp": {
+      "name": "test:webapp",
+      "description": "Run all webapp use case tests",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/webapp/tests/.*\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:webapp:core": {
+      "name": "test:webapp:core",
+      "description": "Run core webapp construct tests only",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/webapp/tests/webapp\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:webapp:frontend": {
+      "name": "test:webapp:frontend",
+      "description": "Run webapp frontend construct tests only",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/webapp/tests/frontend-construct\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:webapp:quickstart": {
+      "name": "test:webapp:quickstart",
+      "description": "Run webapp quickstart tests only",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/webapp/tests/webapp-quickstart\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "test:webapp:unit": {
+      "name": "test:webapp:unit",
+      "description": "Run webapp unit tests (excluding nag tests)",
+      "steps": [
+        {
+          "exec": "jest --testPathPattern=\"use-cases/webapp/tests/.*\\.test\\.(ts|js)$\" --testPathIgnorePatterns=\".*nag\\.test\\.(ts|js)$\" --passWithNoTests --updateSnapshot"
+        }
+      ]
+    },
+    "unbump": {
+      "name": "unbump",
+      "description": "Restores version to 0.0.0",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12",
+        "RELEASABLE_COMMITS": "git log --no-merges --oneline $LATEST_TAG..HEAD -E --grep \"^(feat|fix){1}(\\([^()[:space:]]+\\))?(!)?:[[:blank:]]+.+\""
+      },
+      "steps": [
+        {
+          "builtin": "release/reset-version"
         }
       ]
     },
@@ -333,13 +539,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@types/jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@types/jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,cdk-nag"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @stylistic/eslint-plugin @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @stylistic/eslint-plugin @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser commit-and-tag-version eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha cdk-nag"
         },
         {
           "exec": "npx projen"
