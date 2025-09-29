@@ -15,6 +15,7 @@ import { StateMachine, DefinitionBody, Map, TaskInput } from 'aws-cdk-lib/aws-st
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import { DefaultRuntimes } from '../framework';
 
 /**
  * Supported database engines
@@ -279,7 +280,7 @@ export class DataLoader extends Construct {
           ].join(' && '),
         ],
         // Use the standard Python image to avoid pre-installed packages
-        image: DockerImage.fromRegistry('public.ecr.aws/docker/library/python:3.13.5-bullseye'),
+        image: DockerImage.fromRegistry(DefaultRuntimes.PYTHON_BUNDLING_IMAGE),
       },
     });
 

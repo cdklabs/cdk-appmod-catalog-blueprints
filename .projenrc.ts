@@ -11,7 +11,7 @@ const project = new CdklabsConstructLibrary({
   description: 'Serverless infrastructure components organized by business use cases',
   projenrcTs: true,
   npmAccess: NpmAccess.PUBLIC,
-  repositoryUrl: 'git@github.com:cdklabs/cdk-appmod-catalog-blueprints.git',
+  repository: 'https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git',
   sampleCode: false,
   integrationTestAutoDiscover: false,
   docgen: process.env.SKIP_DOCGEN !== 'true',
@@ -56,6 +56,7 @@ const project = new CdklabsConstructLibrary({
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
+  publishToGo: undefined,
 });
 
 project.postCompileTask.exec('cp -R use-cases/document-processing/resources lib/document-processing/', {
