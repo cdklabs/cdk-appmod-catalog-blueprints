@@ -15,7 +15,7 @@ const project = new CdklabsConstructLibrary({
   sampleCode: false,
   integrationTestAutoDiscover: false,
   docgen: process.env.SKIP_DOCGEN !== 'true',
-
+  private: false,
   peerDeps: ['@aws-cdk/aws-lambda-python-alpha@2.192.0-alpha.0', 'aws-cdk-lib'],
   // Configure source and lib directories for use cases
   srcdir: 'use-cases',
