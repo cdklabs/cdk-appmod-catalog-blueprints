@@ -3,7 +3,7 @@
   "description": "Serverless infrastructure components organized by business use cases",
   "repository": {
     "type": "git",
-    "url": "git@github.com:cdklabs/cdk-appmod-catalog-blueprints.git"
+    "url": "https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git"
   },
   "scripts": {
     "build": "npx projen build",

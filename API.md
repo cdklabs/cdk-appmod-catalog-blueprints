@@ -3775,6 +3775,7 @@ new DefaultRuntimes()
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes.property.NODEJS">NODEJS</a></code> | <code>aws-cdk-lib.aws_lambda.Runtime</code> | Default runtime for all Lambda functions in the use cases. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes.property.PYTHON">PYTHON</a></code> | <code>aws-cdk-lib.aws_lambda.Runtime</code> | Default runtime for Python based Lambda functions. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes.property.PYTHON_BUNDLING_IMAGE">PYTHON_BUNDLING_IMAGE</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes.property.PYTHON_FUNCTION_BUNDLING">PYTHON_FUNCTION_BUNDLING</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.BundlingOptions</code> | Default bundling arguments for Python function. |
 
 ---
@@ -3800,6 +3801,16 @@ public readonly PYTHON: Runtime;
 - *Type:* aws-cdk-lib.aws_lambda.Runtime
 
 Default runtime for Python based Lambda functions.
+
+---
+
+##### `PYTHON_BUNDLING_IMAGE`<sup>Required</sup> <a name="PYTHON_BUNDLING_IMAGE" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes.property.PYTHON_BUNDLING_IMAGE"></a>
+
+```typescript
+public readonly PYTHON_BUNDLING_IMAGE: string;
+```
+
+- *Type:* string
 
 ---
 

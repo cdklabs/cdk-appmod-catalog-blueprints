@@ -29,4 +29,6 @@ export class DefaultRuntimes {
     },
     image: this.PYTHON.bundlingImage,
   };
+
+  public static readonly PYTHON_BUNDLING_IMAGE = 'python:3.13.7-bookworm';
 }
