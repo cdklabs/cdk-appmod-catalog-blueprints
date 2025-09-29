@@ -175,7 +175,6 @@
       "rootDir": "use-cases"
     }
   },
-  "private": true,
   "files": [
     "lib/",
     ".jsii"
