@@ -54,7 +54,8 @@ const project = new CdklabsConstructLibrary({
     '.DS_Store',
     '**/.DS_Store',
   ],
-  packageName: '@cdklabs/appmod-catalog-blueprints',
+  packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
+  majorVersion: 1,
 });
 
 project.postCompileTask.exec('cp -R use-cases/document-processing/resources lib/document-processing/', {

@@ -1,5 +1,5 @@
 {
-  "name": "@cdklabs/appmod-catalog-blueprints",
+  "name": "@cdklabs/cdk-appmod-catalog-blueprints",
   "description": "Serverless infrastructure components organized by business use cases",
   "repository": {
     "type": "git",
