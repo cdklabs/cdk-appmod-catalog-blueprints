@@ -1,0 +1,10 @@
+{
+  "name": "default-doc-retrieval-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function for retrieving documents with sensitive data masking",
+  "main": "index.mjs",
+  "type": "module",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

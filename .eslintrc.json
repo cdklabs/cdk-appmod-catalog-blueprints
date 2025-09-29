@@ -150,14 +150,7 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": [
-          "**/test/**",
-          "**/build-tools/**",
-          ".projenrc.ts",
-          "projenrc/**/*.ts"
-        ],
-        "optionalDependencies": false,
-        "peerDependencies": true
+        "devDependencies": true
       }
     ],
     "import/no-unresolved": [

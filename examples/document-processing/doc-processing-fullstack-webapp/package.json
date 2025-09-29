@@ -1,0 +1,16 @@
+{
+  "name": "doc-processing-fullstack-webapp",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.21"
+  }
+}

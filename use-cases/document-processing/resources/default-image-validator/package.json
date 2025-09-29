@@ -1,0 +1,7 @@
+{
+    "name": "@document-processing/default-image-validator",
+    "version": "0.0.1",
+    "dependencies": {
+        "file-type": "^20.5.0"
+    }
+}

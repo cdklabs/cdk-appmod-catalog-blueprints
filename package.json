@@ -1,11 +1,14 @@
 {
-  "name": "@cdklabs/cdk-appmod-catalog-blueprints",
+  "name": "@cdklabs/appmod-catalog-blueprints",
+  "description": "Serverless infrastructure components organized by business use cases",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git"
+    "url": "git@github.com:cdklabs/cdk-appmod-catalog-blueprints.git"
   },
   "scripts": {
     "build": "npx projen build",
+    "build:fast": "npx projen build:fast",
+    "bump": "npx projen bump",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
     "compile": "npx projen compile",
@@ -25,9 +28,22 @@
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
+    "release": "npx projen release",
     "rosetta:extract": "npx projen rosetta:extract",
     "test": "npx projen test",
+    "test:cdk-nag:all": "npx projen test:cdk-nag:all",
+    "test:cdk-nag:document-processing": "npx projen test:cdk-nag:document-processing",
+    "test:cdk-nag:webapp": "npx projen test:cdk-nag:webapp",
+    "test:document-processing": "npx projen test:document-processing",
+    "test:document-processing:unit": "npx projen test:document-processing:unit",
+    "test:security": "npx projen test:security",
     "test:watch": "npx projen test:watch",
+    "test:webapp": "npx projen test:webapp",
+    "test:webapp:core": "npx projen test:webapp:core",
+    "test:webapp:frontend": "npx projen test:webapp:frontend",
+    "test:webapp:quickstart": "npx projen test:webapp:quickstart",
+    "test:webapp:unit": "npx projen test:webapp:unit",
+    "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
     "upgrade-cdklabs-projen-project-types": "npx projen upgrade-cdklabs-projen-project-types",
     "upgrade-dev-deps": "npx projen upgrade-dev-deps",
@@ -40,33 +56,37 @@
     "organization": true
   },
   "devDependencies": {
+    "@aws-cdk/aws-lambda-python-alpha": "2.192.0-alpha.0",
     "@aws-cdk/integ-runner": "latest",
     "@aws-cdk/integ-tests-alpha": "latest",
     "@stylistic/eslint-plugin": "^2",
-    "@types/jest": "^30.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "aws-cdk-lib": "2.1.0",
-    "cdklabs-projen-project-types": "^0.3.5",
+    "aws-cdk-lib": "2.216.0",
+    "cdk-nag": "^2.37.35",
+    "cdklabs-projen-project-types": "^0.3.1",
+    "commit-and-tag-version": "^12",
     "constructs": "10.0.5",
     "eslint": "^9",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
-    "jest": "^30.1.3",
+    "eslint-import-resolver-typescript": "^4.2.5",
+    "eslint-plugin-import": "^2.31.0",
+    "jest": "^29.7.0",
     "jest-junit": "^16",
-    "jsii": "~5.7",
-    "jsii-diff": "^1.114.1",
+    "jsii": "~5.9.5",
+    "jsii-diff": "^1.110.0",
     "jsii-docgen": "^10.5.0",
-    "jsii-pacmak": "^1.114.1",
-    "jsii-rosetta": "^5.9.5",
-    "projen": "^0.96.3",
-    "ts-jest": "^29.4.4",
+    "jsii-pacmak": "^1.110.0",
+    "jsii-rosetta": "~5.8.0",
+    "projen": "^0.95.2",
+    "ts-jest": "^29.3.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.8.2"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.1.0",
+    "@aws-cdk/aws-lambda-python-alpha": "2.192.0-alpha.0",
+    "aws-cdk-lib": "^2.216.0",
     "constructs": "^10.0.5"
   },
   "keywords": [
@@ -77,12 +97,15 @@
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.0.0",
   "jest": {
     "coverageProvider": "v8",
     "testMatch": [
-      "<rootDir>/@(src|test)/**/*(*.)@(spec|test).ts?(x)",
-      "<rootDir>/@(src|test)/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/@(use-cases|test)/**/*(*.)@(spec|test).ts?(x)",
+      "<rootDir>/@(use-cases|test)/**/__tests__/**/*.ts?(x)",
       "<rootDir>/@(projenrc)/**/*(*.)@(spec|test).ts?(x)",
       "<rootDir>/@(projenrc)/**/__tests__/**/*.ts?(x)"
     ],
@@ -129,29 +152,33 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "io.github.cdklabs.cdk.appmod.catalog.blueprints",
+        "package": "io.github.cdklabs.appmod.catalog.blueprints",
         "maven": {
           "groupId": "io.github.cdklabs",
-          "artifactId": "cdk-appmod-catalog-blueprints"
+          "artifactId": "appmod-catalog-blueprints"
         }
       },
       "python": {
-        "distName": "cdklabs.cdk-appmod-catalog-blueprints",
-        "module": "cdklabs.cdk_appmod_catalog_blueprints"
+        "distName": "appmod-catalog-blueprints",
+        "module": "appmod_catalog_blueprints"
       },
       "dotnet": {
-        "namespace": "Cdklabs.CdkAppmodCatalogBlueprints",
-        "packageId": "Cdklabs.CdkAppmodCatalogBlueprints"
+        "namespace": "CdklabsAppmodCatalogBlueprints",
+        "packageId": "CdklabsAppmodCatalogBlueprints"
       },
       "go": {
-        "moduleName": "github.com/cdklabs/cdk-appmod-catalog-blueprints-go"
+        "moduleName": "github.com/cdklabs/appmod-catalog-blueprints-go"
       }
     },
     "tsc": {
       "outDir": "lib",
-      "rootDir": "src"
+      "rootDir": "use-cases"
     }
   },
   "private": true,
+  "files": [
+    "lib/",
+    ".jsii"
+  ],
   "//": "~~ Generated by projen. To modify, edit .projenrc.ts and run \"npx projen\"."
 }
