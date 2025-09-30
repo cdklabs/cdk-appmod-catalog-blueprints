@@ -502,6 +502,7 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       functionName: 'SQSConsumer',
       region,
       account,
+      enableObservability: this.props.enableObservability,
     });
 
     // Create policy statements for SQS consumer Lambda

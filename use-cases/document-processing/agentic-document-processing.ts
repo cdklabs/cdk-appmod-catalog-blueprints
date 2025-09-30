@@ -72,6 +72,7 @@ export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
       functionName: 'agentic-idp-processing',
       region,
       scope: this,
+      enableObservability: this.bedrockDocumentProcessingProps.enableObservability,
     });
 
     const agenticFunction = new PythonFunction(this, 'ProcessingAgentFunction', {

@@ -3,6 +3,7 @@ import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Function, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { DataProtectionPolicy, LogGroup } from 'aws-cdk-lib/aws-logs';
 import { LogGroupDataProtectionProps } from './log-group-data-protection-props';
+import { LambdaIamUtils } from '../lambda-iam-utils';
 
 export class LambdaObservabilityPropertyInjector implements IPropertyInjector {
   readonly constructUniqueId: string;
@@ -15,7 +16,7 @@ export class LambdaObservabilityPropertyInjector implements IPropertyInjector {
 
   inject(originalProps: any, _context: InjectionContext): any {
     const { region, account } = Stack.of(_context.scope);
-    const logGroupName = `/aws/lambda/${originalProps.functionName}`;
+    const logGroupName = `/aws/lambda/${originalProps.functionName}${LambdaIamUtils.OBSERVABILITY_SUFFIX}`;
     const logGroupArn = `arn:aws:logs:${region}:${account}:log-group:${logGroupName}`;
     this.logGroupDataProtection.logGroupEncryptionKey?.grantEncryptDecrypt(new ServicePrincipal('logs.amazonaws.com', {
       conditions: {
@@ -26,7 +27,7 @@ export class LambdaObservabilityPropertyInjector implements IPropertyInjector {
     }));
 
     return {
-      LogGroup: new LogGroup(_context.scope, `${_context.id}-LogGroup`, {
+      logGroup: new LogGroup(_context.scope, `${_context.id}-LogGroup`, {
         logGroupName,
         encryptionKey: this.logGroupDataProtection.logGroupEncryptionKey,
         dataProtectionPolicy: this.logGroupDataProtection.dataProtectionIdentifiers ? new DataProtectionPolicy({
