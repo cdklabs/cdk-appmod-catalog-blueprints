@@ -42,6 +42,14 @@ export interface LambdaLogsPermissionsProps {
    * AWS account ID for the log group ARN
    */
   readonly account: string;
+
+  /**
+   * Whether observability is enabled or not. This would have an impact
+   * on the result IAM policy for the LogGroup for the Lambda function
+   *
+   * @default false
+   */
+  readonly enableObservability?: boolean;
 }
 
 /**
@@ -63,6 +71,7 @@ export interface LambdaLogsPermissionsResult {
  * Utility class for creating secure Lambda IAM policy statements with minimal permissions
  */
 export class LambdaIamUtils {
+  public static readonly OBSERVABILITY_SUFFIX = '-secured';
   /**
    * Creates CloudWatch Logs policy statements for Lambda execution
    *
@@ -72,15 +81,15 @@ export class LambdaIamUtils {
   public static createLogsPermissions(props: LambdaLogsPermissionsProps): LambdaLogsPermissionsResult {
     // Generate unique function name using construct node path
     const uniqueFunctionName = LambdaIamUtils.generateUniqueFunctionName(props.scope, props.functionName);
-    const logGroupName = props.logGroupName || `/aws/lambda/${uniqueFunctionName}`;
-
+    const logGroupName = props.logGroupName || `/aws/lambda/${uniqueFunctionName}` + props.enableObservability ? LambdaIamUtils.OBSERVABILITY_SUFFIX : '';
+    let logGroupArn = `arn:aws:logs:${props.region}:${props.account}:log-group:${logGroupName}`;
     const policyStatements = [
       // Permission to create log group
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:CreateLogGroup'],
         resources: [
-          `arn:aws:logs:${props.region}:${props.account}:log-group:${logGroupName}:*`,
+          logGroupArn,
         ],
       }),
       // Permission to create log streams and put log events
@@ -91,7 +100,7 @@ export class LambdaIamUtils {
           'logs:PutLogEvents',
         ],
         resources: [
-          `arn:aws:logs:${props.region}:${props.account}:log-group:${logGroupName}:*`,
+          `${logGroupArn}:*`,
         ],
       }),
     ];

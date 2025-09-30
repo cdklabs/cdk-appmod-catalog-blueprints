@@ -1,10 +1,13 @@
 import { CdklabsConstructLibrary, JsiiLanguage } from 'cdklabs-projen-project-types';
 import { DependencyType } from 'projen';
 import { NpmAccess } from 'projen/lib/javascript';
+
+const CDK_VERSION = '2.218.0';
+
 const project = new CdklabsConstructLibrary({
   author: 'AWS AppMod Catalog Team',
   authorAddress: 'appmod-catalog@amazon.com',
-  cdkVersion: '2.216.0',
+  cdkVersion: CDK_VERSION,
   defaultReleaseBranch: 'main',
   jsiiVersion: '~5.9.5',
   name: 'appmod-catalog-blueprints',
@@ -16,7 +19,7 @@ const project = new CdklabsConstructLibrary({
   integrationTestAutoDiscover: false,
   docgen: process.env.SKIP_DOCGEN !== 'true',
   private: false,
-  peerDeps: ['@aws-cdk/aws-lambda-python-alpha@2.192.0-alpha.0', 'aws-cdk-lib'],
+  peerDeps: ['aws-cdk-lib', `@aws-cdk/aws-lambda-python-alpha@^${CDK_VERSION}-alpha.0`],
   // Configure source and lib directories for use cases
   srcdir: 'use-cases',
   libdir: 'lib',

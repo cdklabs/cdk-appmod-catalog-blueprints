@@ -200,6 +200,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
       functionName: 'bedrock-idp-classification',
       region,
       scope: this,
+      enableObservability: this.bedrockDocumentProcessingProps.enableObservability,
     });
 
     this.encryptionKey.grantEncryptDecrypt(role);

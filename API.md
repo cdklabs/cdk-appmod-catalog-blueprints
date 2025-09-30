@@ -3354,6 +3354,7 @@ const lambdaLogsPermissionsProps: LambdaLogsPermissionsProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.functionName">functionName</a></code> | <code>string</code> | The base name of the Lambda function. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.region">region</a></code> | <code>string</code> | AWS region for the log group ARN. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.scope">scope</a></code> | <code>constructs.Construct</code> | The construct scope (used to generate unique names). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Whether observability is enabled or not. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.logGroupName">logGroupName</a></code> | <code>string</code> | Custom log group name pattern. |
 
 ---
@@ -3403,6 +3404,22 @@ public readonly scope: Construct;
 - *Type:* constructs.Construct
 
 The construct scope (used to generate unique names).
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaLogsPermissionsProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Whether observability is enabled or not.
+
+This would have an impact
+on the result IAM policy for the LogGroup for the Lambda function
 
 ---
 
@@ -4145,6 +4162,23 @@ The construct scope.
 ---
 
 
+#### Constants <a name="Constants" id="Constants"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaIamUtils.property.OBSERVABILITY_SUFFIX">OBSERVABILITY_SUFFIX</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `OBSERVABILITY_SUFFIX`<sup>Required</sup> <a name="OBSERVABILITY_SUFFIX" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaIamUtils.property.OBSERVABILITY_SUFFIX"></a>
+
+```typescript
+public readonly OBSERVABILITY_SUFFIX: string;
+```
+
+- *Type:* string
+
+---
 
 ### LambdaObservabilityPropertyInjector <a name="LambdaObservabilityPropertyInjector" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaObservabilityPropertyInjector"></a>
 
