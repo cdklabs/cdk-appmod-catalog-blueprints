@@ -18,6 +18,7 @@
   "dependencies": {
     "aws-cdk-lib": "^2.192.0",
     "constructs": "10.0.5",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "@cdklabs/cdk-appmod-catalog-blueprints": "^1.0.0"
   }
 }
