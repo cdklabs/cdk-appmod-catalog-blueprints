@@ -1,4 +1,4 @@
-import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
+import { CdklabsConstructLibrary, JsiiLanguage } from 'cdklabs-projen-project-types';
 import { DependencyType } from 'projen';
 import { NpmAccess } from 'projen/lib/javascript';
 const project = new CdklabsConstructLibrary({
@@ -56,7 +56,11 @@ const project = new CdklabsConstructLibrary({
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
-  publishToGo: undefined,
+  jsiiTargetLanguages: [
+    JsiiLanguage.DOTNET,
+    JsiiLanguage.JAVA,
+    JsiiLanguage.PYTHON,
+  ],
 });
 
 project.postCompileTask.exec('cp -R use-cases/document-processing/resources lib/document-processing/', {
