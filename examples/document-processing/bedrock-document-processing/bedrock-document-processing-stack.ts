@@ -1,8 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { BedrockDocumentProcessing } from '../../../use-cases/document-processing/bedrock-document-processing';
-import { Network } from '../../../use-cases/framework';
-import { EventbridgeBroker } from '../../../use-cases/framework/foundation/eventbridge-broker';
+import { BedrockDocumentProcessing, EventbridgeBroker, Network } from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 export class BedrockDocumentProcessingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

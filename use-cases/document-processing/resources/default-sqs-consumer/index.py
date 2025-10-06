@@ -19,6 +19,7 @@ def handler(event, context):
     print(f'SQS Consumer: Received event: {json.dumps(event, indent=2)}')
     
     results = []
+    raw_prefix = os.getenv('RAW_PREFIX', 'raw/')
     
     for record in event['Records']:
         try:
@@ -53,20 +54,24 @@ def handler(event, context):
                     # Generate unique document ID from S3 key and timestamp
                     timestamp = int(time.time() * 1000)
                     document_id = (key
-                        .replace('raw/', '', 1)  # Remove raw/ prefix
+                        .replace(raw_prefix, '', 1)  # Remove raw/ prefix
                         .rsplit('.', 1)[0]       # Remove file extension
                         )
                     document_id = re.sub(r'[^a-zA-Z0-9-]', '-', document_id) + '-' + str(timestamp)
                     
                     # Extract filename from key
-                    filename = key.replace('raw/', '', 1)  # Remove raw/ prefix
+                    filename = key.replace(raw_prefix, '', 1)  # Remove raw/ prefix
                     
                     # Prepare Step Functions execution input
                     step_function_input = {
                         'documentId': document_id,
-                        'bucket': bucket,
-                        'key': key,
-                        'filename': filename,
+                        'contentType': 'file',
+                        'content': {
+                            'location': 's3',
+                            'bucket': bucket,
+                            'key': key,
+                            'filename': filename
+                        },
                         'eventTime': event_time,
                         'eventName': event_name,
                         'source': 'sqs-consumer'

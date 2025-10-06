@@ -293,15 +293,12 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.deadLetterQueue">deadLetterQueue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | Dead letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Ingress adapter, responsible for triggering workflow. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | log group data protection configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.queue">queue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | SQS queue for reliable message processing with dead letter queue support. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.bucketEncryptionKey">bucketEncryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | Encryption key used by the DocumentProcessingBucket. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.StateMachine</code> | The Step Functions state machine that orchestrates the document processing workflow. |
 
 ---
@@ -315,30 +312,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
----
-
-##### `deadLetterQueue`<sup>Required</sup> <a name="deadLetterQueue" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.deadLetterQueue"></a>
-
-```typescript
-public readonly deadLetterQueue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-Dead letter queue.
 
 ---
 
@@ -363,6 +336,18 @@ public readonly encryptionKey: Key;
 - *Type:* aws-cdk-lib.aws_kms.Key
 
 KMS key.
+
+---
+
+##### `ingressAdapter`<sup>Required</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Ingress adapter, responsible for triggering workflow.
 
 ---
 
@@ -401,30 +386,6 @@ public readonly metricServiceName: string;
 Business metric service name.
 
 This is part of the initial service dimension
-
----
-
-##### `queue`<sup>Required</sup> <a name="queue" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.queue"></a>
-
-```typescript
-public readonly queue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-SQS queue for reliable message processing with dead letter queue support.
-
----
-
-##### `bucketEncryptionKey`<sup>Optional</sup> <a name="bucketEncryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.property.bucketEncryptionKey"></a>
-
-```typescript
-public readonly bucketEncryptionKey: IKey;
-```
-
-- *Type:* aws-cdk-lib.aws_kms.IKey
-
-Encryption key used by the DocumentProcessingBucket.
 
 ---
 
@@ -562,15 +523,12 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.deadLetterQueue">deadLetterQueue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | Dead letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Ingress adapter, responsible for triggering workflow. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | log group data protection configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.queue">queue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | SQS queue for reliable message processing with dead letter queue support. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.bucketEncryptionKey">bucketEncryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | Encryption key used by the DocumentProcessingBucket. |
 
 ---
 
@@ -583,30 +541,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
----
-
-##### `deadLetterQueue`<sup>Required</sup> <a name="deadLetterQueue" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.deadLetterQueue"></a>
-
-```typescript
-public readonly deadLetterQueue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-Dead letter queue.
 
 ---
 
@@ -631,6 +565,18 @@ public readonly encryptionKey: Key;
 - *Type:* aws-cdk-lib.aws_kms.Key
 
 KMS key.
+
+---
+
+##### `ingressAdapter`<sup>Required</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Ingress adapter, responsible for triggering workflow.
 
 ---
 
@@ -669,30 +615,6 @@ public readonly metricServiceName: string;
 Business metric service name.
 
 This is part of the initial service dimension
-
----
-
-##### `queue`<sup>Required</sup> <a name="queue" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.queue"></a>
-
-```typescript
-public readonly queue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-SQS queue for reliable message processing with dead letter queue support.
-
----
-
-##### `bucketEncryptionKey`<sup>Optional</sup> <a name="bucketEncryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.property.bucketEncryptionKey"></a>
-
-```typescript
-public readonly bucketEncryptionKey: IKey;
-```
-
-- *Type:* aws-cdk-lib.aws_kms.IKey
-
-Encryption key used by the DocumentProcessingBucket.
 
 ---
 
@@ -824,15 +746,12 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.deadLetterQueue">deadLetterQueue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | Dead letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Ingress adapter, responsible for triggering workflow. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | log group data protection configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.queue">queue</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | SQS queue for reliable message processing with dead letter queue support. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.bucketEncryptionKey">bucketEncryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | Encryption key used by the DocumentProcessingBucket. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.StateMachine</code> | The Step Functions state machine that orchestrates the document processing workflow. |
 
 ---
@@ -846,30 +765,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
----
-
-##### `deadLetterQueue`<sup>Required</sup> <a name="deadLetterQueue" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.deadLetterQueue"></a>
-
-```typescript
-public readonly deadLetterQueue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-Dead letter queue.
 
 ---
 
@@ -894,6 +789,18 @@ public readonly encryptionKey: Key;
 - *Type:* aws-cdk-lib.aws_kms.Key
 
 KMS key.
+
+---
+
+##### `ingressAdapter`<sup>Required</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Ingress adapter, responsible for triggering workflow.
 
 ---
 
@@ -932,30 +839,6 @@ public readonly metricServiceName: string;
 Business metric service name.
 
 This is part of the initial service dimension
-
----
-
-##### `queue`<sup>Required</sup> <a name="queue" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.queue"></a>
-
-```typescript
-public readonly queue: Queue;
-```
-
-- *Type:* aws-cdk-lib.aws_sqs.Queue
-
-SQS queue for reliable message processing with dead letter queue support.
-
----
-
-##### `bucketEncryptionKey`<sup>Optional</sup> <a name="bucketEncryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.property.bucketEncryptionKey"></a>
-
-```typescript
-public readonly bucketEncryptionKey: IKey;
-```
-
-- *Type:* aws-cdk-lib.aws_kms.IKey
-
-Encryption key used by the DocumentProcessingBucket.
 
 ---
 
@@ -1838,14 +1721,12 @@ const agenticDocumentProcessingProps: AgenticDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.dlqMaxReceiveCount">dlqMaxReceiveCount</a></code> | <code>number</code> | The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable logging and tracing for all supporting resource. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key to be used. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.eventbridgeBroker">eventbridgeBroker</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a></code> | Optional EventBridge broker for publishing custom events during processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Adapter that defines how the document processing workflow is triggered. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.queueVisibilityTimeout">queueVisibilityTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | SQS queue visibility timeout for processing messages. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationModelId">classificationModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document classification step. |
@@ -1897,33 +1778,6 @@ public readonly metricServiceName: string;
 - *Default:* would be defined per use case
 
 Business metric service name dimension.
-
----
-
-##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
-If not provided, a new bucket will be created with auto-delete enabled based on removalPolicy.
-
----
-
-##### `dlqMaxReceiveCount`<sup>Optional</sup> <a name="dlqMaxReceiveCount" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.dlqMaxReceiveCount"></a>
-
-```typescript
-public readonly dlqMaxReceiveCount: number;
-```
-
-- *Type:* number
-- *Default:* 5
-
-The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
 
 ---
 
@@ -1981,6 +1835,19 @@ If not provided, no custom events will be sent out.
 
 ---
 
+##### `ingressAdapter`<sup>Optional</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+- *Default:* QueuedS3Adapter
+
+Adapter that defines how the document processing workflow is triggered.
+
+---
+
 ##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.network"></a>
 
 ```typescript
@@ -1991,21 +1858,6 @@ public readonly network: Network;
 - *Default:* resources will run outside of a VPC
 
 Resources that can run inside a VPC will follow the provided network configuration.
-
----
-
-##### `queueVisibilityTimeout`<sup>Optional</sup> <a name="queueVisibilityTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.queueVisibilityTimeout"></a>
-
-```typescript
-public readonly queueVisibilityTimeout: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-- *Default:* Duration.seconds(300)
-
-SQS queue visibility timeout for processing messages.
-
-Should be longer than expected processing time to prevent duplicate processing.
 
 ---
 
@@ -2186,9 +2038,10 @@ const agentProps: AgentProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.agentSystemPrompt">agentSystemPrompt</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.LayerVersion[]</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsLocation">toolsLocation</a></code> | <code>string[]</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.agentSystemPrompt">agentSystemPrompt</a></code> | <code>string</code> | System prompt for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.LayerVersion[]</code> | If there are python dependencies that are needed by the provided tools, provide the Lambda Layers with the dependencies. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsBucket">toolsBucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | Bucket where the tools are located in Primarily use to grant read permission to the processing agent to access the tools. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsLocation">toolsLocation</a></code> | <code>string[]</code> | S3 path where the tools are located. |
 
 ---
 
@@ -2200,6 +2053,8 @@ public readonly agentSystemPrompt: string;
 
 - *Type:* string
 
+System prompt for the agent.
+
 ---
 
 ##### `lambdaLayers`<sup>Optional</sup> <a name="lambdaLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.lambdaLayers"></a>
@@ -2210,6 +2065,21 @@ public readonly lambdaLayers: LayerVersion[];
 
 - *Type:* aws-cdk-lib.aws_lambda.LayerVersion[]
 
+If there are python dependencies that are needed by the provided tools, provide the Lambda Layers with the dependencies.
+
+---
+
+##### `toolsBucket`<sup>Optional</sup> <a name="toolsBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsBucket"></a>
+
+```typescript
+public readonly toolsBucket: Bucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.Bucket
+- *Default:* No extra IAM permissions would be automatically assigned to the processing agent.
+
+Bucket where the tools are located in Primarily use to grant read permission to the processing agent to access the tools.
+
 ---
 
 ##### `toolsLocation`<sup>Optional</sup> <a name="toolsLocation" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsLocation"></a>
@@ -2219,6 +2089,10 @@ public readonly toolsLocation: string[];
 ```
 
 - *Type:* string[]
+
+S3 path where the tools are located.
+
+The agent would dynamically load the tools
 
 ---
 
@@ -2241,14 +2115,12 @@ const baseDocumentProcessingProps: BaseDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.dlqMaxReceiveCount">dlqMaxReceiveCount</a></code> | <code>number</code> | The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable logging and tracing for all supporting resource. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key to be used. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.eventbridgeBroker">eventbridgeBroker</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a></code> | Optional EventBridge broker for publishing custom events during processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Adapter that defines how the document processing workflow is triggered. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.queueVisibilityTimeout">queueVisibilityTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | SQS queue visibility timeout for processing messages. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
 
@@ -2290,33 +2162,6 @@ public readonly metricServiceName: string;
 - *Default:* would be defined per use case
 
 Business metric service name dimension.
-
----
-
-##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
-If not provided, a new bucket will be created with auto-delete enabled based on removalPolicy.
-
----
-
-##### `dlqMaxReceiveCount`<sup>Optional</sup> <a name="dlqMaxReceiveCount" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.dlqMaxReceiveCount"></a>
-
-```typescript
-public readonly dlqMaxReceiveCount: number;
-```
-
-- *Type:* number
-- *Default:* 5
-
-The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
 
 ---
 
@@ -2374,6 +2219,19 @@ If not provided, no custom events will be sent out.
 
 ---
 
+##### `ingressAdapter`<sup>Optional</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+- *Default:* QueuedS3Adapter
+
+Adapter that defines how the document processing workflow is triggered.
+
+---
+
 ##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.network"></a>
 
 ```typescript
@@ -2384,21 +2242,6 @@ public readonly network: Network;
 - *Default:* resources will run outside of a VPC
 
 Resources that can run inside a VPC will follow the provided network configuration.
-
----
-
-##### `queueVisibilityTimeout`<sup>Optional</sup> <a name="queueVisibilityTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps.property.queueVisibilityTimeout"></a>
-
-```typescript
-public readonly queueVisibilityTimeout: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-- *Default:* Duration.seconds(300)
-
-SQS queue visibility timeout for processing messages.
-
-Should be longer than expected processing time to prevent duplicate processing.
 
 ---
 
@@ -2449,14 +2292,12 @@ const bedrockDocumentProcessingProps: BedrockDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.dlqMaxReceiveCount">dlqMaxReceiveCount</a></code> | <code>number</code> | The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable logging and tracing for all supporting resource. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key to be used. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.eventbridgeBroker">eventbridgeBroker</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a></code> | Optional EventBridge broker for publishing custom events during processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Adapter that defines how the document processing workflow is triggered. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.queueVisibilityTimeout">queueVisibilityTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | SQS queue visibility timeout for processing messages. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationModelId">classificationModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document classification step. |
@@ -2507,33 +2348,6 @@ public readonly metricServiceName: string;
 - *Default:* would be defined per use case
 
 Business metric service name dimension.
-
----
-
-##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.bucket"></a>
-
-```typescript
-public readonly bucket: Bucket;
-```
-
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-
-S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-
-If not provided, a new bucket will be created with auto-delete enabled based on removalPolicy.
-
----
-
-##### `dlqMaxReceiveCount`<sup>Optional</sup> <a name="dlqMaxReceiveCount" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.dlqMaxReceiveCount"></a>
-
-```typescript
-public readonly dlqMaxReceiveCount: number;
-```
-
-- *Type:* number
-- *Default:* 5
-
-The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
 
 ---
 
@@ -2591,6 +2405,19 @@ If not provided, no custom events will be sent out.
 
 ---
 
+##### `ingressAdapter`<sup>Optional</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+- *Default:* QueuedS3Adapter
+
+Adapter that defines how the document processing workflow is triggered.
+
+---
+
 ##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.network"></a>
 
 ```typescript
@@ -2601,21 +2428,6 @@ public readonly network: Network;
 - *Default:* resources will run outside of a VPC
 
 Resources that can run inside a VPC will follow the provided network configuration.
-
----
-
-##### `queueVisibilityTimeout`<sup>Optional</sup> <a name="queueVisibilityTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.queueVisibilityTimeout"></a>
-
-```typescript
-public readonly queueVisibilityTimeout: Duration;
-```
-
-- *Type:* aws-cdk-lib.Duration
-- *Default:* Duration.seconds(300)
-
-SQS queue visibility timeout for processing messages.
-
-Should be longer than expected processing time to prevent duplicate processing.
 
 ---
 
@@ -3694,6 +3506,115 @@ Business metric service name dimension.
 
 ---
 
+### QueuedS3AdapterProps <a name="QueuedS3AdapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps"></a>
+
+Props for the Queued S3 Adapter.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.Initializer"></a>
+
+```typescript
+import { QueuedS3AdapterProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const queuedS3AdapterProps: QueuedS3AdapterProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 bucket for document storage with organized prefixes (raw/, processed/, failed/). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.dlqMaxReceiveCount">dlqMaxReceiveCount</a></code> | <code>number</code> | The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.failedPrefix">failedPrefix</a></code> | <code>string</code> | S3 prefix where the files that failed processing would be stored. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.processedPrefix">processedPrefix</a></code> | <code>string</code> | S3 prefix where the processed files would be stored. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.queueVisibilityTimeout">queueVisibilityTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | SQS queue visibility timeout for processing messages. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.rawPrefix">rawPrefix</a></code> | <code>string</code> | S3 prefix where the raw files would be stored. |
+
+---
+
+##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.bucket"></a>
+
+```typescript
+public readonly bucket: Bucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.Bucket
+- *Default:* create a new bucket
+
+S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
+
+If not provided, a new bucket will be created with auto-delete enabled based on removalPolicy.
+
+---
+
+##### `dlqMaxReceiveCount`<sup>Optional</sup> <a name="dlqMaxReceiveCount" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.dlqMaxReceiveCount"></a>
+
+```typescript
+public readonly dlqMaxReceiveCount: number;
+```
+
+- *Type:* number
+- *Default:* 5
+
+The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
+
+---
+
+##### `failedPrefix`<sup>Optional</sup> <a name="failedPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.failedPrefix"></a>
+
+```typescript
+public readonly failedPrefix: string;
+```
+
+- *Type:* string
+- *Default:* "failed/"
+
+S3 prefix where the files that failed processing would be stored.
+
+---
+
+##### `processedPrefix`<sup>Optional</sup> <a name="processedPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.processedPrefix"></a>
+
+```typescript
+public readonly processedPrefix: string;
+```
+
+- *Type:* string
+- *Default:* "processed/"
+
+S3 prefix where the processed files would be stored.
+
+---
+
+##### `queueVisibilityTimeout`<sup>Optional</sup> <a name="queueVisibilityTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.queueVisibilityTimeout"></a>
+
+```typescript
+public readonly queueVisibilityTimeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.seconds(300)
+
+SQS queue visibility timeout for processing messages.
+
+Should be longer than expected processing time to prevent duplicate processing.
+
+---
+
+##### `rawPrefix`<sup>Optional</sup> <a name="rawPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps.property.rawPrefix"></a>
+
+```typescript
+public readonly rawPrefix: string;
+```
+
+- *Type:* string
+- *Default:* "raw/"
+
+S3 prefix where the raw files would be stored.
+
+This serves as the trigger point for processing
+
+---
+
 ## Classes <a name="Classes" id="Classes"></a>
 
 ### CloudfrontDistributionObservabilityPropertyInjector <a name="CloudfrontDistributionObservabilityPropertyInjector" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudfrontDistributionObservabilityPropertyInjector"></a>
@@ -3762,6 +3683,82 @@ The unique Id of the Construct class.
 
 ---
 
+
+### DefaultDocumentProcessingConfig <a name="DefaultDocumentProcessingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultDocumentProcessingConfig"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultDocumentProcessingConfig.Initializer"></a>
+
+```typescript
+import { DefaultDocumentProcessingConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new DefaultDocumentProcessingConfig()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+
+
+#### Constants <a name="Constants" id="Constants"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultDocumentProcessingConfig.property.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME">DEFAULT_OBSERVABILITY_METRIC_SVC_NAME</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `DEFAULT_OBSERVABILITY_METRIC_SVC_NAME`<sup>Required</sup> <a name="DEFAULT_OBSERVABILITY_METRIC_SVC_NAME" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultDocumentProcessingConfig.property.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME"></a>
+
+```typescript
+public readonly DEFAULT_OBSERVABILITY_METRIC_SVC_NAME: string;
+```
+
+- *Type:* string
+
+---
+
+### DefaultObservabilityConfig <a name="DefaultObservabilityConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultObservabilityConfig"></a>
+
+Contains default constants for Observability related configuration.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultObservabilityConfig.Initializer"></a>
+
+```typescript
+import { DefaultObservabilityConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new DefaultObservabilityConfig()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+
+
+#### Constants <a name="Constants" id="Constants"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultObservabilityConfig.property.DEFAULT_METRIC_NAMESPACE">DEFAULT_METRIC_NAMESPACE</a></code> | <code>string</code> | Default namespace for powertools. |
+
+---
+
+##### `DEFAULT_METRIC_NAMESPACE`<sup>Required</sup> <a name="DEFAULT_METRIC_NAMESPACE" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultObservabilityConfig.property.DEFAULT_METRIC_NAMESPACE"></a>
+
+```typescript
+public readonly DEFAULT_METRIC_NAMESPACE: string;
+```
+
+- *Type:* string
+
+Default namespace for powertools.
+
+---
 
 ### DefaultRuntimes <a name="DefaultRuntimes" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultRuntimes"></a>
 
@@ -4317,6 +4314,143 @@ PowertoolsConfig.generateDefaultLambdaConfig(enableObservability?: boolean, metr
 
 
 
+### QueuedS3Adapter <a name="QueuedS3Adapter" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+This adapter allows the intelligent document processing workflow to be triggered by files that are uploaded into a S3 Bucket.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.Initializer"></a>
+
+```typescript
+import { QueuedS3Adapter } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new QueuedS3Adapter(adapterProps?: QueuedS3AdapterProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.Initializer.parameter.adapterProps">adapterProps</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps">QueuedS3AdapterProps</a></code> | *No description.* |
+
+---
+
+##### `adapterProps`<sup>Optional</sup> <a name="adapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.Initializer.parameter.adapterProps"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3AdapterProps">QueuedS3AdapterProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain">createFailedChain</a></code> | Create the adapter specific handler for failed processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createIngressTrigger">createIngressTrigger</a></code> | Create resources that would receive the data and trigger the workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain">createSuccessChain</a></code> | Create the adapter specific handler for successful processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.generateAdapterIAMPolicies">generateAdapterIAMPolicies</a></code> | Generate IAM statements that can be used by other resources to access the storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.init">init</a></code> | Initializes the adapter. |
+
+---
+
+##### `createFailedChain` <a name="createFailedChain" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain"></a>
+
+```typescript
+public createFailedChain(scope: Construct): Chain
+```
+
+Create the adapter specific handler for failed processing.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `createIngressTrigger` <a name="createIngressTrigger" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createIngressTrigger"></a>
+
+```typescript
+public createIngressTrigger(scope: Construct, stateMachine: StateMachine, props: BaseDocumentProcessingProps): {[ key: string ]: any}
+```
+
+Create resources that would receive the data and trigger the workflow.
+
+Important: resource created should trigger the state machine
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createIngressTrigger.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `stateMachine`<sup>Required</sup> <a name="stateMachine" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createIngressTrigger.parameter.stateMachine"></a>
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.StateMachine
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createIngressTrigger.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps">BaseDocumentProcessingProps</a>
+
+---
+
+##### `createSuccessChain` <a name="createSuccessChain" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain"></a>
+
+```typescript
+public createSuccessChain(scope: Construct): Chain
+```
+
+Create the adapter specific handler for successful processing.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `generateAdapterIAMPolicies` <a name="generateAdapterIAMPolicies" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.generateAdapterIAMPolicies"></a>
+
+```typescript
+public generateAdapterIAMPolicies(additionalIAMActions?: string[], narrowActions?: boolean): PolicyStatement[]
+```
+
+Generate IAM statements that can be used by other resources to access the storage.
+
+###### `additionalIAMActions`<sup>Optional</sup> <a name="additionalIAMActions" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.generateAdapterIAMPolicies.parameter.additionalIAMActions"></a>
+
+- *Type:* string[]
+
+---
+
+###### `narrowActions`<sup>Optional</sup> <a name="narrowActions" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.generateAdapterIAMPolicies.parameter.narrowActions"></a>
+
+- *Type:* boolean
+
+---
+
+##### `init` <a name="init" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.init"></a>
+
+```typescript
+public init(scope: Construct, props: BaseDocumentProcessingProps): void
+```
+
+Initializes the adapter.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.init.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.init.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps">BaseDocumentProcessingProps</a>
+
+---
+
+
+
+
 ### StateMachineObservabilityPropertyInjector <a name="StateMachineObservabilityPropertyInjector" id="@cdklabs/cdk-appmod-catalog-blueprints.StateMachineObservabilityPropertyInjector"></a>
 
 - *Implements:* aws-cdk-lib.IPropertyInjector
@@ -4403,6 +4537,139 @@ public readonly logGroupDataProtection: LogGroupDataProtectionProps;
 
 
 ## Protocols <a name="Protocols" id="Protocols"></a>
+
+### IAdapter <a name="IAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter">QueuedS3Adapter</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Abstraction to enable different types of source triggers for the intelligent document processing workflow.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createFailedChain">createFailedChain</a></code> | Create the adapter specific handler for failed processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createIngressTrigger">createIngressTrigger</a></code> | Create resources that would receive the data and trigger the workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createSuccessChain">createSuccessChain</a></code> | Create the adapter specific handler for successful processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.generateAdapterIAMPolicies">generateAdapterIAMPolicies</a></code> | Generate IAM statements that can be used by other resources to access the storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.init">init</a></code> | Initializes the adapter. |
+
+---
+
+##### `createFailedChain` <a name="createFailedChain" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createFailedChain"></a>
+
+```typescript
+public createFailedChain(scope: Construct): Chain
+```
+
+Create the adapter specific handler for failed processing.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createFailedChain.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+Scope to use in relation to the CDK hierarchy.
+
+---
+
+##### `createIngressTrigger` <a name="createIngressTrigger" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createIngressTrigger"></a>
+
+```typescript
+public createIngressTrigger(scope: Construct, stateMachine: StateMachine, props: BaseDocumentProcessingProps): {[ key: string ]: any}
+```
+
+Create resources that would receive the data and trigger the workflow.
+
+Important: resource created should trigger the state machine
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createIngressTrigger.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+Scope to use in relation to the CDK hierarchy.
+
+---
+
+###### `stateMachine`<sup>Required</sup> <a name="stateMachine" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createIngressTrigger.parameter.stateMachine"></a>
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.StateMachine
+
+The workflow of the document processor.
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createIngressTrigger.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps">BaseDocumentProcessingProps</a>
+
+The parameters passed to the document processing L3 Construct.
+
+---
+
+##### `createSuccessChain` <a name="createSuccessChain" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createSuccessChain"></a>
+
+```typescript
+public createSuccessChain(scope: Construct): Chain
+```
+
+Create the adapter specific handler for successful processing.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createSuccessChain.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+Scope to use in relation to the CDK hierarchy.
+
+---
+
+##### `generateAdapterIAMPolicies` <a name="generateAdapterIAMPolicies" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.generateAdapterIAMPolicies"></a>
+
+```typescript
+public generateAdapterIAMPolicies(additionalIAMActions?: string[], narrowActions?: boolean): PolicyStatement[]
+```
+
+Generate IAM statements that can be used by other resources to access the storage.
+
+###### `additionalIAMActions`<sup>Optional</sup> <a name="additionalIAMActions" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.generateAdapterIAMPolicies.parameter.additionalIAMActions"></a>
+
+- *Type:* string[]
+
+(Optional) list of additional actions in relation to the underlying storage for the adapter.
+
+---
+
+###### `narrowActions`<sup>Optional</sup> <a name="narrowActions" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.generateAdapterIAMPolicies.parameter.narrowActions"></a>
+
+- *Type:* boolean
+
+(Optional) whether the resulting permissions would only be the IAM actions indicated in the `additionalIAMActions` parameter.
+
+---
+
+##### `init` <a name="init" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.init"></a>
+
+```typescript
+public init(scope: Construct, props: BaseDocumentProcessingProps): void
+```
+
+Initializes the adapter.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.init.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+Scope to use in relation to the CDK hierarchy.
+
+---
+
+###### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.init.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessingProps">BaseDocumentProcessingProps</a>
+
+The parameters passed to the document processing L3 Construct.
+
+---
+
 
 ### IObservable <a name="IObservable" id="@cdklabs/cdk-appmod-catalog-blueprints.IObservable"></a>
 
@@ -4514,46 +4781,6 @@ Supported database engines.
 
 
 ##### `POSTGRESQL` <a name="POSTGRESQL" id="@cdklabs/cdk-appmod-catalog-blueprints.DatabaseEngine.POSTGRESQL"></a>
-
----
-
-
-### DocumentProcessingPrefix <a name="DocumentProcessingPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix"></a>
-
-S3 prefix constants for organizing documents throughout the processing lifecycle.
-
-Documents flow through these prefixes based on processing outcomes:
-- Upload → raw/ (triggers processing)
-- Success → processed/ (workflow completed successfully)
-- Failure → failed/ (workflow encountered errors)
-
-#### Members <a name="Members" id="Members"></a>
-
-| **Name** | **Description** |
-| --- | --- |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.RAW">RAW</a></code> | Prefix for newly uploaded documents awaiting processing. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.FAILED">FAILED</a></code> | Prefix for documents that failed processing. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.PROCESSED">PROCESSED</a></code> | Prefix for successfully processed documents. |
-
----
-
-##### `RAW` <a name="RAW" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.RAW"></a>
-
-Prefix for newly uploaded documents awaiting processing.
-
----
-
-
-##### `FAILED` <a name="FAILED" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.FAILED"></a>
-
-Prefix for documents that failed processing.
-
----
-
-
-##### `PROCESSED` <a name="PROCESSED" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentProcessingPrefix.PROCESSED"></a>
-
-Prefix for successfully processed documents.
 
 ---
 

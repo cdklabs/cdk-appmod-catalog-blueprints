@@ -1,10 +1,9 @@
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { AgenticDocumentProcessing } from '../../../use-cases/document-processing/';
 import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
-import { Network } from "../../../use-cases/framework";
 import { DataIdentifier } from "aws-cdk-lib/aws-logs";
+import { AgenticDocumentProcessing, Network, QueuedS3Adapter} from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 export class AgenticDocumentProcessingStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -29,7 +28,9 @@ export class AgenticDocumentProcessingStack extends Stack {
         })
 
         new AgenticDocumentProcessing(this, 'AgenticDocumentProcessing', {
-            bucket,
+            ingressAdapter: new QueuedS3Adapter({
+                bucket
+            }),
             useCrossRegionInference: true,
             processingAgentParameters: {
                 agentSystemPrompt: `

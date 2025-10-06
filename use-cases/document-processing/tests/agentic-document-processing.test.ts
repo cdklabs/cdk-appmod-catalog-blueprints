@@ -80,26 +80,12 @@ describe('AgenticDocumentProcessing', () => {
     basicTemplate.hasResourceProperties('AWS::IAM::Role', {
       Policies: [{
         PolicyDocument: {
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: 's3:GetObject',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
-                    '/*',
-                  ],
-                ],
-              },
-            },
-            {
+          Statement: Match.arrayWith([
+            Match.objectLike({
               Effect: 'Allow',
               Action: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
-              Resource: Match.anyValue(),
-            },
-          ],
+            }),
+          ]),
         },
         PolicyName: 'BedrockInvokePolicy',
       }],

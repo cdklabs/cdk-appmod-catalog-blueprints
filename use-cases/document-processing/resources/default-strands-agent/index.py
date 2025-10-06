@@ -66,8 +66,8 @@ def parse_s3_path(s3_path):
 
 @tracer.capture_method
 def download_attached_document(event):
-    bucket = event['bucket']
-    key = event['key']
+    bucket = event['content']['bucket']
+    key = event['content']['key']
     
     # Download file to /tmp
     local_path = f"/tmp/{key.split('/')[-1]}"
@@ -84,6 +84,7 @@ def handler(event, context):
     prompt = os.getenv("PROMPT")
     system_prompt = os.getenv("SYSTEM_PROMPT")
     invoke_type = os.environ["INVOKE_TYPE"]
+    content_type = event['contentType']
     
     tracer.put_annotation(key="invoke_type", value=invoke_type)
     metrics.add_dimension(name="invoke_type", value=invoke_type)
@@ -93,14 +94,16 @@ def handler(event, context):
         
     if system_prompt is None:
         system_prompt = "You're a document analysis specialist. You specialized in analyzing provided documents using the tools that have been provided."
-        
-    local_path_attached_doc = download_attached_document(event)
     
     if 'classificationResult' in event:
         classification = event['classificationResult']['documentClassification']
         prompt = prompt.replace("[ACTUAL_CLASSIFICATION]", classification)
 
-    prompt += f" Attached document is located in {local_path_attached_doc}"
+    if content_type == 'file' and event['content']['location'] == 's3':
+        local_path_attached_doc = download_attached_document(event)
+        prompt += f" Attached document is located in {local_path_attached_doc}"
+    elif content_type == 'data':
+        prompt += f" Attached document content are as follows: {event['content']['data']}"
     
     agent = Agent(model=model_id, tools=agent_tools + [file_read], system_prompt=system_prompt)
     response = agent(prompt)

@@ -205,10 +205,6 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
 
     this.encryptionKey.grantEncryptDecrypt(role);
 
-    if (this.bucketEncryptionKey) {
-      this.bucketEncryptionKey.grantEncryptDecrypt(role);
-    }
-
     const bedrockFunction = new PythonFunction(this, 'BedrockClassificationFunction', {
       functionName: generatedLogPermissions.uniqueFunctionName,
       architecture: Architecture.X86_64,
@@ -272,9 +268,6 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
       scope: this,
     });
     this.encryptionKey.grantEncryptDecrypt(role);
-    if (this.bucketEncryptionKey) {
-      this.bucketEncryptionKey.grantEncryptDecrypt(role);
-    }
     const bedrockFunction = new PythonFunction(this, 'BedrockExtractionFunction', {
       functionName: generatedLogPermissions.uniqueFunctionName,
       runtime: DefaultRuntimes.PYTHON,
@@ -323,11 +316,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
       inlinePolicies: {
         BedrockInvokePolicy: new PolicyDocument({
           statements: [
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: ['s3:GetObject'],
-              resources: [`${this.bucket.bucketArn}/*`],
-            }),
+            ...this.ingressAdapter.generateAdapterIAMPolicies(),
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: [
