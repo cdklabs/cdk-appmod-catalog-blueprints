@@ -1,57 +1,42 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import * as path from 'node:path';
-import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
-import { Duration, Names, PropertyInjectors, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration, PropertyInjectors, RemovalPolicy } from 'aws-cdk-lib';
 import { IMetric } from 'aws-cdk-lib/aws-cloudwatch';
 import { AttributeType, BillingMode, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { InterfaceVpcEndpointAwsService } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IKey, Key } from 'aws-cdk-lib/aws-kms';
-import { Function } from 'aws-cdk-lib/aws-lambda';
-import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { Bucket, BucketEncryption, EventType } from 'aws-cdk-lib/aws-s3';
-import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
-import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { CustomerManagedEncryptionConfiguration, DefinitionBody, JsonPath, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
-import { BedrockInvokeModel, DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem, LambdaInvoke, CallAwsService, StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { BedrockInvokeModel, DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem, LambdaInvoke, StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
-import { DefaultRuntimes, Network } from '../framework';
+import { IAdapter, QueuedS3Adapter } from './adapter';
+import { DefaultDocumentProcessingConfig } from './default-document-processing-config';
+import { Network } from '../framework';
 import { EventbridgeBroker } from '../framework/foundation/eventbridge-broker';
-import { LambdaIamUtils, LogGroupDataProtectionProps } from '../utilities';
+import { LogGroupDataProtectionProps } from '../utilities';
+import { DefaultObservabilityConfig } from '../utilities/observability/default-observability-config';
 import { LambdaObservabilityPropertyInjector } from '../utilities/observability/lambda-observability-property-injector';
 import { IObservable, ObservableProps } from '../utilities/observability/observable';
-import { PowertoolsConfig } from '../utilities/observability/powertools-config';
 import { StateMachineObservabilityPropertyInjector } from '../utilities/observability/state-machine-observability-property-injector';
 
 /**
  * Configuration properties for BaseDocumentProcessing construct.
  */
 export interface BaseDocumentProcessingProps extends ObservableProps {
+
   /**
-   * S3 bucket for document storage with organized prefixes (raw/, processed/, failed/).
-   * If not provided, a new bucket will be created with auto-delete enabled based on removalPolicy.
+   * Adapter that defines how the document processing workflow is triggered
+   *
+   * @default QueuedS3Adapter
    */
-  readonly bucket?: Bucket;
+  readonly ingressAdapter?: IAdapter;
+
   /**
    * DynamoDB table for storing document processing metadata and workflow state.
    * If not provided, a new table will be created with DocumentId as partition key.
    */
   readonly documentProcessingTable?: Table;
-  /**
-   * SQS queue visibility timeout for processing messages.
-   * Should be longer than expected processing time to prevent duplicate processing.
-   * @default Duration.seconds(300)
-   */
-  readonly queueVisibilityTimeout?: Duration;
-
-  /**
-   * The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
-   *
-   * @default 5
-   */
-  readonly dlqMaxReceiveCount?: number;
 
   /**
    * Maximum execution time for the Step Functions workflow.
@@ -89,23 +74,6 @@ export interface BaseDocumentProcessingProps extends ObservableProps {
 }
 
 /**
- * S3 prefix constants for organizing documents throughout the processing lifecycle.
- *
- * Documents flow through these prefixes based on processing outcomes:
- * - Upload → raw/ (triggers processing)
- * - Success → processed/ (workflow completed successfully)
- * - Failure → failed/ (workflow encountered errors)
- */
-export enum DocumentProcessingPrefix {
-  /** Prefix for newly uploaded documents awaiting processing */
-  RAW = 'raw/',
-  /** Prefix for documents that failed processing */
-  FAILED = 'failed/',
-  /** Prefix for successfully processed documents */
-  PROCESSED = 'processed/',
-}
-
-/**
  * Union type for Step Functions tasks that can be used in document processing workflows.
  * Supports Bedrock model invocation, Lambda function invocation, and nested Step Functions execution.
  */
@@ -140,20 +108,14 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
   readonly metricNamespace: string;
   /** log group data protection configuration */
   readonly logGroupDataProtection: LogGroupDataProtectionProps;
-  /** S3 bucket for document storage with organized prefixes (raw/, processed/, failed/) */
-  readonly bucket: Bucket;
-  /** SQS queue for reliable message processing with dead letter queue support */
-  readonly queue: Queue;
   /** DynamoDB table for storing document processing metadata and workflow state */
   readonly documentProcessingTable: Table;
   /** Configuration properties for the document processing pipeline */
   private readonly props: BaseDocumentProcessingProps;
-  /** Dead letter queue  */
-  readonly deadLetterQueue: Queue;
   /** KMS key */
   readonly encryptionKey: Key;
-  /** Encryption key used by the DocumentProcessingBucket */
-  readonly bucketEncryptionKey?: IKey;
+  /** Ingress adapter, responsible for triggering workflow */
+  readonly ingressAdapter: IAdapter;
 
   /**
    * Creates a new BaseDocumentProcessing construct.
@@ -168,9 +130,9 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
   constructor(scope: Construct, id: string, props: BaseDocumentProcessingProps) {
     super(scope, id);
     this.props = props;
+    this.ingressAdapter = props.ingressAdapter || new QueuedS3Adapter();
+
     if (props.network) {
-      props.network.createServiceEndpoint('vpce-sqs', InterfaceVpcEndpointAwsService.SQS);
-      props.network.createServiceEndpoint('vpce-s3', InterfaceVpcEndpointAwsService.S3);
       props.network.createServiceEndpoint('vpce-sfn', InterfaceVpcEndpointAwsService.STEP_FUNCTIONS);
       props.network.createServiceEndpoint('vpce-eb', InterfaceVpcEndpointAwsService.EVENTBRIDGE);
       if (props.enableObservability) {
@@ -179,36 +141,12 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       }
     }
 
+    this.ingressAdapter.init(this, props);
+
     this.encryptionKey = props.encryptionKey || new Key(this, 'IDPEncryptionKey', {
       enableKeyRotation: true,
       removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
     });
-
-    const bucketName = `documentprocessingbucket-${Names.uniqueResourceName(this, {
-      maxLength: 60 - 'documentprocessingbucket-'.length,
-    })}`.toLowerCase();
-
-    const bucketArn = `arn:aws:s3:::${bucketName}`;
-
-    this.encryptionKey.grantEncryptDecrypt(new ServicePrincipal('s3.amazonaws.com', {
-      conditions: {
-        ArnEquals: {
-          'kms:EncryptionContext:aws:s3:arn': bucketArn,
-        },
-      },
-    }));
-
-    this.bucket = props.bucket || new Bucket(this, 'DocumentProcessingBucket', {
-      bucketName,
-      autoDeleteObjects: (props.removalPolicy && props.removalPolicy === RemovalPolicy.DESTROY) || !props.removalPolicy ? true : false,
-      removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-      encryption: BucketEncryption.KMS,
-      enforceSSL: true,
-      bucketKeyEnabled: true,
-    });
-
-
-    this.bucketEncryptionKey = this.bucket.encryptionKey;
 
     const tempLogGroupDataProtection = props.logGroupDataProtection || {
       logGroupEncryptionKey: new Key(this, 'LogGroupEncryptionKey', {
@@ -228,26 +166,6 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
     } else {
       this.logGroupDataProtection = tempLogGroupDataProtection;
     }
-
-    this.deadLetterQueue = new Queue(this, 'DocumentProcessingDLQ', {
-      visibilityTimeout: props.queueVisibilityTimeout || Duration.seconds(300),
-      removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      encryption: QueueEncryption.KMS,
-      encryptionMasterKey: this.encryptionKey,
-    });
-
-    this.queue = new Queue(this, 'DocumentProcessingQueue', {
-      visibilityTimeout: props.queueVisibilityTimeout || Duration.seconds(300),
-      removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      deadLetterQueue: {
-        maxReceiveCount: props.dlqMaxReceiveCount || 5,
-        queue: this.deadLetterQueue,
-      },
-      encryption: QueueEncryption.KMS,
-      encryptionMasterKey: this.encryptionKey,
-    });
 
     this.documentProcessingTable = props.documentProcessingTable || new Table(this, 'DocumentProcessingTable', {
       partitionKey: {
@@ -270,8 +188,8 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       );
     }
 
-    this.metricNamespace = props.metricNamespace || 'appmod-catalog';
-    this.metricServiceName = props.metricServiceName || 'document-processing';
+    this.metricNamespace = props.metricNamespace || DefaultObservabilityConfig.DEFAULT_METRIC_NAMESPACE;
+    this.metricServiceName = props.metricServiceName || DefaultDocumentProcessingConfig.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME;
   }
 
 
@@ -285,8 +203,8 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       table: this.documentProcessingTable,
       item: {
         DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-        Bucket: DynamoAttributeValue.fromString(JsonPath.stringAt('$.bucket')),
-        Key: DynamoAttributeValue.fromString(JsonPath.stringAt('$.key')),
+        ContentType: DynamoAttributeValue.fromString(JsonPath.stringAt('$.contentType')),
+        Content: DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.content'))),
         WorkflowStatus: DynamoAttributeValue.fromString('pending'),
         StateMachineExecId: DynamoAttributeValue.fromString(JsonPath.stringAt('$$.Execution.Id')),
       },
@@ -472,9 +390,7 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
 
     const role = this.createStateMachineRole();
     this.encryptionKey.grantEncryptDecrypt(role);
-    if (this.bucketEncryptionKey) {
-      this.bucketEncryptionKey.grantEncryptDecrypt(role);
-    }
+
     const stateMachine = new StateMachine(this, stateMachineId, {
       definitionBody: DefinitionBody.fromChainable(workflowDefinition),
       timeout: this.props.workflowTimeout || Duration.minutes(15),
@@ -482,82 +398,9 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       encryptionConfiguration: new CustomerManagedEncryptionConfiguration(this.encryptionKey),
     });
 
-    this.handleWorkflowTrigger(stateMachine);
+    this.ingressAdapter.createIngressTrigger(this, stateMachine, this.props);
 
     return stateMachine;
-  }
-
-  protected handleWorkflowTrigger(stateMachine: StateMachine) {
-    this.bucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(this.queue), {
-      prefix: DocumentProcessingPrefix.RAW,
-    });
-    this.createSQSConsumerLambda(stateMachine);
-  }
-
-  private createSQSConsumerLambda(stateMachine: StateMachine): Function {
-    const { region, account } = LambdaIamUtils.getStackInfo(this);
-    // Create logs permissions and get unique function name
-    const logsPermissions = LambdaIamUtils.createLogsPermissions({
-      scope: this,
-      functionName: 'SQSConsumer',
-      region,
-      account,
-      enableObservability: this.props.enableObservability,
-    });
-
-    // Create policy statements for SQS consumer Lambda
-    const policyStatements = [
-      ...logsPermissions.policyStatements,
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['states:StartExecution'],
-        resources: [stateMachine.stateMachineArn],
-      }),
-    ];
-
-    if (this.props.network) {
-      policyStatements.push(LambdaIamUtils.generateLambdaVPCPermissions());
-    }
-
-    // Create IAM role for SQS consumer Lambda
-    const sqsConsumerRole = new Role(this, 'SQSConsumerRole', {
-      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      inlinePolicies: {
-        SQSConsumerExecutionPolicy: new PolicyDocument({
-          statements: policyStatements,
-        }),
-      },
-    });
-
-    this.encryptionKey.grantEncryptDecrypt(sqsConsumerRole);
-
-    // Create SQS consumer Lambda function
-    const sqsConsumerLambda = new PythonFunction(this, 'SQSConsumer', {
-      functionName: logsPermissions.uniqueFunctionName,
-      runtime: DefaultRuntimes.PYTHON,
-      role: sqsConsumerRole,
-      entry: path.join(__dirname, '/resources/default-sqs-consumer'),
-      environment: {
-        STATE_MACHINE_ARN: stateMachine.stateMachineArn,
-        ...PowertoolsConfig.generateDefaultLambdaConfig(this.props.enableObservability, this.metricNamespace, this.metricServiceName),
-      },
-      timeout: Duration.minutes(5),
-      description: 'Consumes SQS messages and triggers Step Functions executions for document processing',
-      environmentEncryption: this.encryptionKey,
-      vpc: this.props.network ? this.props.network.vpc : undefined,
-      vpcSubnets: this.props.network ? this.props.network.applicationSubnetSelection() : undefined,
-    });
-
-    // Add SQS event source to Lambda
-    sqsConsumerLambda.addEventSource(
-      new SqsEventSource(this.queue, {
-        batchSize: 10,
-        maxBatchingWindow: Duration.seconds(5),
-        reportBatchItemFailures: true,
-      }),
-    );
-
-    return sqsConsumerLambda;
   }
 
   private createStateMachineRole(): Role {
@@ -566,11 +409,7 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       inlinePolicies: {
         StateMachineExecutionPolicy: new PolicyDocument({
           statements: [
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: ['s3:GetObject', 's3:CopyObject', 's3:DeleteObject', 's3:PutObject'],
-              resources: [`${this.bucket.bucketArn}/*`],
-            }),
+            ...this.ingressAdapter.generateAdapterIAMPolicies(),
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: ['dynamodb:PutItem', 'dynamodb:UpdateItem'],
@@ -583,68 +422,26 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
   }
 
   private createMoveToFailedChain() {
-    const failedChain = new CallAwsService(this, 'CopyToFailed', {
-      service: 's3',
-      action: 'copyObject',
-      parameters: {
-        Bucket: JsonPath.stringAt('$.bucket'),
-        CopySource: JsonPath.format('{}/{}', JsonPath.stringAt('$.bucket'), JsonPath.stringAt('$.key')),
-        Key: JsonPath.format('failed/{}', JsonPath.stringAt('$.filename')),
-      },
-      iamResources: [`${this.bucket.bucketArn}/*`],
-      resultPath: JsonPath.DISCARD,
-    }).next(
-      new CallAwsService(this, 'DeleteFromRaw', {
-        service: 's3',
-        action: 'deleteObject',
-        parameters: {
-          Bucket: JsonPath.stringAt('$.bucket'),
-          Key: JsonPath.stringAt('$.key'),
-        },
-        iamResources: [`${this.bucket.bucketArn}/*`],
-        resultPath: JsonPath.DISCARD,
-      }),
-    );
+    const failedChain = this.ingressAdapter.createFailedChain(this);
 
     if (this.props.eventbridgeBroker) {
-      failedChain.next(
-        this.props.eventbridgeBroker.sendViaSfnChain(
-          'document-processing-failed',
-          {
-            documentId: JsonPath.stringAt('$.documentId'),
-            bucket: JsonPath.stringAt('$.bucket'),
-            filename: JsonPath.stringAt('$.filename'),
-          },
-        ),
+      const ebChain = this.props.eventbridgeBroker.sendViaSfnChain(
+        'document-processing-failed',
+        {
+          documentId: JsonPath.stringAt('$.documentId'),
+          contentType: JsonPath.stringAt('$.contentType'),
+          content: JsonPath.jsonToString(JsonPath.objectAt('$.content')),
+        },
       );
+
+      failedChain.next(ebChain);
     }
 
     return failedChain;
   }
 
   private createMoveToProcessedChain() {
-    const processedChain = new CallAwsService(this, 'CopyToProcessed', {
-      service: 's3',
-      action: 'copyObject',
-      parameters: {
-        Bucket: JsonPath.stringAt('$.bucket'),
-        CopySource: JsonPath.format('{}/{}', JsonPath.stringAt('$.bucket'), JsonPath.stringAt('$.key')),
-        Key: JsonPath.format('processed/{}', JsonPath.stringAt('$.filename')),
-      },
-      iamResources: [`${this.bucket.bucketArn}/*`],
-      resultPath: JsonPath.DISCARD,
-    }).next(
-      new CallAwsService(this, 'DeleteFromRawSuccess', {
-        service: 's3',
-        action: 'deleteObject',
-        parameters: {
-          Bucket: JsonPath.stringAt('$.bucket'),
-          Key: JsonPath.stringAt('$.key'),
-        },
-        iamResources: [`${this.bucket.bucketArn}/*`],
-        resultPath: JsonPath.DISCARD,
-      }),
-    );
+    const processedChain = this.ingressAdapter.createSuccessChain(this);
 
     if (this.props.eventbridgeBroker) {
       processedChain.next(
@@ -652,8 +449,8 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
           'document-processed-successful',
           {
             documentId: JsonPath.stringAt('$.documentId'),
-            bucket: JsonPath.stringAt('$.bucket'),
-            filename: JsonPath.stringAt('$.filename'),
+            contentType: JsonPath.stringAt('$.contentType'),
+            content: JsonPath.jsonToString(JsonPath.objectAt('$.content')),
             classification: JsonPath.stringAt('$.classificationResult.documentClassification'),
           },
         ),

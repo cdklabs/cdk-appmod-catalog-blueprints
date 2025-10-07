@@ -4,6 +4,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { AccessLog } from '../../framework';
 import { EventbridgeBroker } from '../../framework/foundation/eventbridge-broker';
+import { QueuedS3Adapter } from '../adapter';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 
 // Create app and stack
@@ -30,9 +31,13 @@ const bucket = new Bucket(stack, 'BedrockDocumentProcessingBucket', {
   enforceSSL: true,
 });
 
+const adapter = new QueuedS3Adapter({
+  bucket,
+});
+
 // Create the main BedrockDocumentProcessing construct
 new BedrockDocumentProcessing(stack, 'BedrockDocumentProcessing', {
-  bucket,
+  ingressAdapter: adapter,
   useCrossRegionInference: true,
   eventbridgeBroker: broker,
   enableObservability: true,

@@ -7,3 +7,4 @@ export * from './cloudfront-distribution-observability-property-injector';
 export * from './observable';
 export * from './powertools-config';
 export * from './log-group-data-protection-props';
+export * from './default-observability-config';

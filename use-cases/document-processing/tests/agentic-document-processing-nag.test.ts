@@ -3,6 +3,7 @@ import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { AccessLog } from '../../framework';
+import { QueuedS3Adapter } from '../adapter';
 import { AgenticDocumentProcessing } from '../agentic-document-processing';
 
 // Create app and stack
@@ -23,9 +24,13 @@ const bucket = new Bucket(stack, 'AgenticDocumentProcessingBucket', {
   enforceSSL: true,
 });
 
+const adapter = new QueuedS3Adapter({
+  bucket,
+});
+
 // Create the main AgenticDocumentProcessing construct
 new AgenticDocumentProcessing(stack, 'AgenticDocumentProcessing', {
-  bucket,
+  ingressAdapter: adapter,
   useCrossRegionInference: true,
   processingAgentParameters: {
     agentSystemPrompt: `

@@ -1,7 +1,7 @@
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Duration, Stack } from 'aws-cdk-lib';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Architecture, LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { DocumentProcessingStepType } from './base-document-processing';
@@ -11,8 +11,32 @@ import { LambdaIamUtils } from '../utilities';
 import { PowertoolsConfig } from '../utilities/observability/powertools-config';
 
 export interface AgentProps {
+  /**
+   * Bucket where the tools are located in
+   * Primarily use to grant read permission to the
+   * processing agent to access the tools.
+   *
+   * @default No extra IAM permissions would be automatically
+   * assigned to the processing agent.
+   */
+  readonly toolsBucket?: Bucket;
+
+  /**
+   * System prompt for the agent
+   */
   readonly agentSystemPrompt?: string;
+
+  /**
+   * S3 path where the tools are located.
+   * The agent would dynamically load the tools
+   */
   readonly toolsLocation?: string[];
+
+  /**
+   * If there are python dependencies that are needed by
+   * the provided tools, provide the Lambda Layers with the
+   * dependencies.
+   */
   readonly lambdaLayers?: LayerVersion[];
 }
 
@@ -30,15 +54,9 @@ export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
     const fmModel = this.bedrockDocumentProcessingProps.processingModelId || BedrockDocumentProcessing.DEFAULT_PROCESSING_MODEL_ID;
     const adjustedModelId = this.bedrockDocumentProcessingProps.useCrossRegionInference ? `${this.crossRegionInferencePrefix}.${fmModel.modelId}` : fmModel.modelId;
     const role = this.generateLambdaRoleForBedrock(fmModel, 'ProcessingAgentLambdaRole');
-    role.addToPrincipalPolicy(new PolicyStatement({
-      effect: Effect.ALLOW,
-      actions: [
-        's3:ListBucket',
-      ],
-      resources: [
-        this.bucket.bucketArn,
-      ],
-    }));
+    this.ingressAdapter.generateAdapterIAMPolicies(['s3:ListBucket']).forEach((statement) => {
+      role.addToPrincipalPolicy(statement);
+    });
     const environmentVariables:Record<string, string> = {
       MODEL_ID: adjustedModelId,
       INVOKE_TYPE: 'agent',
@@ -50,8 +68,15 @@ export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
     };
 
     this.encryptionKey.grantEncryptDecrypt(role);
-    if (this.bucketEncryptionKey) {
-      this.bucketEncryptionKey.grantEncryptDecrypt(role);
+
+    const toolsBucket = agentProps.processingAgentParameters?.toolsBucket;
+
+    if (toolsBucket) {
+      toolsBucket.grantRead(role);
+
+      if (toolsBucket.encryptionKey) {
+        toolsBucket.encryptionKey.grantDecrypt(role);
+      }
     }
 
     if (agentProps.processingAgentParameters?.toolsLocation) {
