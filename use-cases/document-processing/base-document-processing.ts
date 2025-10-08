@@ -14,7 +14,7 @@ import { IAdapter, QueuedS3Adapter } from './adapter';
 import { DefaultDocumentProcessingConfig } from './default-document-processing-config';
 import { Network } from '../framework';
 import { EventbridgeBroker } from '../framework/foundation/eventbridge-broker';
-import { LogGroupDataProtectionProps } from '../utilities';
+import { LogGroupDataProtectionProps, LogGroupDataProtectionUtils } from '../utilities';
 import { DefaultObservabilityConfig } from '../utilities/observability/default-observability-config';
 import { LambdaObservabilityPropertyInjector } from '../utilities/observability/lambda-observability-property-injector';
 import { IObservable, ObservableProps } from '../utilities/observability/observable';
@@ -148,24 +148,7 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
       removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
     });
 
-    const tempLogGroupDataProtection = props.logGroupDataProtection || {
-      logGroupEncryptionKey: new Key(this, 'LogGroupEncryptionKey', {
-        enableKeyRotation: true,
-        removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-      }),
-    };
-
-    if (!tempLogGroupDataProtection.logGroupEncryptionKey) {
-      this.logGroupDataProtection = {
-        dataProtectionIdentifiers: tempLogGroupDataProtection.dataProtectionIdentifiers,
-        logGroupEncryptionKey: new Key(this, 'LogGroupEncryptionKey', {
-          enableKeyRotation: true,
-          removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-        }),
-      };
-    } else {
-      this.logGroupDataProtection = tempLogGroupDataProtection;
-    }
+    this.logGroupDataProtection = LogGroupDataProtectionUtils.handleDefault(this, props.logGroupDataProtection, props.removalPolicy);
 
     this.documentProcessingTable = props.documentProcessingTable || new Table(this, 'DocumentProcessingTable', {
       partitionKey: {

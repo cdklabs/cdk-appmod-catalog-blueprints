@@ -8,6 +8,22 @@ The foundation layer abstracts common infrastructure patterns and provides sensi
 
 ## Components
 
+### Bedrock
+
+#### `BedrockModelUtils`
+Contains utility functions to handle the following:
+- Derive the actual Model ID factoring in cases where cross region inferencing is used.
+- Centralized default model to used
+- Generate IAM permission to invoke the model
+
+### Agentic Framework
+
+The `agents/` component contains the agentic framework that makes it easy to incorporate agentic functionality into your CDK application. It simplifies the deployment of tools and agents.
+
+Currently, Batch mode agents are supported. Batch mode is typically used in cases such as document processing where the Agent would leverage the use the provided tools to process the document.
+
+Interactive agents are *coming soon*. Interactive mode allows the use of agents in chatbots.
+
 ### Network Foundation
 
 #### Network Construct

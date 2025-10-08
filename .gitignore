@@ -53,6 +53,7 @@ Thumbs.db
 !demo/webapp/lambda-init/index.js
 .DS_Store
 **/.DS_Store
+**/.venv
 /test-reports/
 junit.xml
 /coverage/

@@ -38,7 +38,8 @@ const adapter = new QueuedS3Adapter({
 // Create the main BedrockDocumentProcessing construct
 new BedrockDocumentProcessing(stack, 'BedrockDocumentProcessing', {
   ingressAdapter: adapter,
-  useCrossRegionInference: true,
+  classificationBedrockModel: { useCrossRegionInference: true },
+  processingBedrockModel: { useCrossRegionInference: true },
   eventbridgeBroker: broker,
   enableObservability: true,
 });

@@ -81,7 +81,8 @@ export class LambdaIamUtils {
   public static createLogsPermissions(props: LambdaLogsPermissionsProps): LambdaLogsPermissionsResult {
     // Generate unique function name using construct node path
     const uniqueFunctionName = LambdaIamUtils.generateUniqueFunctionName(props.scope, props.functionName);
-    const logGroupName = props.logGroupName || `/aws/lambda/${uniqueFunctionName}` + props.enableObservability ? LambdaIamUtils.OBSERVABILITY_SUFFIX : '';
+    let logGroupName = props.logGroupName || `/aws/lambda/${uniqueFunctionName}`;
+    logGroupName += props.enableObservability ? LambdaIamUtils.OBSERVABILITY_SUFFIX : '';
     let logGroupArn = `arn:aws:logs:${props.region}:${props.account}:log-group:${logGroupName}`;
     const policyStatements = [
       // Permission to create log group

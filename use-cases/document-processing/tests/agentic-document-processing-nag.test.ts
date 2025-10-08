@@ -1,6 +1,7 @@
 import { App, Stack, Aspects } from 'aws-cdk-lib';
 import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { AccessLog } from '../../framework';
 import { QueuedS3Adapter } from '../adapter';
@@ -28,23 +29,24 @@ const adapter = new QueuedS3Adapter({
   bucket,
 });
 
+const systemPrompt = new Asset(stack, 'SystemPrompt', {
+  path: __dirname + '/../resources/default-strands-agent',
+});
+
 // Create the main AgenticDocumentProcessing construct
 new AgenticDocumentProcessing(stack, 'AgenticDocumentProcessing', {
   ingressAdapter: adapter,
-  useCrossRegionInference: true,
   processingAgentParameters: {
-    agentSystemPrompt: `
-      You're an insurance claims specialist. Use the provided tools to ensure that the submitted claims and supporting documents are valid and there are no discrepancies.
-    `,
-    toolsLocation: [
-      `s3://${bucket.bucketName}/agentic-tools/download_policy.py`,
-      `s3://${bucket.bucketName}/agentic-tools/download_supporting_documents.py`,
-    ],
-  },
-  processingPrompt: `
+    agentName: 'ClaimsSpecialist',
+    agentDefinition: {
+      bedrockModel: { useCrossRegionInference: true },
+      systemPrompt,
+    },
+    prompt: `
     Analyze the attached insurance claim document and check if this is a valid claim or not.
     Final output should in JSON format with claim_approved and justification fields.
   `,
+  },
   enableObservability: true,
 });
 

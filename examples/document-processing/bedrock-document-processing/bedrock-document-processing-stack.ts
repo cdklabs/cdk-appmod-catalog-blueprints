@@ -1,14 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { BedrockDocumentProcessing, EventbridgeBroker, Network } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { BedrockDocumentProcessing, EventbridgeBroker } from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 export class BedrockDocumentProcessingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const network = new Network(this, 'BedrockIDPNetwork', {
-        private: true
-    })
+    // const network = new Network(this, 'BedrockIDPNetwork', {
+    //     private: true
+    // })
 
     const broker = new EventbridgeBroker(this, 'IDPBroker', {
       name: 'idp-broker',
@@ -16,12 +16,17 @@ export class BedrockDocumentProcessingStack extends cdk.Stack {
     })
 
     new BedrockDocumentProcessing(this, 'BedrockDocumentProcessing', {
-      useCrossRegionInference: true,
+      classificationBedrockModel: {
+        useCrossRegionInference: true
+      },
+      processingBedrockModel: {
+        useCrossRegionInference: true
+      },
       eventbridgeBroker: broker,
       enableObservability: true,
       metricNamespace: "bedrock-document-processing",
       metricServiceName: "extraction-workflow",
-      network
+      // network
     });
   }
 }
