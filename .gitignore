@@ -51,6 +51,7 @@ Thumbs.db
 !**/resources/**/*.js
 !demo/webapp/app/server.js
 !demo/webapp/lambda-init/index.js
+!website/**/*.js
 .DS_Store
 **/.DS_Store
 /test-reports/

@@ -1,15 +1,25 @@
 # Document Processing
 
 ## Overview
-At a high-level this L3 construct uses a layered approach to provide various functionality and enable users to customized at varying layers depending on their requirements. The following diagram demonstrates the high-level architecture:
+
+The Document Processing L3 constructs provides a layered architectural approach for intelligent document processing workflows. The system offers multiple implementation levels to provide various functionality and enable users to customized at varying layers depending on their requirements - from abstract base classes to fully-featured agentic processing with tool integration.
 
 ![Overview](./doc-img/idp-overview.png)
 
+You can leverage the following constructs:
+- **BaseDocumentProcessing**: Abstract foundation requiring custom step implementations
+- **BedrockDocumentProcessing**: Ready-to-use genAI document processing implementation with Amazon Bedrock 
+- **AgenticDocumentProcessing**: Advanced agentic capabilities with S3 tool storage
+
+All implementations share common infrastructure: Step Functions workflow, DynamoDB metadata storage, EventBridge integration, and built-in observability.
+
 ## Components
-The following are the key components of this L3 Construct
+The following are the key components of this L3 Construct:
 
 ### Ingress Adapter
 The ingress adapter is an interface that allows you to define where the data source would be coming from. There's a default implementation already that you can use as a reference: [`QueuedS3Adapter`](./adapter/queued-s3-adapter.ts). 
+
+![Architecture](./doc-img/idp-architecture.png)
 
 The `QueuedS3Adapter` basically does the following:
 - Creates a new S3 Bucket (if one is not provided during instantiation)
@@ -22,12 +32,21 @@ The `QueuedS3Adapter` basically does the following:
 
 If no Ingress Adapter is provided, the Document Processing workflow would use the `QueuedS3Adapter` as the default implementation. That means that users would use S3 as the point of input for the document processing workflow to trigger.
 
-Supporting other types of ingress (eg. streaming, micro-batching, even on-prem data sources) would require implementing the [`IAdapter`](./adapter/adapter.ts) interface. Once implemented, instantiate the new ingress adapter and pass it to the document processing L3 construct.
+Supporting other types of ingress (eg. streaming, micro-batching, even on-prem data sources) would require implementing the [`IAdapter`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/adapter/adapter.ts) interface. Once implemented, instantiate the new ingress adapter and pass it to the document processing L3 construct.
 
 ### Workflow
 At a high-level, regardless which implementation you're using, the core workflow's structure are as follows:
 
 ![Workflow High-Level Structure](./doc-img/workflow-high-level-structure.png)
+
+- Classification: Determines document type/category for routing decisions
+- Processing / Extraction: Extracts and processes information from the document
+- Enrichment: Enhances extracted data with additional context or validation
+- Post Processing: Final processing for formatting output or triggering downstream systems
+
+Here is an example of the workflow and customisability points:
+
+![Example Workflow](./doc-img/step-functions-workflow-example.png)
 
 #### Payload Structure
 
@@ -98,37 +117,78 @@ The following are example structure of the event:
 }
 ```
 
-## Class Structure
+## [`BaseDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/base-document-processing.ts) Construct
 
-### [`BaseDocumentProcessing`](./base-document-processing.ts)
-This is the foundational abstract class for all implementation of the document processing L3 Construct. This takes care of the following:
+The [`BaseDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/base-document-processing.ts) construct is the foundational abstract class for all document processing implementations. It provides complete serverless document processing infrastructure and takes care of the following:
 - Initializes and calls the necessary hooks to properly integrate the Ingress Adapter
 - Initializes the DynamoDB metadata table
 - Initializes and configures the various Observability related configuration
 - Provides the core workflow scaffolding
 
-If you're directly extending this abstract class, you would need to provide concrete implementations of the following:
-- `classificationStep()`
-    - `ResultPath` should be `$.classificationResult`
-- `processingStep()`
-    - `ResultPath` should be `$.processingResult`
-- `enrichmentStep()`
-    - `ResultPath` should be `$.enrichedResult`
-- `postProcessingStep()`
-    - `ResultPath` should be `$.postProcessedResult`
+### Implementation Requirements
+If you're directly extending this abstract class, you must provide concrete implementations of the following:
+- **`classificationStep()`**: Document type classification (required)
+  - `ResultPath` should be `$.classificationResult`
+- **`processingStep()`**: Data extraction and processing (required)
+  - `ResultPath` should be `$.processingResult`
+- **`enrichmentStep()`**: Optional data enrichment
+  - `ResultPath` should be `$.enrichedResult`
+- **`postProcessingStep()`**: Optional final processing
+  - `ResultPath` should be `$.postProcessedResult`
 
-Each of those functions must return either one of the following:
+Each function must return one of the following:
 - [`BedrockInvokeModel`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks.BedrockInvokeModel.html)
 - [`LambdaInvoke`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke.html)
 - [`StepFunctionsStartExecution`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks.StepFunctionsStartExecution.html)
 
-You can use [`BedrockDocumentProcessing`](./bedrock-document-processing.ts) as an implementation example on how to define your own implementation for all of the steps in the workflow.
+### Configuration Options
+- **Ingress Adapter**: Custom trigger mechanism (default: `QueuedS3Adapter`)
+- **Workflow Timeout**: Maximum execution time (default: 30 minutes)
+- **Network**: Optional VPC deployment with subnet selection
+- **Encryption Key**: Custom KMS key or auto-generated
+- **EventBridge Broker**: Optional event publishing for integration
+- **Observability**: Enable logging, tracing, and metrics
 
-### [`BedrockDocumentProcessing`](./bedrock-document-processing.ts)
-This implementation uses Amazon Bedrock's [InvokeModel](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-runtime/client/invoke_model.html) for the classification and processing step. You can customized the following:
-- The LLM model to use.
-- The prompts for both classification and processing
-- Lambda function for enrichment and/or post-processing
+## [`BedrockDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/bedrock-document-processing.ts) Construct
 
-### [`AgenticDocumentProcessing`](./agentic-document-processing.ts)
-This implementation builds on top of the [`BedrockDocumentProcessing`](./bedrock-document-processing.ts). It reuses the `classificationStep()` that's defined in the parent class and overrides the `processingStep()` to provide agentic functionality to process the document / data. Tools (and its dependencies) can be provided as part of the parameter for this L3 construct further expanding what the agent can do. 
+The [`BedrockDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/bedrock-document-processing.ts) construct **extends BaseDocumentProcessing** and uses Amazon Bedrock's [InvokeModel](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-runtime/client/invoke_model.html) for the classification and processing steps.
+
+### Key Features
+- **Inherits**: All base infrastructure (S3, SQS, DynamoDB, Step Functions)
+- **Implements**: Classification and processing steps using Bedrock models
+- **Adds**: Cross-region inference, custom prompts, Lambda integration
+
+### Configuration Options
+You can customize the following:
+- **Classification Model**: Bedrock model for document classification (default: Claude 3.7 Sonnet)
+- **Processing Model**: Bedrock model for data extraction (default: Claude 3.7 Sonnet)
+- **Custom Prompts**: Override default classification and processing prompts
+- **Cross-Region Inference**: Enable inference profiles for high availability
+- **Step Timeouts**: Individual step timeout configuration (default: 5 minutes)
+- **Lambda Functions**: Optional enrichment and post-processing functions
+
+### Example Implementations
+- [Bedrock Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/bedrock-document-processing)
+
+## [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) Construct
+
+The [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) construct **extends BedrockDocumentProcessing** to provide advanced agentic capabilities with dynamic tool integration.
+
+### Key Features
+- **Inherits**: All Bedrock functionality (models, prompts, cross-region inference)
+- **Reuses**: Classification step from parent class unchanged
+- **Overrides**: Processing step with agentic capabilities and tool integration
+- **Enhances**: Memory allocation (1024MB) for complex tool operations
+
+Tools (and their dependencies) can be provided as part of the parameter for this L3 construct, expanding what the agent can do.
+
+### Configuration Options
+- **Tools Bucket**: S3 bucket containing processing tools and utilities
+- **Tools Location**: Array of S3 paths to specific tool sets
+- **Agent System Prompt**: Custom instructions for agent behavior
+- **Lambda Layers**: Additional dependencies for tool execution
+- **Processing Prompt**: Override default processing instructions
+
+### Example Implementations
+- [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing) 
+- [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)

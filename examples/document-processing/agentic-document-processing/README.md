@@ -1,12 +1,26 @@
 # Agentic Document Processing
 
-AI-powered insurance claims processing using Amazon Bedrock with multi-agent workflow. The system automatically analyzes travel insurance claims, verifies them against policies, and provides approval decisions.
+## Overview
+
+This example demonstrates advanced AI-powered insurance claims processing using the [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) construct with Amazon Bedrock and multi-agent workflow capabilities.
+
+**Use Case**: Complex document analysis, multi-step processing, validation workflows
+
+**Note**: This example uses insurance claims processing as a demonstration, but can be easily adapted for any document type by modifying the agent prompts and tools.
+
+## What This Example Does
+
+The system automatically analyzes travel insurance claims, verifies them against policies, and provides approval decisions using an AI agent with specialized tools:
+
+- **Document Analysis**: Extracts key information from travel claims
+- **Policy Verification**: Downloads and analyzes insurance policies
+- **Supporting Document Review**: Validates receipts and supporting evidence
+- **Cross-Reference Checking**: Ensures claim details match supporting documents
+- **Decision Making**: Provides approval/denial with detailed justification
 
 ## Architecture
 
-```
-S3 Upload → S3 Event → SQS → SQS Consumer Lambda → Step Functions → [Classification Lambda + Agentic Processing Lambda] → Final Decision
-```
+![](./doc-img/genai-doc-processing-pipeline.png)
 
 **Flow:**
 1. Document uploaded to `raw/` folder triggers S3 event
@@ -15,42 +29,32 @@ S3 Upload → S3 Event → SQS → SQS Consumer Lambda → Step Functions → [C
 4. Step Functions orchestrates document classification and agentic processing
 5. Agentic Processing Lambda uses Bedrock Claude 3.5 Sonnet with specialized tools
 
-The agent uses specialized tools to:
-- Download insurance policies
-- Retrieve supporting documents  
-- Perform cross-document verification
-- Generate structured claim decisions
+## Key Features
 
-## Prerequisites
-
-- AWS CLI configured
-- CDK CLI installed (`npm install -g aws-cdk`)
-- Node.js 18+
+- **Agentic Processing**: AI agent with tool integration for complex reasoning
+- **Dynamic Tool Loading**: S3-based tool storage with runtime loading
+- **Multi-Document Analysis**: Cross-references claims with policies and supporting documents
+- **Intelligent Decision Making**: Provides structured approval decisions with justification
+- **Enhanced Memory**: 1024MB allocation for complex processing tasks
 
 ## Deployment
 
-1. **Build the project:**
-   ```bash
-   cd examples/document-processing/agentic-document-processing
-   npm install
-   ```
+### Prerequisites
+- AWS CLI configured
+- CDK CLI installed (`npm install -g aws-cdk`)
+- Node.js 18+
+- Amazon Bedrock model access (Claude 3.5 Sonnet)
 
-2. **Deploy the stack:**
-   ```bash
-   AWS_PROFILE=your-profile npx cdk deploy --require-approval never
-   ```
+### Deploy Steps
+```bash
+cd examples/document-processing/agentic-document-processing
+npm install
+AWS_PROFILE=your-profile npx cdk deploy --require-approval never
+```
 
-3. **Configure environment:**
-   ```bash
-   # Update .env with your values
-   AWS_PROFILE=your-aws-profile
-   S3_BUCKET=your-deployed-bucket-name
-   ```
-
-## Usage
+## Usage Example
 
 ### Upload Documents
-
 The system expects documents in specific S3 locations:
 
 ```bash
@@ -67,7 +71,6 @@ The system expects documents in specific S3 locations:
 ```
 
 ### Expected S3 Structure
-
 ```
 s3://bucket/
 ├── raw/                           # Triggers processing
@@ -81,22 +84,7 @@ s3://bucket/
         └── airline_delay_notification.pdf
 ```
 
-## Monitoring
-
-1. **Step Functions Console:** Monitor workflow execution
-2. **CloudWatch Logs:** View detailed agent processing logs
-3. **AWS CLI:** Get execution results
-
-```bash
-# List recent executions
-aws stepfunctions list-executions --state-machine-arn <state-machine-arn>
-
-# Get execution output
-aws stepfunctions describe-execution --execution-arn <execution-arn>
-```
-
-## Expected Results
-
+### Expected Results
 The agent provides structured JSON output:
 
 ```json
@@ -108,7 +96,7 @@ The agent provides structured JSON output:
   "processingResult": {
     "result": {
       "claim_approved": false,
-      "justification": "While most of the claim is valid and within policy limits, there is missing documentation for the ground transportation expenses ($25.00). The flight delay of 18 hours is covered under the policy and the hotel and meal expenses are properly documented. However, to approve the full claim amount, documentation for the ground transportation expenses must be provided."
+      "justification": "While most of the claim is valid and within policy limits, there is missing documentation for the ground transportation expenses ($25.00). The flight delay of 18 hours is covered under the policy and the hotel and meal expenses are properly documented."
     }
   }
 }
@@ -116,13 +104,11 @@ The agent provides structured JSON output:
 
 ## Agent Capabilities
 
-The insurance claims specialist agent:
-
-1. **Document Analysis:** Extracts key information from travel claims
-2. **Policy Verification:** Downloads and analyzes insurance policies
-3. **Supporting Document Review:** Validates receipts and supporting evidence
-4. **Cross-Reference Checking:** Ensures claim details match supporting documents
-5. **Decision Making:** Provides approval/denial with detailed justification
+The insurance claims specialist agent uses specialized tools to:
+- Download insurance policies from S3
+- Retrieve supporting documents  
+- Perform cross-document verification
+- Generate structured claim decisions with detailed reasoning
 
 ## Sample Files
 
@@ -133,12 +119,42 @@ The `sample-files/` directory contains a complete test dataset:
 - `meal_receipts.pdf` - Food expense receipts
 - `airline_delay_notification.pdf` - Official delay notification
 
+## Configuration Options
+
+```typescript
+new AgenticDocumentProcessing(this, 'AgenticProcessing', {
+  processingAgentParameters: {
+    toolsBucket: myToolsBucket,
+    toolsLocation: ['s3://my-tools-bucket/validation-tools/'],
+    agentSystemPrompt: 'You are a financial document processing agent...',
+    lambdaLayers: [myCustomDependenciesLayer]
+  },
+  useCrossRegionInference: true,
+  enableObservability: true
+});
+```
+
+## Monitoring
+
+```bash
+# List recent executions
+aws stepfunctions list-executions --state-machine-arn <state-machine-arn>
+
+# Get execution output
+aws stepfunctions describe-execution --execution-arn <execution-arn>
+```
+
 ## Troubleshooting
 
-**Issue:** Agent returns `null` result
-- **Cause:** Missing policy or supporting documents
-- **Solution:** Ensure all referenced documents are uploaded to correct S3 locations
+**Common Issues:**
+1. **Agent returns null result**: Missing policy or supporting documents - ensure all referenced documents are uploaded to correct S3 locations
+2. **Step Functions not triggered**: Upload to wrong S3 prefix - upload claims to `raw/` folder only
+3. **Tool loading errors**: Check tools bucket permissions and S3 paths
 
-**Issue:** Step Functions not triggered
-- **Cause:** Upload to wrong S3 prefix
-- **Solution:** Upload claims to `raw/` folder only
+## Cleanup
+
+```bash
+npx cdk destroy
+```
+
+**Note**: This will delete all resources including the S3 bucket and any uploaded documents.
