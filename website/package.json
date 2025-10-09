@@ -7,8 +7,7 @@
     "start": "docusaurus start",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "clear": "docusaurus clear",
-    "sync-readme": "node scripts/sync-readme.js"
+    "clear": "docusaurus clear"
   },
   "dependencies": {
     "@docusaurus/core": "^3.8.1",
