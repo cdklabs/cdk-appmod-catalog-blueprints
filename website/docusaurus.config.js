@@ -3,12 +3,12 @@ const {themes} = require('prism-react-renderer');
 const config = {
   title: 'AppMod Catalog Blueprints',
   tagline: 'Deploy customizable production-ready applications in minutes.',
-  url: 'https://awslabs.github.io',
+  url: 'https://cdklabs.github.io',
   baseUrl: '/cdk-appmod-catalog-blueprints/',
   onBrokenLinks: 'warn',
   favicon: 'img/favicon.ico',
 
-  organizationName: 'awslabs',
+  organizationName: 'cdklabs',
   projectName: 'cdk-appmod-catalog-blueprints',
 
   i18n: {
@@ -30,7 +30,7 @@ const config = {
         docs: {
           path: '../',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/awslabs/cdk-appmod-catalog-blueprints/tree/main/',
+          editUrl: 'https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/',
           include: ['**/README.md'],
           exclude: ['**/node_modules/**', '**/website/**', '**/.git/**', '**/cdk.out/**'],
           routeBasePath: 'docs',
