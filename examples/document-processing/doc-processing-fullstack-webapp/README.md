@@ -1,53 +1,99 @@
-# Document Processing Full-Stack WebApp
+# Full-Stack Insurance Claims Processing Web Application
 
-A complete full-stack application demonstrating AI-powered document processing with presigned URL uploads and real-time status polling.
+## Overview
 
-![](/examples/document-processing/doc-processing-fullstack-webapp/img/doc-processing-web-app-ui.png)
+This example demonstrates a complete full-stack web application that provides a user-friendly interface for the [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) workflow with React frontend, API Gateway backend, and real-time status polling.
+
+**Use Case**: End-to-end document processing with web interface, secure uploads, real-time monitoring
+
+**Prerequisites**: Deploy the [Agentic Document Processing](../agentic-document-processing/) example first, as this webapp integrates with its resources.
+
+![](./doc-img/doc-processing-web-app-ui.png)
+
+**Note**: This example uses insurance claims processing as a demonstration, but can be easily adapted for any document type by modifying the underlying agentic workflow configuration.
+
+## What This Example Does
+
+- **Web Interface**: React TypeScript application for document upload and monitoring
+- **Secure Upload**: Direct S3 uploads using presigned URLs (no file data through API)
+- **Agentic Integration**: Leverages existing agentic document processing workflow
+- **Real-time Monitoring**: Live status updates with 10-second polling intervals
+- **Results Display**: Structured AI analysis results in the web interface
 
 ## Architecture
 
+![insurance-claims-web-app-archi](./doc-img/insurance-claims-web-app-archi.png)
+
+**Integration Flow:**
+1. Frontend requests presigned URL from API Gateway
+2. Browser uploads file directly to agentic processing S3 bucket
+3. Upload triggers existing agentic document processing workflow
+4. Frontend polls API for real-time status updates from agentic DynamoDB table
+
+## Key Features
+
+- **Secure File Upload**: Presigned URLs for direct S3 uploads without API Gateway bottlenecks
+- **Real-time Monitoring**: Live status updates with 10-second polling intervals
+- **Agentic Processing**: Advanced AI workflow with multi-step document analysis
+- **Responsive UI**: Modern React TypeScript interface with CloudFront CDN
+- **Status Persistence**: DynamoDB tracking for processing history and results
+
+## Deployment
+
+### Prerequisites
+- AWS CLI configured with appropriate permissions
+- CDK CLI installed: `npm install -g aws-cdk`
+- Node.js 18+
+- Amazon Bedrock model access (Claude 3.5 Sonnet)
+
+### Deploy Steps
+```bash
+# Install dependencies
+npm install
+
+# Build and deploy all stacks
+npx cdk deploy --all --require-approval never
+
+# Deploy individual stacks (optional)
+npx cdk deploy InsuranceClaimsApiStack
+npx cdk deploy InsuranceClaimsFrontendStack
 ```
-Frontend (React/TS) → API Gateway → Lambda (Presigned URL)
-        ↓                                    ↓
-   CloudFront+S3                      Returns Presigned URL
-        ↓                                    ↓
-Direct S3 Upload ←─────────────────────────────
-        ↓
-   S3 Event Trigger → Step Functions → Bedrock AI → DynamoDB
-                           ↓                          ↑
-                    Agentic Processing              Status
-                                                     ↑
-Frontend Polling ← API Gateway ← Lambda ←───────────
+
+## Usage Example
+
+### 1. Access Web Application
+After deployment, navigate to the CloudFront distribution URL provided in the CDK output.
+
+### 2. Upload Documents
+1. Select document file using the file picker
+2. Choose document type from dropdown
+3. Click "Upload Document" to start processing
+4. Monitor real-time processing status
+
+### 3. View Results
+The application displays:
+- Upload progress and confirmation
+- Processing status updates (every 10 seconds)
+- Final AI analysis results in structured format
+- Processing history for uploaded documents
+
+### Expected Results
+The system provides structured JSON output displayed in the web interface:
+
+```json
+{
+  "documentId": "travel-claim-1756614134842",
+  "classificationResult": {
+    "documentClassification": "INSURANCE_CLAIM"
+  },
+  "processingResult": {
+    "result": {
+      "claim_approved": true,
+      "justification": "All required documentation provided and expenses within policy limits."
+    }
+  }
+}
 ```
-
-### Key Components
-
-**Frontend Stack:**
-- React TypeScript application
-- CloudFront distribution with S3 static hosting
-- Direct S3 uploads using presigned URLs
-- Real-time status polling (10-second intervals)
-
-**API Stack:**
-- API Gateway with Lambda integration
-- Presigned URL generation for secure S3 uploads
-- DynamoDB status polling with begins_with() filtering
-- CORS-enabled for browser uploads
-
-**Document Processing Stack:**
-- Agentic document processing workflow
-- Step Functions orchestration
-- Amazon Bedrock AI processing
-- S3 event triggers for automatic processing
-
-## Data Flow
-
-1. **Upload Request**: Frontend requests presigned URL from API
-2. **Direct Upload**: Browser uploads file directly to S3 using presigned URL
-3. **Processing Trigger**: S3 upload triggers Step Functions workflow
-4. **AI Processing**: Bedrock analyzes document and generates results
-5. **Status Updates**: Workflow updates DynamoDB with processing status
-6. **Result Polling**: Frontend polls API for status and retrieves results
 
 ## Project Structure
 
@@ -68,53 +114,22 @@ doc-processing-fullstack-webapp/
 └── README.md
 ```
 
-## Key Features
+## Configuration Options
 
-**Secure File Upload:**
-- Presigned URLs for direct S3 uploads
-- No file data passes through API Gateway
+```typescript
+// API Stack Configuration
+new InsuranceClaimsApiStack(app, 'InsuranceClaimsApiStack', {
+  agenticBucket: 'your-processing-bucket',
+  tableName: 'your-dynamodb-table'
+});
 
-**Real-time Processing:**
-- Automatic workflow triggering on S3 upload
-- Status polling with exponential backoff
-- Processing results retrieval
-
-**AI-Powered Analysis:**
-- Document classification using Amazon Bedrock
-- Content extraction and analysis
-- Structured result formatting
-
-## Deployment
-
-```bash
-# Install dependencies
-npm install
-
-# Build and deploy all stacks
-npx cdk deploy --all --require-approval never
-
-# Deploy individual stacks
-npx cdk deploy InsuranceClaimsApiStack
-npx cdk deploy InsuranceClaimsFrontendStack
+// Frontend Stack Configuration
+new InsuranceClaimsFrontendStack(app, 'InsuranceClaimsFrontendStack', {
+  apiBaseUrl: 'https://your-api-gateway-url'
+});
 ```
 
-## Configuration
-
-**Environment Variables:**
-- `API_BASE_URL`: API Gateway endpoint URL
-- `TABLE_NAME`: DynamoDB table for document metadata
-- `AGENTIC_BUCKET`: S3 bucket for document processing
-
-Required: enable CORS in document processing S3 bucket.
-
-## Usage
-
-1. **Access Application**: Navigate to CloudFront distribution URL
-2. **Upload Document**: Select file and document type
-3. **Monitor Processing**: View real-time status updates
-4. **Review Results**: Access AI-generated analysis and recommendations
-
-## Technical Notes
+## Technical Details
 
 **DocumentId Format:**
 - API generates: `filename-timestamp` (e.g., `travel-claim-1756614134842`)
@@ -122,3 +137,50 @@ Required: enable CORS in document processing S3 bucket.
 
 **Status Polling:**
 - 10-second intervals for up to 30 attempts (5 minutes total)
+- Exponential backoff for failed requests
+- Real-time UI updates during processing
+
+**CORS Configuration:**
+- API Gateway configured for browser requests
+- S3 bucket CORS enabled for direct uploads
+
+## Troubleshooting
+
+**Common Issues:**
+1. **Upload fails**: Check S3 bucket CORS configuration and presigned URL expiration
+2. **No processing triggered**: Verify S3 event configuration and Step Functions permissions
+3. **Status polling timeout**: Check DynamoDB table permissions and document processing time
+4. **Frontend not loading**: Verify CloudFront distribution and S3 static hosting configuration
+
+**Monitoring:**
+- CloudFront access logs for frontend requests
+- API Gateway logs for backend API calls
+- Step Functions execution history for processing workflows
+- DynamoDB items for document status tracking
+
+## Local Development
+
+For frontend development and testing:
+
+```bash
+# Navigate to frontend directory
+cd frontend-app
+
+# Install frontend dependencies
+npm install
+
+# Run development server
+npm start
+# Opens http://localhost:3000
+
+# Build for production
+npm run build
+```
+
+## Cleanup
+
+```bash
+npx cdk destroy --all
+```
+
+**Note**: This will delete all resources including S3 buckets, CloudFront distribution, and any uploaded documents.
