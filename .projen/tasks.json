@@ -294,6 +294,10 @@
         {
           "exec": "cp -R use-cases/utilities/observability/resources lib/utilities/observability/",
           "name": "Copy custom resource needed by Observability"
+        },
+        {
+          "exec": "cp -R use-cases/framework/agents/resources lib/framework/agents/",
+          "name": "Copy custom resource needed by Agentic Framework"
         }
       ]
     },

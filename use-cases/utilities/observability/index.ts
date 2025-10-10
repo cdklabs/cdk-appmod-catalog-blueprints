@@ -8,3 +8,4 @@ export * from './observable';
 export * from './powertools-config';
 export * from './log-group-data-protection-props';
 export * from './default-observability-config';
+export * from './log-group-data-protection-utils';

@@ -56,6 +56,7 @@ const project = new CdklabsConstructLibrary({
     // Ignore macOS system files
     '.DS_Store',
     '**/.DS_Store',
+    '**/.venv',
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
@@ -80,6 +81,10 @@ project.postCompileTask.exec('cp -R use-cases/utilities/lambda_layers lib/utilit
 
 project.postCompileTask.exec('cp -R use-cases/utilities/observability/resources lib/utilities/observability/', {
   name: 'Copy custom resource needed by Observability',
+});
+
+project.postCompileTask.exec('cp -R use-cases/framework/agents/resources lib/framework/agents/', {
+  name: 'Copy custom resource needed by Agentic Framework',
 });
 
 project.eslint?.addRules({

@@ -402,6 +402,149 @@ The Step Functions state machine that orchestrates the document processing workf
 ---
 
 
+### BaseAgent <a name="BaseAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer"></a>
+
+```typescript
+import { BaseAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new BaseAgent(scope: Construct, id: string, props: BaseAgentProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps">BaseAgentProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps">BaseAgentProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
+
+```typescript
+import { BaseAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BaseAgent.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: PythonFunction;
+```
+
+- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+
+---
+
+##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole"></a>
+
+```typescript
+public readonly agentRole: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel"></a>
+
+```typescript
+public readonly bedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+---
+
+
 ### BaseDocumentProcessing <a name="BaseDocumentProcessing" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing"></a>
 
 - *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IObservable">IObservable</a>
@@ -615,6 +758,149 @@ public readonly metricServiceName: string;
 Business metric service name.
 
 This is part of the initial service dimension
+
+---
+
+
+### BatchAgent <a name="BatchAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer"></a>
+
+```typescript
+import { BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new BatchAgent(scope: Construct, id: string, props: BatchAgentProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
+
+```typescript
+import { BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BatchAgent.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: PythonFunction;
+```
+
+- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+
+---
+
+##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole"></a>
+
+```typescript
+public readonly agentRole: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel"></a>
+
+```typescript
+public readonly bedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
 
 ---
 
@@ -1704,6 +1990,94 @@ Optional web ACL ID for the distribution.
 
 ---
 
+### AgentDefinitionProps <a name="AgentDefinitionProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps"></a>
+
+Parameters that influences the behavior of the agent.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.Initializer"></a>
+
+```typescript
+import { AgentDefinitionProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentDefinitionProps: AgentDefinitionProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Configuration for the Bedrock Model to be used. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.systemPrompt">systemPrompt</a></code> | <code>aws-cdk-lib.aws_s3_assets.Asset</code> | The system prompt of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForTools">additionalPolicyStatementsForTools</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | If tools need additional IAM permissions, these statements would be attached to the Agent's IAM role. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.LayerVersion[]</code> | Any dependencies needed by the provided tools. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.tools">tools</a></code> | <code>aws-cdk-lib.aws_s3_assets.Asset[]</code> | List of tools defined in python files. |
+
+---
+
+##### `bedrockModel`<sup>Required</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.bedrockModel"></a>
+
+```typescript
+public readonly bedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+Configuration for the Bedrock Model to be used.
+
+---
+
+##### `systemPrompt`<sup>Required</sup> <a name="systemPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.systemPrompt"></a>
+
+```typescript
+public readonly systemPrompt: Asset;
+```
+
+- *Type:* aws-cdk-lib.aws_s3_assets.Asset
+
+The system prompt of the agent.
+
+---
+
+##### `additionalPolicyStatementsForTools`<sup>Optional</sup> <a name="additionalPolicyStatementsForTools" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForTools"></a>
+
+```typescript
+public readonly additionalPolicyStatementsForTools: PolicyStatement[];
+```
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement[]
+
+If tools need additional IAM permissions, these statements would be attached to the Agent's IAM role.
+
+---
+
+##### `lambdaLayers`<sup>Optional</sup> <a name="lambdaLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.lambdaLayers"></a>
+
+```typescript
+public readonly lambdaLayers: LayerVersion[];
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.LayerVersion[]
+
+Any dependencies needed by the provided tools.
+
+---
+
+##### `tools`<sup>Optional</sup> <a name="tools" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.tools"></a>
+
+```typescript
+public readonly tools: Asset[];
+```
+
+- *Type:* aws-cdk-lib.aws_s3_assets.Asset[]
+
+List of tools defined in python files.
+
+This tools would automatically
+be loaded by the agent. You can also use this to incorporate other specialized
+agents as tools.
+
+---
+
 ### AgenticDocumentProcessingProps <a name="AgenticDocumentProcessingProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps"></a>
 
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.Initializer"></a>
@@ -1729,16 +2103,14 @@ const agenticDocumentProcessingProps: AgenticDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationModelId">classificationModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document classification step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.crossRegionInferencePrefix">crossRegionInferencePrefix</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a></code> | Prefix for cross-region inference configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingModelId">processingModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document extraction step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingPrompt">processingPrompt</a></code> | <code>string</code> | Custom prompt template for document extraction. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.stepTimeouts">stepTimeouts</a></code> | <code>aws-cdk-lib.Duration</code> | Timeout for individual Step Functions tasks (classification, extraction, etc.). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.useCrossRegionInference">useCrossRegionInference</a></code> | <code>boolean</code> | Enable cross-region inference for Bedrock models to improve availability and performance. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingAgentParameters">processingAgentParameters</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps">AgentProps</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingAgentParameters">processingAgentParameters</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a></code> | This parameter takes precedence over the `processingBedrockModel` parameter. |
 
 ---
 
@@ -1887,14 +2259,13 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
-##### `classificationModelId`<sup>Optional</sup> <a name="classificationModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationModelId"></a>
+##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationBedrockModel"></a>
 
 ```typescript
-public readonly classificationModelId: FoundationModelIdentifier;
+public readonly classificationBedrockModel: BedrockModelProps;
 ```
 
-- *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
-- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
 
 Bedrock foundation model for document classification step.
 
@@ -1912,21 +2283,6 @@ public readonly classificationPrompt: string;
 Custom prompt template for document classification.
 
 Must include placeholder for document content.
-
----
-
-##### `crossRegionInferencePrefix`<sup>Optional</sup> <a name="crossRegionInferencePrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.crossRegionInferencePrefix"></a>
-
-```typescript
-public readonly crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix;
-```
-
-- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a>
-- *Default:* BedrockCrossRegionInferencePrefix.US
-
-Prefix for cross-region inference configuration.
-
-Only used when useCrossRegionInference is true.
 
 ---
 
@@ -1958,14 +2314,13 @@ If provided, will be invoked after enrichment with workflow state.
 
 ---
 
-##### `processingModelId`<sup>Optional</sup> <a name="processingModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingModelId"></a>
+##### `processingBedrockModel`<sup>Optional</sup> <a name="processingBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingBedrockModel"></a>
 
 ```typescript
-public readonly processingModelId: FoundationModelIdentifier;
+public readonly processingBedrockModel: BedrockModelProps;
 ```
 
-- *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
-- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
 
 Bedrock foundation model for document extraction step.
 
@@ -1999,100 +2354,217 @@ Timeout for individual Step Functions tasks (classification, extraction, etc.).
 
 ---
 
-##### `useCrossRegionInference`<sup>Optional</sup> <a name="useCrossRegionInference" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.useCrossRegionInference"></a>
+##### `processingAgentParameters`<sup>Required</sup> <a name="processingAgentParameters" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingAgentParameters"></a>
 
 ```typescript
-public readonly useCrossRegionInference: boolean;
+public readonly processingAgentParameters: BatchAgentProps;
 ```
 
-- *Type:* boolean
-- *Default:* false
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a>
 
-Enable cross-region inference for Bedrock models to improve availability and performance.
-
-When enabled, uses inference profiles instead of direct model invocation.
+This parameter takes precedence over the `processingBedrockModel` parameter.
 
 ---
 
-##### `processingAgentParameters`<sup>Optional</sup> <a name="processingAgentParameters" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingAgentParameters"></a>
+### AgentToolsLocationDefinition <a name="AgentToolsLocationDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.Initializer"></a>
 
 ```typescript
-public readonly processingAgentParameters: AgentProps;
-```
+import { AgentToolsLocationDefinition } from '@cdklabs/cdk-appmod-catalog-blueprints'
 
-- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps">AgentProps</a>
-
----
-
-### AgentProps <a name="AgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps"></a>
-
-#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.Initializer"></a>
-
-```typescript
-import { AgentProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
-
-const agentProps: AgentProps = { ... }
+const agentToolsLocationDefinition: AgentToolsLocationDefinition = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.agentSystemPrompt">agentSystemPrompt</a></code> | <code>string</code> | System prompt for the agent. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.LayerVersion[]</code> | If there are python dependencies that are needed by the provided tools, provide the Lambda Layers with the dependencies. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsBucket">toolsBucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | Bucket where the tools are located in Primarily use to grant read permission to the processing agent to access the tools. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsLocation">toolsLocation</a></code> | <code>string[]</code> | S3 path where the tools are located. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.bucketName">bucketName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.isFile">isFile</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.isZipArchive">isZipArchive</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.key">key</a></code> | <code>string</code> | *No description.* |
 
 ---
 
-##### `agentSystemPrompt`<sup>Optional</sup> <a name="agentSystemPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.agentSystemPrompt"></a>
+##### `bucketName`<sup>Required</sup> <a name="bucketName" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.bucketName"></a>
 
 ```typescript
-public readonly agentSystemPrompt: string;
+public readonly bucketName: string;
 ```
 
 - *Type:* string
 
-System prompt for the agent.
+---
+
+##### `isFile`<sup>Required</sup> <a name="isFile" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.isFile"></a>
+
+```typescript
+public readonly isFile: boolean;
+```
+
+- *Type:* boolean
 
 ---
 
-##### `lambdaLayers`<sup>Optional</sup> <a name="lambdaLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.lambdaLayers"></a>
+##### `isZipArchive`<sup>Required</sup> <a name="isZipArchive" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.isZipArchive"></a>
 
 ```typescript
-public readonly lambdaLayers: LayerVersion[];
+public readonly isZipArchive: boolean;
 ```
 
-- *Type:* aws-cdk-lib.aws_lambda.LayerVersion[]
-
-If there are python dependencies that are needed by the provided tools, provide the Lambda Layers with the dependencies.
+- *Type:* boolean
 
 ---
 
-##### `toolsBucket`<sup>Optional</sup> <a name="toolsBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsBucket"></a>
+##### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.property.key"></a>
 
 ```typescript
-public readonly toolsBucket: Bucket;
+public readonly key: string;
 ```
 
-- *Type:* aws-cdk-lib.aws_s3.Bucket
-- *Default:* No extra IAM permissions would be automatically assigned to the processing agent.
-
-Bucket where the tools are located in Primarily use to grant read permission to the processing agent to access the tools.
+- *Type:* string
 
 ---
 
-##### `toolsLocation`<sup>Optional</sup> <a name="toolsLocation" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentProps.property.toolsLocation"></a>
+### BaseAgentProps <a name="BaseAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.Initializer"></a>
 
 ```typescript
-public readonly toolsLocation: string[];
+import { BaseAgentProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const baseAgentProps: BaseAgentProps = { ... }
 ```
 
-- *Type:* string[]
+#### Properties <a name="Properties" id="Properties"></a>
 
-S3 path where the tools are located.
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
 
-The agent would dynamically load the tools
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `agentDefinition`<sup>Required</sup> <a name="agentDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentDefinition"></a>
+
+```typescript
+public readonly agentDefinition: AgentDefinitionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a>
+
+Agent related parameters.
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the agent.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable observability.
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* new KMS Key would be created
+
+Encryption key to encrypt agent environment variables.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* Agent would not be in a VPC
+
+If the Agent would be running inside a VPC.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for resources created by this construct.
 
 ---
 
@@ -2271,6 +2743,169 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
+### BatchAgentProps <a name="BatchAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.Initializer"></a>
+
+```typescript
+import { BatchAgentProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const batchAgentProps: BatchAgentProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | *No description.* |
+
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `agentDefinition`<sup>Required</sup> <a name="agentDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentDefinition"></a>
+
+```typescript
+public readonly agentDefinition: AgentDefinitionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a>
+
+Agent related parameters.
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the agent.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable observability.
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* new KMS Key would be created
+
+Encryption key to encrypt agent environment variables.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* Agent would not be in a VPC
+
+If the Agent would be running inside a VPC.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for resources created by this construct.
+
+---
+
+##### `prompt`<sup>Required</sup> <a name="prompt" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt"></a>
+
+```typescript
+public readonly prompt: string;
+```
+
+- *Type:* string
+
+---
+
+##### `expectJson`<sup>Optional</sup> <a name="expectJson" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson"></a>
+
+```typescript
+public readonly expectJson: boolean;
+```
+
+- *Type:* boolean
+
+---
+
 ### BedrockDocumentProcessingProps <a name="BedrockDocumentProcessingProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps"></a>
 
 Configuration properties for BedrockDocumentProcessing construct.
@@ -2300,15 +2935,13 @@ const bedrockDocumentProcessingProps: BedrockDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationModelId">classificationModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document classification step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.crossRegionInferencePrefix">crossRegionInferencePrefix</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a></code> | Prefix for cross-region inference configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingModelId">processingModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Bedrock foundation model for document extraction step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingPrompt">processingPrompt</a></code> | <code>string</code> | Custom prompt template for document extraction. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.stepTimeouts">stepTimeouts</a></code> | <code>aws-cdk-lib.Duration</code> | Timeout for individual Step Functions tasks (classification, extraction, etc.). |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.useCrossRegionInference">useCrossRegionInference</a></code> | <code>boolean</code> | Enable cross-region inference for Bedrock models to improve availability and performance. |
 
 ---
 
@@ -2457,14 +3090,13 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
-##### `classificationModelId`<sup>Optional</sup> <a name="classificationModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationModelId"></a>
+##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationBedrockModel"></a>
 
 ```typescript
-public readonly classificationModelId: FoundationModelIdentifier;
+public readonly classificationBedrockModel: BedrockModelProps;
 ```
 
-- *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
-- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
 
 Bedrock foundation model for document classification step.
 
@@ -2482,21 +3114,6 @@ public readonly classificationPrompt: string;
 Custom prompt template for document classification.
 
 Must include placeholder for document content.
-
----
-
-##### `crossRegionInferencePrefix`<sup>Optional</sup> <a name="crossRegionInferencePrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.crossRegionInferencePrefix"></a>
-
-```typescript
-public readonly crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix;
-```
-
-- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a>
-- *Default:* BedrockCrossRegionInferencePrefix.US
-
-Prefix for cross-region inference configuration.
-
-Only used when useCrossRegionInference is true.
 
 ---
 
@@ -2528,14 +3145,13 @@ If provided, will be invoked after enrichment with workflow state.
 
 ---
 
-##### `processingModelId`<sup>Optional</sup> <a name="processingModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingModelId"></a>
+##### `processingBedrockModel`<sup>Optional</sup> <a name="processingBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingBedrockModel"></a>
 
 ```typescript
-public readonly processingModelId: FoundationModelIdentifier;
+public readonly processingBedrockModel: BedrockModelProps;
 ```
 
-- *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
-- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
 
 Bedrock foundation model for document extraction step.
 
@@ -2569,7 +3185,55 @@ Timeout for individual Step Functions tasks (classification, extraction, etc.).
 
 ---
 
-##### `useCrossRegionInference`<sup>Optional</sup> <a name="useCrossRegionInference" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.useCrossRegionInference"></a>
+### BedrockModelProps <a name="BedrockModelProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.Initializer"></a>
+
+```typescript
+import { BedrockModelProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const bedrockModelProps: BedrockModelProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.crossRegionInferencePrefix">crossRegionInferencePrefix</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a></code> | Prefix for cross-region inference configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.fmModelId">fmModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Foundation model to use. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.useCrossRegionInference">useCrossRegionInference</a></code> | <code>boolean</code> | Enable cross-region inference for Bedrock models to improve availability and performance. |
+
+---
+
+##### `crossRegionInferencePrefix`<sup>Optional</sup> <a name="crossRegionInferencePrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.crossRegionInferencePrefix"></a>
+
+```typescript
+public readonly crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a>
+- *Default:* BedrockCrossRegionInferencePrefix.US
+
+Prefix for cross-region inference configuration.
+
+Only used when useCrossRegionInference is true.
+
+---
+
+##### `fmModelId`<sup>Optional</sup> <a name="fmModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.fmModelId"></a>
+
+```typescript
+public readonly fmModelId: FoundationModelIdentifier;
+```
+
+- *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
+- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0
+
+Foundation model to use.
+
+---
+
+##### `useCrossRegionInference`<sup>Optional</sup> <a name="useCrossRegionInference" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.useCrossRegionInference"></a>
 
 ```typescript
 public readonly useCrossRegionInference: boolean;
@@ -3617,6 +4281,67 @@ This serves as the trigger point for processing
 
 ## Classes <a name="Classes" id="Classes"></a>
 
+### BedrockModelUtils <a name="BedrockModelUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.Initializer"></a>
+
+```typescript
+import { BedrockModelUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new BedrockModelUtils()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.deriveActualModelId">deriveActualModelId</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.generateModelIAMPermissions">generateModelIAMPermissions</a></code> | *No description.* |
+
+---
+
+##### `deriveActualModelId` <a name="deriveActualModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.deriveActualModelId"></a>
+
+```typescript
+import { BedrockModelUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BedrockModelUtils.deriveActualModelId(props?: BedrockModelProps)
+```
+
+###### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.deriveActualModelId.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+---
+
+##### `generateModelIAMPermissions` <a name="generateModelIAMPermissions" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.generateModelIAMPermissions"></a>
+
+```typescript
+import { BedrockModelUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BedrockModelUtils.generateModelIAMPermissions(scope: Construct, props?: BedrockModelProps)
+```
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.generateModelIAMPermissions.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils.generateModelIAMPermissions.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+---
+
+
+
 ### CloudfrontDistributionObservabilityPropertyInjector <a name="CloudfrontDistributionObservabilityPropertyInjector" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudfrontDistributionObservabilityPropertyInjector"></a>
 
 - *Implements:* aws-cdk-lib.IPropertyInjector
@@ -3683,6 +4408,42 @@ The unique Id of the Construct class.
 
 ---
 
+
+### DefaultAgentConfig <a name="DefaultAgentConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultAgentConfig"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultAgentConfig.Initializer"></a>
+
+```typescript
+import { DefaultAgentConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new DefaultAgentConfig()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+
+
+#### Constants <a name="Constants" id="Constants"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DefaultAgentConfig.property.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME">DEFAULT_OBSERVABILITY_METRIC_SVC_NAME</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `DEFAULT_OBSERVABILITY_METRIC_SVC_NAME`<sup>Required</sup> <a name="DEFAULT_OBSERVABILITY_METRIC_SVC_NAME" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultAgentConfig.property.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME"></a>
+
+```typescript
+public readonly DEFAULT_OBSERVABILITY_METRIC_SVC_NAME: string;
+```
+
+- *Type:* string
+
+---
 
 ### DefaultDocumentProcessingConfig <a name="DefaultDocumentProcessingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.DefaultDocumentProcessingConfig"></a>
 
@@ -4260,6 +5021,58 @@ public readonly logGroupDataProtection: LogGroupDataProtectionProps;
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
 
 ---
+
+
+### LogGroupDataProtectionUtils <a name="LogGroupDataProtectionUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.Initializer"></a>
+
+```typescript
+import { LogGroupDataProtectionUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LogGroupDataProtectionUtils()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.handleDefault">handleDefault</a></code> | *No description.* |
+
+---
+
+##### `handleDefault` <a name="handleDefault" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.handleDefault"></a>
+
+```typescript
+import { LogGroupDataProtectionUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LogGroupDataProtectionUtils.handleDefault(scope: Construct, props?: LogGroupDataProtectionProps, removalPolicy?: RemovalPolicy)
+```
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.handleDefault.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.handleDefault.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+
+---
+
+###### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.handleDefault.parameter.removalPolicy"></a>
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+---
+
 
 
 ### PowertoolsConfig <a name="PowertoolsConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig"></a>

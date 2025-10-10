@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AgenticDocumentProcessing } from '../agentic-document-processing';
 
 describe('AgenticDocumentProcessing', () => {
@@ -13,22 +14,48 @@ describe('AgenticDocumentProcessing', () => {
   beforeAll(() => {
     // Create all stacks and constructs first
     basicStack = new Stack();
+    const systemPrompt = new Asset(basicStack, 'SystemPrompt', {
+      path: __dirname + '/../resources/default-strands-agent',
+    });
     new AgenticDocumentProcessing(basicStack, 'BasicTest', {
-      processingPrompt: 'Custom processing prompt',
       processingAgentParameters: {
-        agentSystemPrompt: 'Test system prompt',
-        toolsLocation: ['tool1', 'tool2'],
+        agentName: 'TestAgent',
+        agentDefinition: {
+          bedrockModel: {},
+          systemPrompt,
+        },
+        prompt: 'Custom processing prompt',
       },
     });
 
     crossRegionStack = new Stack();
+    const crossRegionPrompt = new Asset(crossRegionStack, 'SystemPrompt', {
+      path: __dirname + '/../resources/default-strands-agent',
+    });
     new AgenticDocumentProcessing(crossRegionStack, 'CrossRegionTest', {
-      useCrossRegionInference: true,
+      processingAgentParameters: {
+        agentName: 'CrossRegionAgent',
+        agentDefinition: {
+          bedrockModel: { useCrossRegionInference: true },
+          systemPrompt: crossRegionPrompt,
+        },
+        prompt: 'Test prompt',
+      },
     });
 
     defaultModelStack = new Stack();
+    const defaultPrompt = new Asset(defaultModelStack, 'SystemPrompt', {
+      path: __dirname + '/../resources/default-strands-agent',
+    });
     new AgenticDocumentProcessing(defaultModelStack, 'DefaultModelTest', {
-      useCrossRegionInference: false,
+      processingAgentParameters: {
+        agentName: 'DefaultAgent',
+        agentDefinition: {
+          bedrockModel: { useCrossRegionInference: false },
+          systemPrompt: defaultPrompt,
+        },
+        prompt: 'Test prompt',
+      },
     });
 
     // Generate templates once after all constructs are created
@@ -49,8 +76,6 @@ describe('AgenticDocumentProcessing', () => {
     basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          SYSTEM_PROMPT: 'Test system prompt',
-          TOOLS_CONFIG: '["tool1","tool2"]',
           PROMPT: 'Custom processing prompt',
         },
       },
@@ -94,7 +119,7 @@ describe('AgenticDocumentProcessing', () => {
 
   test('configures timeout and memory for processing function', () => {
     basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Timeout: 300,
+      Timeout: 600,
       MemorySize: 1024,
     });
   });
@@ -103,7 +128,7 @@ describe('AgenticDocumentProcessing', () => {
     crossRegionTemplate.hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          MODEL_ID: 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
+          MODEL_ID: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
         },
       },
     });
@@ -113,7 +138,7 @@ describe('AgenticDocumentProcessing', () => {
     defaultModelTemplate.hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          MODEL_ID: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
+          MODEL_ID: 'anthropic.claude-sonnet-4-20250514-v1:0',
         },
       },
     });

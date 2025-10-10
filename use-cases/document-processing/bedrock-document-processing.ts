@@ -4,15 +4,15 @@
 import * as path from 'path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Duration, Stack } from 'aws-cdk-lib';
-import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { InterfaceVpcEndpointAwsService } from 'aws-cdk-lib/aws-ec2';
-import { Role, ServicePrincipal, PolicyStatement, PolicyDocument, Effect } from 'aws-cdk-lib/aws-iam';
+import { Role, ServicePrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
 import { Function, Architecture } from 'aws-cdk-lib/aws-lambda';
 import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { BaseDocumentProcessing, BaseDocumentProcessingProps, DocumentProcessingStepType } from './base-document-processing';
 import { DefaultRuntimes } from '../framework';
+import { BedrockModelProps, BedrockModelUtils } from '../framework/bedrock';
 import { LambdaIamUtils } from '../utilities';
 import { PowertoolsConfig } from '../utilities/observability/powertools-config';
 
@@ -23,14 +23,13 @@ import { PowertoolsConfig } from '../utilities/observability/powertools-config';
 export interface BedrockDocumentProcessingProps extends BaseDocumentProcessingProps {
   /**
    * Bedrock foundation model for document classification step.
-   * @default FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
    */
-  readonly classificationModelId?: FoundationModelIdentifier;
+  readonly classificationBedrockModel?: BedrockModelProps;
+
   /**
    * Bedrock foundation model for document extraction step.
-   * @default FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0
    */
-  readonly processingModelId?: FoundationModelIdentifier;
+  readonly processingBedrockModel?: BedrockModelProps;
   /**
    * Custom prompt template for document classification.
    * Must include placeholder for document content.
@@ -58,29 +57,6 @@ export interface BedrockDocumentProcessingProps extends BaseDocumentProcessingPr
    * @default Duration.minutes(5)
    */
   readonly stepTimeouts?: Duration;
-  /**
-   * Enable cross-region inference for Bedrock models to improve availability and performance.
-   * When enabled, uses inference profiles instead of direct model invocation.
-   * @default false
-   */
-  readonly useCrossRegionInference?: boolean;
-  /**
-   * Prefix for cross-region inference configuration.
-   * Only used when useCrossRegionInference is true.
-   * @default BedrockCrossRegionInferencePrefix.US
-   */
-  readonly crossRegionInferencePrefix?: BedrockCrossRegionInferencePrefix;
-}
-
-/**
- * Cross-region inference prefix options for Bedrock models.
- * Used to configure inference profiles for improved availability and performance.
- */
-export enum BedrockCrossRegionInferencePrefix {
-  /** US-based cross-region inference profile */
-  US = 'us',
-  /** EU-based cross-region inference profile */
-  EU = 'eu',
 }
 
 /**
@@ -114,11 +90,6 @@ export enum BedrockCrossRegionInferencePrefix {
  * - EU prefix: Routes to EU-based regions for data residency compliance
  */
 export class BedrockDocumentProcessing extends BaseDocumentProcessing {
-
-  protected static readonly DEFAULT_CLASSIFICATION_MODEL_ID: FoundationModelIdentifier
-    = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0;
-  protected static readonly DEFAULT_PROCESSING_MODEL_ID: FoundationModelIdentifier
-    = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0;
   protected static readonly DEFAULT_CLASSIFICATION_PROMPT = `
   Analyze the document below, and classify the type of document it is (eg. INVOICE, IDENTITY_DOCUMENT, RECEIPT, etc). The result should be in JSON and should follow the following structure (only respond in JSON with the following structure and do not use markdown to indicate the json, just output plain old json with nothing else):
 
@@ -152,8 +123,6 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
 
   /** Configuration properties specific to Bedrock document processing */
   protected readonly bedrockDocumentProcessingProps: BedrockDocumentProcessingProps;
-  /** Cross-region inference prefix for Bedrock model routing */
-  protected readonly crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix;
   /** The Step Functions state machine that orchestrates the document processing workflow */
   readonly stateMachine: StateMachine;
 
@@ -176,7 +145,6 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
     }
 
     this.bedrockDocumentProcessingProps = props;
-    this.crossRegionInferencePrefix = props.crossRegionInferencePrefix || BedrockCrossRegionInferencePrefix.US;
     this.stateMachine = this.handleStateMachineCreation('bedrock-document-processing-workflow');
   }
 
@@ -191,9 +159,8 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
    */
   protected classificationStep(): DocumentProcessingStepType {
     const prompt = this.bedrockDocumentProcessingProps.classificationPrompt || BedrockDocumentProcessing.DEFAULT_CLASSIFICATION_PROMPT;
-    const fmModel = this.bedrockDocumentProcessingProps.classificationModelId || BedrockDocumentProcessing.DEFAULT_CLASSIFICATION_MODEL_ID;
-    const adjustedModelId = this.bedrockDocumentProcessingProps.useCrossRegionInference ? `${this.crossRegionInferencePrefix}.${fmModel.modelId}` : fmModel.modelId;
-    const role = this.generateLambdaRoleForBedrock(fmModel, 'ClassificationLambdaRole');
+    const adjustedModelId = BedrockModelUtils.deriveActualModelId(this.bedrockDocumentProcessingProps.classificationBedrockModel);
+    const role = this.generateLambdaRoleForBedrock('ClassificationLambdaRole', this.bedrockDocumentProcessingProps.classificationBedrockModel);
     const { region, account } = Stack.of(this);
     const generatedLogPermissions = LambdaIamUtils.createLogsPermissions({
       account,
@@ -256,9 +223,8 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
    */
   protected processingStep(): DocumentProcessingStepType {
     const prompt = this.bedrockDocumentProcessingProps.processingPrompt || BedrockDocumentProcessing.DEFAULT_PROCESSING_PROMPT;
-    const fmModel = this.bedrockDocumentProcessingProps.processingModelId || BedrockDocumentProcessing.DEFAULT_PROCESSING_MODEL_ID;
-    const adjustedModelId = this.bedrockDocumentProcessingProps.useCrossRegionInference ? `${this.crossRegionInferencePrefix}.${fmModel.modelId}` : fmModel.modelId;
-    const role = this.generateLambdaRoleForBedrock(fmModel, 'ProcessingLambdaRole');
+    const adjustedModelId = BedrockModelUtils.deriveActualModelId(this.bedrockDocumentProcessingProps.processingBedrockModel);
+    const role = this.generateLambdaRoleForBedrock('ProcessingLambdaRole', this.bedrockDocumentProcessingProps.processingBedrockModel);
     const { region, account } = Stack.of(this);
 
     const generatedLogPermissions = LambdaIamUtils.createLogsPermissions({
@@ -309,25 +275,14 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
     });
   }
 
-  protected generateLambdaRoleForBedrock(fmModel: FoundationModelIdentifier, id: string) {
-    const { region, account } = Stack.of(this);
+  protected generateLambdaRoleForBedrock(id: string, model?: BedrockModelProps) {
     return new Role(this, id, {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       inlinePolicies: {
         BedrockInvokePolicy: new PolicyDocument({
           statements: [
             ...this.ingressAdapter.generateAdapterIAMPolicies(),
-            new PolicyStatement({
-              effect: Effect.ALLOW,
-              actions: [
-                'bedrock:InvokeModel',
-                'bedrock:InvokeModelWithResponseStream',
-              ],
-              resources: [
-                `arn:aws:bedrock:*::foundation-model/${fmModel.modelId}`,
-                `arn:aws:bedrock:${region}:${account}:inference-profile/${this.crossRegionInferencePrefix}.${fmModel.modelId}`,
-              ],
-            }),
+            BedrockModelUtils.generateModelIAMPermissions(this, model),
           ],
         }),
       },

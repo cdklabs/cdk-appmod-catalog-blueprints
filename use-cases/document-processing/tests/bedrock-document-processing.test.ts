@@ -1,7 +1,8 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
-import { BedrockCrossRegionInferencePrefix, BedrockDocumentProcessing } from '../bedrock-document-processing';
+import { BedrockCrossRegionInferencePrefix } from '../../framework';
+import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 
 describe('BedrockDocumentProcessing', () => {
   let defaultStack: Stack;
@@ -18,14 +19,18 @@ describe('BedrockDocumentProcessing', () => {
 
     customStack = new Stack();
     new BedrockDocumentProcessing(customStack, 'CustomTest', {
-      classificationModelId: FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0,
-      useCrossRegionInference: false,
+      classificationBedrockModel: {
+        fmModelId: FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0,
+        useCrossRegionInference: false,
+      },
     });
 
     crossRegionStack = new Stack();
     new BedrockDocumentProcessing(crossRegionStack, 'CrossRegionTest', {
-      useCrossRegionInference: true,
-      crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix.EU,
+      classificationBedrockModel: {
+        useCrossRegionInference: true,
+        crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix.EU,
+      },
     });
 
     // Generate templates once after all constructs are created
@@ -46,7 +51,7 @@ describe('BedrockDocumentProcessing', () => {
     defaultTemplate.hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          MODEL_ID: 'anthropic.claude-3-7-sonnet-20250219-v1:0',
+          MODEL_ID: 'anthropic.claude-sonnet-4-20250514-v1:0',
         },
       },
     });
@@ -66,7 +71,7 @@ describe('BedrockDocumentProcessing', () => {
     crossRegionTemplate.hasResourceProperties('AWS::Lambda::Function', {
       Environment: {
         Variables: {
-          MODEL_ID: 'eu.anthropic.claude-3-7-sonnet-20250219-v1:0',
+          MODEL_ID: 'eu.anthropic.claude-sonnet-4-20250514-v1:0',
         },
       },
     });
