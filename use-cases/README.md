@@ -1,6 +1,6 @@
 # Use Case Building Blocks
 
-Production-ready, composable infrastructure constructs that accelerate serverless development and modernization on AWS. Each use case provides multiple implementation pathways with industry-specific examples.
+Use-case driven composable infrastructure constructs that accelerate serverless development and modernization on AWS. Each use case provides multiple implementation pathways with industry-specific examples.
 
 ## Core Use Cases
 

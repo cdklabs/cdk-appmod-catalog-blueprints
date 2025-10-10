@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to AppMod Catalog Blueprints! We welcome contributions from the community to help improve and expand this library of production-ready infrastructure blueprints.
+Thank you for your interest in contributing to AppMod Catalog Blueprints! We welcome contributions from the community to help improve and expand this library of infrastructure blueprints.
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your contribution.
 
