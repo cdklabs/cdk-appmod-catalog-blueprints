@@ -1,10 +1,6 @@
----
-title: Introduction
----
-
 # AppMod Catalog Blueprints
 
-Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of production-ready, use case-driven infrastructure blueprints in the form of composable multi-layered building blocks built using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html). These blueprints offer use case-driven solutions with multiple implementation pathways and industry-specific implementations that are designed to accelerate serverless development and modernization on AWS.
+Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of use case-driven infrastructure blueprints built using AWS well-architected best practices. Designed in the form of composable multi-layered building blocks using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints offer use case-driven solutions with multiple implementation pathways and industry-specific implementations to accelerate serverless development and modernization on AWS.
 
 Built with [JSII](https://aws.github.io/jsii/), these constructs are available in TypeScript, Python, Java, and .NET, enabling teams to use their preferred programming language while leveraging the same proven infrastructure patterns. 
 
@@ -44,16 +40,16 @@ Our blueprints use a multi-layered architecture that bridges the gap between bus
 | Layer | Implementation Type | Purpose | Key Features |
 |-------|-------------------|---------|--------------|
 | **Infrastructure Foundation** | Abstract base classes | Shared infrastructure components and common services | • Standardized interfaces and contracts<br/>• Extensible foundation for custom implementations |
-| **General Use Case Implementation** | Concrete implementation classes | Production-ready implementations for common patterns across industries | • Configurable parameters for different environments<br/>• Abstract method implementations with general-purpose solutions |
+| **General Use Case Implementation** | Concrete implementation classes | Implementations for common patterns across industries | • Configurable parameters for different environments<br/>• Abstract method implementations with general-purpose solutions |
 | **Industry-Aligned Implementation** | Configured implementation examples | Pre-configured solutions for specific business domains | • Industry-specific validation rules and workflows<br/>• Built-in compliance requirements and domain expertise |
 
-### Production-Ready with Smart Defaults
+### Well-Architected with Smart Defaults
 
 AppMod Catalog Blueprints serves both **rapid deployment** needs (for teams wanting immediate solutions) and **custom development** requirements (for teams needing tailored implementations), providing flexibility without compromising on production readiness.
 
 | Approach | Best For | Capabilities |
 |----------|----------|--------------|
-| **Out-of-the-Box Deployment** | Rapid deployment and evaluation | • Deploy complete solutions in minutes using examples for immediate value<br/>• Pre-configured security, monitoring, and best practices for production readiness<br/>• Sensible defaults with production-ready configurations that work immediately<br/>• No infrastructure boilerplate required with minimal learning curve |
+| **Out-of-the-Box Deployment** | Rapid deployment and evaluation | • Deploy complete solutions in minutes using examples for immediate value<br/>• Pre-configured security, monitoring, and best practices for production readiness<br/>• Sensible defaults with well-architected configurations that work immediately<br/>• No infrastructure boilerplate required with minimal learning curve |
 | **Intelligent Customization** | Custom development and integration | • Override defaults to modify behavior without changing core implementation<br/>• Enable/disable optional features to meet specific requirements<br/>• Inject custom logic at predefined extension points while maintaining production readiness<br/>• Configure parameters for different environments and use cases |
 
 ### Security & Compliance
