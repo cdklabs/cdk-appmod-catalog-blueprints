@@ -45,12 +45,12 @@ Our blueprints use a multi-layered architecture that bridges the gap between bus
 
 ### Well-Architected with Smart Defaults
 
-AppMod Catalog Blueprints serves both **rapid deployment** needs (for teams wanting immediate solutions) and **custom development** requirements (for teams needing tailored implementations), providing flexibility without compromising on production readiness.
+AppMod Catalog Blueprints serves both **rapid deployment** needs (for teams wanting immediate solutions) and **custom development** requirements (for teams needing tailored implementations), providing flexibility based on your needs.
 
 | Approach | Best For | Capabilities |
 |----------|----------|--------------|
-| **Out-of-the-Box Deployment** | Rapid deployment and evaluation | • Deploy complete solutions in minutes using examples for immediate value<br/>• Pre-configured security, monitoring, and best practices for production readiness<br/>• Sensible defaults with well-architected configurations that work immediately<br/>• No infrastructure boilerplate required with minimal learning curve |
-| **Intelligent Customization** | Custom development and integration | • Override defaults to modify behavior without changing core implementation<br/>• Enable/disable optional features to meet specific requirements<br/>• Inject custom logic at predefined extension points while maintaining production readiness<br/>• Configure parameters for different environments and use cases |
+| **Out-of-the-Box Deployment** | Rapid deployment and evaluation | • Deploy complete solutions in minutes using examples for immediate value<br/>• Pre-configured security, monitoring, and well-architected best practices<br/>• Sensible defaults with well-architected configurations that work immediately<br/>• No infrastructure boilerplate required with minimal learning curve |
+| **Intelligent Customization** | Custom development and integration | • Override defaults to modify behavior without changing core implementation<br/>• Enable/disable optional features to meet specific requirements<br/>• Inject custom logic at predefined extension points with well-architected best practices<br/>• Configure parameters for different environments and use cases |
 
 ### Security & Compliance
 
