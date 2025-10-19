@@ -9,7 +9,7 @@ The Document Processing L3 constructs provides a layered architectural approach 
 You can leverage the following constructs:
 - **BaseDocumentProcessing**: Abstract foundation requiring custom step implementations
 - **BedrockDocumentProcessing**: Ready-to-use genAI document processing implementation with Amazon Bedrock 
-- **AgenticDocumentProcessing**: Advanced agentic capabilities with S3 tool storage
+- **AgenticDocumentProcessing**: Advanced agentic capabilities powered by the [Agents Framework](../framework/agents/) with BatchAgent integration
 
 All implementations share common infrastructure: Step Functions workflow, DynamoDB metadata storage, EventBridge integration, and built-in observability.
 
@@ -172,22 +172,35 @@ You can customize the following:
 
 ## [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) Construct
 
-The [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) construct **extends BedrockDocumentProcessing** to provide advanced agentic capabilities with dynamic tool integration.
+The [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) construct **extends BedrockDocumentProcessing** to provide advanced agentic capabilities using the [Agents Framework](../framework/agents/).
 
 ### Key Features
 - **Inherits**: All Bedrock functionality (models, prompts, cross-region inference)
 - **Reuses**: Classification step from parent class unchanged
-- **Overrides**: Processing step with agentic capabilities and tool integration
-- **Enhances**: Memory allocation (1024MB) for complex tool operations
+- **Overrides**: Processing step with BatchAgent from the Agents Framework
+- **Integrates**: Full tool ecosystem with dynamic loading and execution
 
-Tools (and their dependencies) can be provided as part of the parameter for this L3 construct, expanding what the agent can do.
+The processing step is now powered by a `BatchAgent` that can leverage custom tools, system prompts, and advanced reasoning capabilities.
 
 ### Configuration Options
-- **Tools Bucket**: S3 bucket containing processing tools and utilities
-- **Tools Location**: Array of S3 paths to specific tool sets
-- **Agent System Prompt**: Custom instructions for agent behavior
+Instead of direct Bedrock model configuration, you now provide `processingAgentParameters`:
+
+```typescript
+interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps {
+  readonly processingAgentParameters: BatchAgentProps;
+}
+```
+
+**Agent Configuration:**
+- **Agent Name**: Unique identifier for the processing agent
+- **System Prompt**: S3 Asset containing agent instructions
+- **Tools**: Array of S3 Assets with Python tool implementations
 - **Lambda Layers**: Additional dependencies for tool execution
-- **Processing Prompt**: Override default processing instructions
+- **Processing Prompt**: Specific task instructions for the agent
+- **Expect JSON**: Enable automatic JSON response parsing
+
+### Example Implementations
+- [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing)
 
 ### Example Implementations
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing) 
