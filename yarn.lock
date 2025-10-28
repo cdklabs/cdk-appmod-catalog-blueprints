@@ -1659,7 +1659,7 @@ cdk-nag@^2.37.55:
   resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.37.55.tgz#438f6bb99a08bedee8c8067a0a16ede952a5f10e"
   integrity sha512-xcAkygwbph3pp7N0UEzJBmXUH/MIsluV7DYJSeZ/V3yCr0Y0QaRGO298WyD6mi4K+Rmnpl+EJoWUxcOblOqLKA==
 
-cdklabs-projen-project-types@^0.3.7:
+cdklabs-projen-project-types@^0.3.1:
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/cdklabs-projen-project-types/-/cdklabs-projen-project-types-0.3.7.tgz#91b4d2eaa40d8d68507fce834cf0a9409612aafc"
   integrity sha512-ixRq2RK/4lW40UBvhJEhU0fvpCFFIu6VEPdW0liJvAy/uypSubRroqQ6N/9rj/uY9pXxK8cYPr7rFJe8Pp0pQg==
@@ -4727,10 +4727,10 @@ process-nextick-args@~2.0.0:
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
 
-projen@^0.98.4:
-  version "0.98.4"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.98.4.tgz#7ccf0014b7b2d3ff75dc1a8c406ca3c0029ef989"
-  integrity sha512-v3o7ueUV+J6eRUmEZcg1UdmH1t/nRUrY737iugm9f4AH4v7GVGqDEDd4dIa80hCreIUPruXtUBpyl82h8d7NdA==
+projen@^0.95.2:
+  version "0.95.6"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.95.6.tgz#0d8ca52804117dd6b4f95b3fb1f3da49f8eb213b"
+  integrity sha512-LgtNgveF7UyYoFwEFbx0r570R3+jvz9XQRvykijZg+O5y7+h1hF+FzvL2r1i7FZ3RTlqfyJHP+wFXrfA1F+Oxw==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
@@ -4742,7 +4742,7 @@ projen@^0.98.4:
     fast-json-patch "^3.1.1"
     ini "^2.0.0"
     parse-conflict-json "^4.0.0"
-    semver "^7.7.3"
+    semver "^7.7.2"
     shx "^0.4.0"
     xmlbuilder2 "^3.1.1"
     yaml "^2.2.2"
