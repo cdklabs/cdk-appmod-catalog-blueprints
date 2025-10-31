@@ -1,5 +1,5 @@
 import { Stack } from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AgenticDocumentProcessing } from '../agentic-document-processing';
 
@@ -12,7 +12,6 @@ describe('AgenticDocumentProcessing', () => {
   let defaultModelTemplate: Template;
 
   beforeAll(() => {
-    // Create all stacks and constructs first
     basicStack = new Stack();
     const systemPrompt = new Asset(basicStack, 'SystemPrompt', {
       path: __dirname + '/../resources/default-strands-agent',
@@ -58,89 +57,139 @@ describe('AgenticDocumentProcessing', () => {
       },
     });
 
-    // Generate templates once after all constructs are created
     basicTemplate = Template.fromStack(basicStack);
     crossRegionTemplate = Template.fromStack(crossRegionStack);
     defaultModelTemplate = Template.fromStack(defaultModelStack);
   });
 
-  test('creates basic infrastructure', () => {
-    basicTemplate.hasResourceProperties('AWS::S3::Bucket', {});
-    basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.13',
+  describe('Basic infrastructure', () => {
+    test('creates basic infrastructure', () => {
+      basicTemplate.hasResourceProperties('AWS::S3::Bucket', {});
+      basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
+        Runtime: 'python3.13',
+      });
+      basicTemplate.resourceCountIs('AWS::Lambda::Function', 5);
     });
-    basicTemplate.resourceCountIs('AWS::Lambda::Function', 5);
-  });
 
-  test('configures all agent parameters', () => {
-    basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          PROMPT: 'Custom processing prompt',
-        },
-      },
+    test('inherits bedrock document processing functionality', () => {
+      basicTemplate.hasResourceProperties('AWS::S3::Bucket', {});
+      basicTemplate.hasResourceProperties('AWS::DynamoDB::Table', {});
+      basicTemplate.hasResourceProperties('AWS::SQS::Queue', {});
+      basicTemplate.hasResourceProperties('AWS::StepFunctions::StateMachine', {});
     });
   });
 
-  test('inherits bedrock document processing functionality', () => {
-    basicTemplate.hasResourceProperties('AWS::S3::Bucket', {});
-    basicTemplate.hasResourceProperties('AWS::DynamoDB::Table', {});
-    basicTemplate.hasResourceProperties('AWS::SQS::Queue', {});
-    basicTemplate.hasResourceProperties('AWS::StepFunctions::StateMachine', {});
-  });
-
-  test('creates IAM role with correct permissions', () => {
-    basicTemplate.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [{
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: 'lambda.amazonaws.com',
+  describe('Agent configuration', () => {
+    test('configures all agent parameters', () => {
+      basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            PROMPT: 'Custom processing prompt',
           },
+        },
+      });
+    });
+
+    test('configures timeout and memory for processing function', () => {
+      basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
+        Timeout: 600,
+        MemorySize: 1024,
+      });
+    });
+
+    test('uses cross-region inference when enabled', () => {
+      crossRegionTemplate.hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            MODEL_ID: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
+          },
+        },
+      });
+    });
+
+    test('uses default model when cross-region inference is disabled', () => {
+      defaultModelTemplate.hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            MODEL_ID: 'anthropic.claude-sonnet-4-20250514-v1:0',
+          },
+        },
+      });
+    });
+  });
+
+  describe('IAM permissions', () => {
+    test('creates IAM role with correct permissions', () => {
+      basicTemplate.hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [{
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          }],
+        },
+      });
+
+      basicTemplate.hasResourceProperties('AWS::IAM::Role', {
+        Policies: [{
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Effect: 'Allow',
+                Action: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+              }),
+            ]),
+          },
+          PolicyName: 'BedrockInvokePolicy',
         }],
-      },
+      });
     });
 
-    basicTemplate.hasResourceProperties('AWS::IAM::Role', {
-      Policies: [{
-        PolicyDocument: {
-          Statement: Match.arrayWith([
-            Match.objectLike({
-              Effect: 'Allow',
-              Action: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
-            }),
-          ]),
-        },
-        PolicyName: 'BedrockInvokePolicy',
-      }],
-    });
-  });
-
-  test('configures timeout and memory for processing function', () => {
-    basicTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Timeout: 600,
-      MemorySize: 1024,
+    test('grants S3 access to agent function', () => {
+      basicTemplate.hasResourceProperties('AWS::IAM::Role', {
+        Policies: Match.arrayWith([
+          Match.objectLike({
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: Match.arrayWith(['s3:GetObject']),
+                  Effect: 'Allow',
+                }),
+              ]),
+            },
+          }),
+        ]),
+      });
     });
   });
 
-  test('uses cross-region inference when enabled', () => {
-    crossRegionTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          MODEL_ID: 'us.anthropic.claude-sonnet-4-20250514-v1:0',
-        },
-      },
+  describe('State machine integration', () => {
+    test('integrates agent as processing step in workflow', () => {
+      basicTemplate.hasResourceProperties('AWS::StepFunctions::StateMachine', {
+        DefinitionString: Match.objectLike({
+          'Fn::Join': Match.arrayWith(['']),
+        }),
+      });
+    });
+
+    test('creates state machine with encryption', () => {
+      basicTemplate.hasResourceProperties('AWS::StepFunctions::StateMachine', {
+        EncryptionConfiguration: Match.objectLike({
+          Type: 'CUSTOMER_MANAGED_KMS_KEY',
+        }),
+      });
     });
   });
 
-  test('uses default model when cross-region inference is disabled', () => {
-    defaultModelTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          MODEL_ID: 'anthropic.claude-sonnet-4-20250514-v1:0',
-        },
-      },
+  describe('Resource counts', () => {
+    test('creates expected number of Lambda functions', () => {
+      basicTemplate.resourceCountIs('AWS::Lambda::Function', 5);
+    });
+
+    test('creates single state machine', () => {
+      basicTemplate.resourceCountIs('AWS::StepFunctions::StateMachine', 1);
     });
   });
 });
