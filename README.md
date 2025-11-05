@@ -10,8 +10,9 @@ Get started by exploring the [use case constructs](use-cases) and deployable [ex
 
 | Use Case | Description | Quick Deploy Examples |
 |----------|-------------|----------------------|
-| **[Document Processing](./use-cases/document-processing/)** | AI-powered document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](./examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](./examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
+| **[Document Processing](./use-cases/document-processing/)** | Intelligent document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](./examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](./examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
 | **[Web Application](./use-cases/webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
+| **[Agent Framework](./use-cases/framework/agents/)** | Framework to quickly deploy and integrate agentic capabilities | [Used in Agentic Document Processing](./examples/document-processing/agentic-document-processing/)
 
 ## Foundation and Utilities
 
@@ -64,9 +65,6 @@ All components include enterprise-grade security by default:
 
 ### Environment Setup
 ```bash
-# Clone the repository
-git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
-
 # Configure AWS credentials and region
 aws configure
 # OR set AWS profile: export AWS_PROFILE=your-profile-name
@@ -75,39 +73,28 @@ aws configure
 npx cdk bootstrap
 ```
 
-### Quick Start
-
-Deploy a working example in **5 minutes**:
+### Quick Start (New CDK Project)
 
 ```bash
+# Initialize a new project.
+# https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-init.html
+cdk init --language=typescript
+# Install cdk-appmod-catalog-blueprints
+npm i -s @cdklabs/appmod-catalog-blueprints
+# Start using the constructs directly in your CDK code
+```
+
+### Quick Start (Deploying the Example)
+
+```bash
+# Clone the repository
+git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
 # Navigate to any example and deploy
-cd examples/document-processing/agentic-document-processing
+cd cdk-appmod-catalog-blueprints/examples/document-processing/agentic-document-processing
+# Install dependencies
 npm install
-npm run deploy
-```
-
-### Build & Deploy Project
-```bash
-# Build entire project
-npx projen build
-
-# Deploy with specific profile/region
-npx cdk deploy --require-approval never
-
-# Update CDK CLI if needed
-npm install aws-cdk@latest
-```
-
-### Development
-```bash
-# Run all tests
-npm test
-
-# Run specific test pattern
-npm test -- --testPathPattern="document-processing"
-
-# Generate CDK Nag compliance reports
-npm test -- --testPathPattern="nag.test.ts"
+# Deploy using the configured AWS credentials
+cdk deploy
 ```
 
 ## How to Use This Library
