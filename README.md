@@ -1,26 +1,92 @@
 # AppMod Catalog Blueprints
 
-Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of use case-driven infrastructure blueprints built using AWS well-architected best practices. Designed in the form of composable multi-layered building blocks using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints offer use case-driven solutions with multiple implementation pathways and industry-specific implementations to accelerate serverless development and modernization on AWS.
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
+[![Website](https://img.shields.io/badge/website-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
+[![Package](https://img.shields.io/badge/package-construct--hub-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
 
-Built with [JSII](https://aws.github.io/jsii/), these constructs are available in TypeScript, Python, Java, and .NET, enabling teams to use their preferred programming language while leveraging the same proven infrastructure patterns. 
+Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of use case-driven infrastructure solution blueprints built using AWS well-architected best practices. Designed as composable multi-layered building blocks using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints offer use case-driven solutions with multiple implementation pathways and industry-specific implementations to accelerate serverless development and modernization on AWS.
+
+**Key Benefits:**
+- **Use case-driven solutions**: Purpose-built blueprints for common business scenarios like document processing, web applications, and AI workflows, with industry-specific implementations like insurance claims processing
+- **Multi-layered approach**: Infrastructure Foundation → General Use Cases → Industry Examples, allowing you to start with proven patterns and customize as needed.
+- **Composable architecture**: Mix and match independent components with standardized interfaces
+- **Enterprise-ready**: Built-in security, compliance, and AWS Well-Architected best practices
+- **Multi-language support**: Available in TypeScript, Python, Java, and .NET via [JSII](https://aws.github.io/jsii/)
+
+## How to Use This Library
 
 Get started by exploring the [use case constructs](use-cases) and deployable [examples](examples). Learn more from [documentation](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/) and [Construct Hub](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints).
 
-## Core Use Cases
+| Approach | Best For | Get Started |
+|----------|----------|-------------|
+| **🚀 Rapid Deployment** | Quick evaluation, immediate solutions, proof-of-concepts | Use [examples](./examples/) - deploy complete solutions in minutes with sensible defaults and AWS Well-Architected best practices |
+| **🔧 Custom Development** | Specific requirements, enterprise integration, tailored solutions | Use [individual constructs](./use-cases/) - override defaults, inject custom logic, configure for your environment |
+
+## Use Case Building Blocks
+
+### Core Use Cases
 
 | Use Case | Description | Quick Deploy Examples |
 |----------|-------------|----------------------|
 | **[Document Processing](./use-cases/document-processing/)** | Intelligent document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](./examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](./examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
 | **[Web Application](./use-cases/webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
-| **[Agent Framework](./use-cases/framework/agents/)** | Framework to quickly deploy and integrate agentic capabilities | [Used in Agentic Document Processing](./examples/document-processing/agentic-document-processing/)
 
-## Foundation and Utilities
+### Foundation and Utilities
 
 | Component | Description |
 |-----------|-------------|
-| **[Observability & Monitoring](./use-cases/utilities/observability/)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
-| **[Data Masking](./use-cases/utilities/lambda_layers/data-masking/)** | Lambda layer for data masking and PII protection in serverless applications |
-| **[Infrastructure Foundation](./use-cases/framework/)** | Core infrastructure components and utilities for building scalable applications |
+| **[Agentic AI Framework](./use-cases/framework/agents/)** | Composable enterprise framework for building intelligent AI agents that can be mixed and matched across diverse use cases - from document processing to conversational AI |
+| **[Infrastructure Foundation](./use-cases/framework/foundation/)** | Core infrastructure components including VPC networking, access logging, and EventBridge integration |
+| **[Observability & Monitoring](./use-cases/utilities/#observability)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
+| **[Data Masking](./use-cases/utilities/#data-masking)** | Lambda layer for data masking and PII protection in serverless applications |
+
+## Getting Started
+
+### Environment Setup
+```bash
+# Configure AWS credentials and region
+aws configure
+# OR set AWS profile: export AWS_PROFILE=your-profile-name
+
+# Bootstrap your AWS environment (one-time setup)
+npx cdk bootstrap
+```
+
+### Quick Deploy (Complete Solutions)
+Deploy working examples in minutes for immediate value:
+
+```bash
+# Clone the repository
+git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
+
+# Deploy complete insurance claims processing solution
+cd examples/document-processing/doc-processing-fullstack-webapp
+npm install && npm run deploy
+# Full AI-powered solution with web interface deployed
+
+# Or deploy basic document processing
+cd examples/document-processing/bedrock-document-processing
+npm install && npm run deploy
+```
+
+### Using Individual Constructs
+Add to your existing CDK projects for custom solutions:
+
+```bash
+# Install the library
+npm install @cdklabs/appmod-catalog-blueprints
+
+# Use in your CDK code
+import { AgenticDocumentProcessing, WebApp } from '@cdklabs/appmod-catalog-blueprints';
+
+const docProcessor = new AgenticDocumentProcessing(this, 'Processor', {
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt: myPrompt,
+    tools: [myTools]
+  }
+});
+```
 
 ## Key Design Principles
 
@@ -44,15 +110,6 @@ Our blueprints use a multi-layered architecture that bridges the gap between bus
 | **General Use Case Implementation** | Concrete implementation classes | Implementations for common patterns across industries | • Configurable parameters for different environments<br/>• Abstract method implementations with general-purpose solutions |
 | **Industry-Aligned Implementation** | Configured implementation examples | Pre-configured solutions for specific business domains | • Industry-specific validation rules and workflows<br/>• Built-in compliance requirements and domain expertise |
 
-### Well-Architected with Smart Defaults
-
-AppMod Catalog Blueprints serves both **rapid deployment** needs (for teams wanting immediate solutions) and **custom development** requirements (for teams needing tailored implementations), providing flexibility based on your needs.
-
-| Approach | Best For | Capabilities |
-|----------|----------|--------------|
-| **Out-of-the-Box Deployment** | Rapid deployment and evaluation | • Deploy complete solutions in minutes using examples for immediate value<br/>• Pre-configured security, monitoring, and well-architected best practices<br/>• Sensible defaults with well-architected configurations that work immediately<br/>• No infrastructure boilerplate required with minimal learning curve |
-| **Intelligent Customization** | Custom development and integration | • Override defaults to modify behavior without changing core implementation<br/>• Enable/disable optional features to meet specific requirements<br/>• Inject custom logic at predefined extension points with well-architected best practices<br/>• Configure parameters for different environments and use cases |
-
 ### Security & Compliance
 
 All components include enterprise-grade security by default:
@@ -60,68 +117,6 @@ All components include enterprise-grade security by default:
 - **AWS Well-Architected**: Security, reliability, and performance best practices
 - **Encryption & IAM**: At-rest/in-transit encryption with least-privilege access
 - **Compliance Reports**: Generate reports with `npm test -- --testPathPattern="nag.test.ts"`
-
-## Essential Commands
-
-### Environment Setup
-```bash
-# Configure AWS credentials and region
-aws configure
-# OR set AWS profile: export AWS_PROFILE=your-profile-name
-
-# Bootstrap your AWS environment (one-time setup)
-npx cdk bootstrap
-```
-
-### Quick Start (New CDK Project)
-
-```bash
-# Initialize a new project.
-# https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cmd-init.html
-cdk init --language=typescript
-# Install cdk-appmod-catalog-blueprints
-npm i -s @cdklabs/appmod-catalog-blueprints
-# Start using the constructs directly in your CDK code
-```
-
-### Quick Start (Deploying the Example)
-
-```bash
-# Clone the repository
-git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
-# Navigate to any example and deploy
-cd cdk-appmod-catalog-blueprints/examples/document-processing/agentic-document-processing
-# Install dependencies
-npm install
-# Deploy using the configured AWS credentials
-cdk deploy
-```
-
-## How to Use This Library
-
-### Quick Start (Deploy Examples)
-1. **Browse Examples**: Start with the [examples](./examples/) folder to see working implementations
-2. **Deploy & Test**: Use `npm run deploy` in any example to get a working system in minutes
-3. **Customize**: Modify example parameters to fit your specific requirements
-
-### Using Individual Constructs
-1. **Import Constructs**: Add `@cdklabs/appmod-catalog-blueprints` to your CDK project
-2. **Choose Your Layer**: Pick the right abstraction level for your needs
-3. **Configure**: Use the configuration options documented in each construct
-
-### Understanding the Layers
-
-**Foundation Layer** (`use-cases/framework/`, `use-cases/utilities/`)
-- **When to use**: Building custom solutions or need specific infrastructure components
-- **Components**: VPC networking, observability utilities, data management tools, etc.
-
-**Use Case Layer** (`use-cases/document-processing/`, `use-cases/webapp/`)
-- **When to use**: Need proven patterns for common business problems
-- **Components**: Document processing workflows, web application hosting, data transformation patterns, etc.
-
-**Example Layer** (`examples/`)
-- **When to use**: Want complete, deployable solutions
-- **Components**: Industry-specific configurations, end-to-end applications, reference implementations, etc.
 
 ## Contributing
 

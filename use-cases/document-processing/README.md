@@ -1,5 +1,9 @@
 # Document Processing
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/document-processing)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/document-processing/)
+[![Example](https://img.shields.io/badge/example-deploy-orange)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/example/document-processing/agentic-document-processing/)
+
 ## Overview
 
 The Document Processing L3 constructs provides a layered architectural approach for intelligent document processing workflows. The system offers multiple implementation levels to provide various functionality and enable users to customized at varying layers depending on their requirements - from abstract base classes to fully-featured agentic processing with tool integration.

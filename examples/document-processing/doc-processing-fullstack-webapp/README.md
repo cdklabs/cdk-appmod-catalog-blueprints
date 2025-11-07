@@ -1,5 +1,10 @@
 # Full-Stack Insurance Claims Processing Web Application
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/webapp)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/document-processing/doc-processing-fullstack-webapp/)
+[![Construct](https://img.shields.io/badge/construct-AgenticDocumentProcessing-blueviolet)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/document-processing/#agenticdocumentprocessing-construct)
+[![Construct](https://img.shields.io/badge/construct-Frontend-blueviolet)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/webapp/)
+
 ## Overview
 
 This example demonstrates a complete full-stack web application that provides a user-friendly interface for the [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) workflow with React frontend, API Gateway backend, and real-time status polling.

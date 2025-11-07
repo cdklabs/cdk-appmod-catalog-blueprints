@@ -1,5 +1,8 @@
 # Utilities
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/utilities)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/utilities/)
+
 Essential cross-cutting concerns and helper constructs that enhance functionality, security, and observability of AWS applications. All utilities follow AWS Well-Architected principles with built-in security, cost optimization, and operational excellence.
 
 ## [`Observability`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/utilities/observability)
