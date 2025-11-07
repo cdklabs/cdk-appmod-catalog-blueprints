@@ -1,5 +1,9 @@
 # Bedrock Document Processing
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/bedrock-document-processing)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/document-processing/#bedrockdocumentprocessing-construct)
+[![Package](https://img.shields.io/badge/construct-BedrockDocumentProcessing-blueviolet)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/document-processing/#bedrockdocumentprocessing-construct)
+
 ## Overview
 
 This example demonstrates AI-powered document processing using the [`BedrockDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/bedrock-document-processing.ts) construct with Amazon Bedrock foundation models for intelligent document classification and data extraction.

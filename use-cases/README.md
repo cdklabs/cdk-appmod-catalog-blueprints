@@ -1,22 +1,26 @@
 # Use Case Building Blocks
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/)
+[![Examples](https://img.shields.io/badge/examples-deploy-orange)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/)
+
 Use-case driven composable infrastructure constructs that accelerate serverless development and modernization on AWS. Each use case provides multiple implementation pathways with industry-specific examples.
 
 ## Core Use Cases
 
 | Use Case | Description | Quick Deploy Examples |
 |----------|-------------|----------------------|
-| **[Document Processing](./use-cases/document-processing/)** | AI-powered document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](./examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](./examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
-| **[Web Application](./use-cases/webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
+| **[Document Processing](./document-processing/)** | Intelligent document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](../examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](../examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](../examples/document-processing/doc-processing-fullstack-webapp/) |
+| **[Web Application](./webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](../examples/document-processing/doc-processing-fullstack-webapp/) |
 
-## Foundation & Utilities
+### Foundation and Utilities
 
 | Component | Description |
 |-----------|-------------|
-| **[Infrastructure Foundation](./framework/)** | Core infrastructure components including VPC networking, access logging, EventBridge integration, and standardized runtime configurations |
-| **[Observability & Monitoring](./utilities/)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
-| **[Data Masking](./utilities/)** | Lambda layer for PII protection with built-in patterns for SSN, credit cards, emails, and custom regex support |
-| **[Data Management](./utilities/)** | Database initialization utilities and automated IAM policy generation for Lambda functions |
+| **[Agentic AI Framework](./framework/agents/)** | Composable enterprise framework for building intelligent AI agents that can be mixed and matched across diverse use cases - from document processing to conversational AI |
+| **[Infrastructure Foundation](./framework/foundation/)** | Core infrastructure components including VPC networking, access logging, and EventBridge integration |
+| **[Observability & Monitoring](./utilities/#observability)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
+| **[Data Masking](./utilities/#data-masking)** | Lambda layer for data masking and PII protection in serverless applications |
 
 ## Using the Constructs
 

@@ -1,5 +1,8 @@
 # Ready-to-Deploy Examples
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/)
+
 Ready-to-deploy examples demonstrating the AppMod Catalog Blueprints. Each example is a complete CDK application that you can deploy immediately for evaluation or use as a starting point for your own implementation.
 
 ## Quick Start

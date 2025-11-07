@@ -1,5 +1,9 @@
 # Web Application
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/webapp)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/webapp/)
+[![Example](https://img.shields.io/badge/example-deploy-orange)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/document-processing/doc-processing-fullstack-webapp/)
+
 ## Overview
 
 The Web Application L3 construct provides a comprehensive solution for deploying static Web Application with global content delivery and enterprise-grade security. The system offers a streamlined approach to hosting modern Web Application, from simple static sites to complex Single Page Applications (SPAs).
