@@ -29,7 +29,7 @@ const FeatureList = [
     title: 'Accelerated Development',
     description: (
       <>
-        Deploy end-to-end production-ready solutions in minutes.
+        Deploy end-to-end well-architected solutions in minutes.
       </>
     ),
   },
@@ -71,7 +71,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--secondary button--lg"
-            href="https://construct-hub-testing.dev-tools.aws.dev/packages/@cdklabs/appmod-catalog-blueprints"
+            href="https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/"
             style={{marginLeft: '1rem'}}>
             API Reference
           </Link>
@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Deploy customizable production-ready applications in minutes">
+      description="Develop customizable well-architected applications on AWS in minutes">
       <HomepageHeader />
       <main>
         <section className={styles.features}>
