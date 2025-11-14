@@ -2,7 +2,7 @@ const {themes} = require('prism-react-renderer');
 
 const config = {
   title: 'AppMod Catalog Blueprints',
-  tagline: 'Deploy customizable production-ready applications in minutes.',
+  tagline: 'Deploy customizable well-architected applications on AWS in minutes.',
   url: 'https://cdklabs.github.io',
   baseUrl: '/cdk-appmod-catalog-blueprints/',
   onBrokenLinks: 'warn',
@@ -74,7 +74,7 @@ const config = {
           position: 'right',
         },
         {
-          href: 'https://construct-hub-testing.dev-tools.aws.dev/packages/@cdklabs/appmod-catalog-blueprints',
+          href: 'https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints',
           label: 'API Reference',
           position: 'right',
         },
