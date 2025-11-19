@@ -1915,6 +1915,7 @@ public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, p
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.useExistingVPCFromLookup">useExistingVPCFromLookup</a></code> | *No description.* |
 
 ---
 
@@ -1950,12 +1951,38 @@ Any object.
 
 ---
 
+##### `useExistingVPCFromLookup` <a name="useExistingVPCFromLookup" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.useExistingVPCFromLookup"></a>
+
+```typescript
+import { Network } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+Network.useExistingVPCFromLookup(scope: Construct, id: string, options: VpcLookupOptions)
+```
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.useExistingVPCFromLookup.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.useExistingVPCFromLookup.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+###### `options`<sup>Required</sup> <a name="options" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.useExistingVPCFromLookup.parameter.options"></a>
+
+- *Type:* aws-cdk-lib.aws_ec2.VpcLookupOptions
+
+---
+
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.Vpc</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | *No description.* |
 
 ---
 
@@ -1974,10 +2001,10 @@ The tree node.
 ##### `vpc`<sup>Required</sup> <a name="vpc" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.property.vpc"></a>
 
 ```typescript
-public readonly vpc: Vpc;
+public readonly vpc: IVpc;
 ```
 
-- *Type:* aws-cdk-lib.aws_ec2.Vpc
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
 
 ---
 
@@ -4158,6 +4185,7 @@ const networkProps: NetworkProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.existingVpc">existingVpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.ipAddresses">ipAddresses</a></code> | <code>aws-cdk-lib.aws_ec2.IIpAddresses</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.maxAzs">maxAzs</a></code> | <code>number</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.natGatewayProvider">natGatewayProvider</a></code> | <code>aws-cdk-lib.aws_ec2.NatProvider</code> | *No description.* |
@@ -4166,6 +4194,16 @@ const networkProps: NetworkProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.private">private</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.subnetConfiguration">subnetConfiguration</a></code> | <code>aws-cdk-lib.aws_ec2.SubnetConfiguration[]</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.vpcName">vpcName</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `existingVpc`<sup>Optional</sup> <a name="existingVpc" id="@cdklabs/cdk-appmod-catalog-blueprints.NetworkProps.property.existingVpc"></a>
+
+```typescript
+public readonly existingVpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
 
 ---
 
