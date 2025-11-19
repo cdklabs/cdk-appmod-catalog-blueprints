@@ -147,4 +147,31 @@ describe('Network', () => {
     const selection = network.applicationSubnetSelection();
     expect(selection.subnetType).toBe(SubnetType.PRIVATE_ISOLATED);
   });
+
+  test('uses existing VPC from lookup', () => {
+    const envStack = new Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const network = Network.useExistingVPCFromLookup(envStack, 'Network', {
+      vpcId: 'vpc-12345678',
+    });
+
+    expect(network.vpc).toBeDefined();
+    const template = Template.fromStack(envStack);
+    template.resourceCountIs('AWS::EC2::VPC', 0);
+  });
+
+  test('existing VPC works with createServiceEndpoint', () => {
+    const envStack = new Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const network = Network.useExistingVPCFromLookup(envStack, 'Network', {
+      vpcId: 'vpc-12345678',
+    });
+    network.createServiceEndpoint('Lambda', InterfaceVpcEndpointAwsService.LAMBDA);
+
+    const template = Template.fromStack(envStack);
+    template.resourceCountIs('AWS::EC2::VPCEndpoint', 1);
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 1);
+  });
 });

@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GatewayVpcEndpointAwsService, IIpAddresses, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, IpAddresses, IPeer, NatProvider, Peer, Port, SecurityGroup, SubnetConfiguration, SubnetSelection, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpointAwsService, IIpAddresses, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, IpAddresses, IPeer, IVpc, NatProvider, Peer, Port, SecurityGroup, SubnetConfiguration, SubnetSelection, SubnetType, Vpc, VpcLookupOptions } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export interface NetworkProps {
+  readonly existingVpc?: IVpc;
   readonly private?: boolean;
   readonly ipAddresses?: IIpAddresses;
   readonly natGatewayProvider?: NatProvider;
@@ -15,53 +16,65 @@ export interface NetworkProps {
 }
 
 export class Network extends Construct {
-  readonly vpc: Vpc;
+  public static useExistingVPCFromLookup(scope: Construct, id: string, options: VpcLookupOptions): Network {
+    const vpc = Vpc.fromLookup(scope, `${id}-existingVpc`, options);
+
+    return new Network(scope, id, {
+      existingVpc: vpc,
+    });
+  }
+
+  readonly vpc: IVpc;
   private readonly props: NetworkProps;
 
   constructor(scope: Construct, id: string, props: NetworkProps = {}) {
     super(scope, id);
     this.props = props;
 
-    if (props.private) {
-      this.vpc = new Vpc(this, 'VPC', {
-        ipAddresses: props.ipAddresses || IpAddresses.cidr('10.0.0.0/16'),
-        natGateways: 0,
-        maxAzs: props.maxAzs,
-        vpcName: props.vpcName,
-        subnetConfiguration: props.subnetConfiguration || [
-          {
-            name: 'Isolated',
-            subnetType: SubnetType.PRIVATE_ISOLATED,
-            cidrMask: 24,
-          },
-        ],
-      });
+    if (!props.existingVpc) {
+      if (props.private) {
+        this.vpc = new Vpc(this, 'VPC', {
+          ipAddresses: props.ipAddresses || IpAddresses.cidr('10.0.0.0/16'),
+          natGateways: 0,
+          maxAzs: props.maxAzs,
+          vpcName: props.vpcName,
+          subnetConfiguration: props.subnetConfiguration || [
+            {
+              name: 'Isolated',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+              cidrMask: 24,
+            },
+          ],
+        });
+      } else {
+        this.vpc = new Vpc(this, 'VPC', {
+          ipAddresses: props.ipAddresses || IpAddresses.cidr('10.0.0.0/16'),
+          natGatewayProvider: props.natGatewayProvider,
+          natGatewaySubnets: props.natGatewaySubnets,
+          natGateways: props.natGateways || 1,
+          maxAzs: props.maxAzs,
+          vpcName: props.vpcName,
+          subnetConfiguration: props.subnetConfiguration || [
+            {
+              name: 'Public',
+              subnetType: SubnetType.PUBLIC,
+              cidrMask: 24,
+            },
+            {
+              name: 'Private',
+              subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+              cidrMask: 24,
+            },
+            {
+              name: 'Isolated',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+              cidrMask: 24,
+            },
+          ],
+        });
+      }
     } else {
-      this.vpc = new Vpc(this, 'VPC', {
-        ipAddresses: props.ipAddresses || IpAddresses.cidr('10.0.0.0/16'),
-        natGatewayProvider: props.natGatewayProvider,
-        natGatewaySubnets: props.natGatewaySubnets,
-        natGateways: props.natGateways || 1,
-        maxAzs: props.maxAzs,
-        vpcName: props.vpcName,
-        subnetConfiguration: props.subnetConfiguration || [
-          {
-            name: 'Public',
-            subnetType: SubnetType.PUBLIC,
-            cidrMask: 24,
-          },
-          {
-            name: 'Private',
-            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-            cidrMask: 24,
-          },
-          {
-            name: 'Isolated',
-            subnetType: SubnetType.PRIVATE_ISOLATED,
-            cidrMask: 24,
-          },
-        ],
-      });
+      this.vpc = props.existingVpc;
     }
   }
 

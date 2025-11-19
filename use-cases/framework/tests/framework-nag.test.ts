@@ -68,6 +68,19 @@ describe('Framework CDK Nag Tests', () => {
       const errors = Annotations.fromStack(stack).findError('*', Match.stringLikeRegexp('AwsSolutions-.*'));
       expect(errors).toHaveLength(0);
     });
+
+    test('passes CDK Nag checks for existing VPC from lookup', () => {
+      const stack = new Stack(undefined, 'TestStack', {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
+      Network.useExistingVPCFromLookup(stack, 'Network', {
+        vpcId: 'vpc-12345678',
+      });
+
+      Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
+      const errors = Annotations.fromStack(stack).findError('*', Match.stringLikeRegexp('AwsSolutions-.*'));
+      expect(errors).toHaveLength(0);
+    });
   });
 
   describe('EventbridgeBroker', () => {
