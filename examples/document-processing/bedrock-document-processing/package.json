@@ -11,13 +11,13 @@
   },
   "devDependencies": {
     "@types/node": "^18",
-    "aws-cdk": "^2.192.0",
+    "aws-cdk": "^2.225.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@cdklabs/cdk-appmod-catalog-blueprints": "^1.0.0",
-    "aws-cdk-lib": "^2.218.0",
+    "@cdklabs/cdk-appmod-catalog-blueprints": "^1.4.0",
+    "aws-cdk-lib": "^2.225.0",
     "constructs": "^10.0.5",
     "source-map-support": "^0.5.21"
   }

@@ -29,7 +29,8 @@
     "use-cases/**/*.ts",
     "test/**/*.ts",
     ".projenrc.ts",
-    "projenrc/**/*.ts"
+    "projenrc/**/*.ts",
+    "examples/**/*.ts"
   ],
   "exclude": [
     "node_modules"
