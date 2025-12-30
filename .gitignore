@@ -38,6 +38,12 @@ cdk.out
 .Trashes
 ehthumbs.db
 Thumbs.db
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+**/resources/**/test_*.py
+**/resources/**/*_test.py
 *.d.ts
 *.js.map
 *.d.ts.map

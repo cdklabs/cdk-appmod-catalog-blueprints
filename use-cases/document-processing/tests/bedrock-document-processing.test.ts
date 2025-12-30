@@ -2,7 +2,7 @@ import { Duration, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { BedrockCrossRegionInferencePrefix } from '../../framework';
+import { BedrockCrossRegionInferencePrefix, DEFAULT_BEDROCK_MODEL } from '../../framework';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 
 describe('BedrockDocumentProcessing', () => {
@@ -104,7 +104,7 @@ describe('BedrockDocumentProcessing', () => {
       defaultTemplate.hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
-            MODEL_ID: 'anthropic.claude-sonnet-4-20250514-v1:0',
+            MODEL_ID: DEFAULT_BEDROCK_MODEL.modelId,
           },
         },
       });
@@ -124,7 +124,7 @@ describe('BedrockDocumentProcessing', () => {
       crossRegionTemplate.hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
-            MODEL_ID: 'eu.anthropic.claude-sonnet-4-20250514-v1:0',
+            MODEL_ID: `eu.${DEFAULT_BEDROCK_MODEL.modelId}`,
           },
         },
       });

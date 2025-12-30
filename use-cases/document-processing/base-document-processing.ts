@@ -8,7 +8,7 @@ import { InterfaceVpcEndpointAwsService } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CustomerManagedEncryptionConfiguration, DefinitionBody, JsonPath, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
-import { BedrockInvokeModel, DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem, LambdaInvoke, StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { BedrockInvokeModel, CallAwsService, DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem, LambdaInvoke, StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { IAdapter, QueuedS3Adapter } from './adapter';
 import { DefaultDocumentProcessingConfig } from './default-document-processing-config';
@@ -75,9 +75,10 @@ export interface BaseDocumentProcessingProps extends ObservableProps {
 
 /**
  * Union type for Step Functions tasks that can be used in document processing workflows.
- * Supports Bedrock model invocation, Lambda function invocation, and nested Step Functions execution.
+ * Supports Bedrock model invocation, Lambda function invocation, nested Step Functions execution,
+ * and AWS service calls (for AgentCore Runtime invocation).
  */
-export type DocumentProcessingStepType = BedrockInvokeModel | LambdaInvoke | StepFunctionsStartExecution;
+export type DocumentProcessingStepType = BedrockInvokeModel | LambdaInvoke | StepFunctionsStartExecution | CallAwsService;
 
 /**
  * Abstract base class for serverless document processing workflows.

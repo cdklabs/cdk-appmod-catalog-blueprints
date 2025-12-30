@@ -1,0 +1,41 @@
+{
+  "name": "agentcore-document-processing-example",
+  "version": "1.0.0",
+  "description": "Insurance claims processing example demonstrating BatchAgent with Lambda and AgentCore runtimes",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "deploy": "cdk deploy --all --require-approval never",
+    "deploy:lambda": "cdk deploy DocumentProcessingLambdaStack",
+    "deploy:agentcore-direct": "cdk deploy DocumentProcessingAgentCoreDirectStack",
+    "deploy:agentcore-container": "cdk deploy DocumentProcessingAgentCoreContainerStack",
+    "destroy": "cdk destroy --all",
+    "synth": "cdk synth"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "agentcore",
+    "lambda",
+    "bedrock",
+    "ai",
+    "agents",
+    "document-processing",
+    "insurance",
+    "claims"
+  ],
+  "author": "AWS",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "aws-cdk": "^2.218.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@cdklabs/cdk-appmod-catalog-blueprints": "file:../../..",
+    "aws-cdk-lib": "^2.218.0",
+    "constructs": "^10.0.5"
+  }
+}

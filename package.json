@@ -8,6 +8,7 @@
   "scripts": {
     "build": "npx projen build",
     "build:fast": "npx projen build:fast",
+    "build:no-test": "npx projen build:no-test",
     "bump": "npx projen bump",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
@@ -102,6 +103,7 @@
   "version": "0.0.0",
   "jest": {
     "coverageProvider": "v8",
+    "maxWorkers": "50%",
     "testMatch": [
       "<rootDir>/@(use-cases|test)/**/*(*.)@(spec|test).ts?(x)",
       "<rootDir>/@(use-cases|test)/**/__tests__/**/*.ts?(x)",
