@@ -95,9 +95,7 @@ export class DocumentProcessingAgentCoreDirectStack extends Stack {
           codeBucket: codeBucket.bucketName,
           codeKey: 'agents/agent-code.zip', // BucketDeployment creates this
           timeout: Duration.hours(2),
-          memorySize: 2048,
-          minCapacity: 1,
-          maxCapacity: 5,
+          memorySize: 2048
         },
       },
     });

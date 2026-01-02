@@ -120,8 +120,8 @@
  *    - AgentCore: ADOT dependencies and environment variables
  * 4. Adjust timeout and memory settings for longer execution
  * 5. Update Step Functions integration:
- *    - Lambda: LambdaInvoke task
- *    - AgentCore: CallAwsService task with bedrock-agentcore:InvokeAgentRuntime
+ *    - Lambda: LambdaInvoke task (supported)
+ *    - AgentCore: Not yet supported (Step Functions doesn't support bedrock-agentcore service)
  * 6. Test thoroughly in non-production environment
  *
  * ### Code Reuse Between Runtimes

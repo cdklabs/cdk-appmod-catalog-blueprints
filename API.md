@@ -3062,7 +3062,7 @@ public readonly removalPolicy: RemovalPolicy;
 ```
 
 - *Type:* aws-cdk-lib.RemovalPolicy
-- *Default:* RemovalPolicy.RETAIN
+- *Default:* RemovalPolicy.DESTROY
 
 Removal policy for the log group.
 

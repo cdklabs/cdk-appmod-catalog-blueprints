@@ -7,8 +7,8 @@ import { Grant, IGrantable, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { IChainable, JsonPath, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
-import { CallAwsService, LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { IChainable, TaskInput } from 'aws-cdk-lib/aws-stepfunctions';
+import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { LambdaObservabilityPropertyInjector, LogGroupDataProtectionProps, LogGroupDataProtectionUtils, ObservableProps } from '../../utilities';
 import { BedrockModelProps, BedrockModelUtils } from '../bedrock';
@@ -390,26 +390,25 @@ export abstract class BaseAgent extends Construct {
    * This method creates the appropriate Step Functions task based on the agent's
    * runtime type:
    * - Lambda Runtime: Creates a LambdaInvoke task that directly invokes the Lambda function
-   * - AgentCore Runtime: Creates a CallAwsService task that invokes the AgentCore Runtime API
+   * - AgentCore Runtime: NOT YET SUPPORTED - throws an error
    *
-   * For AgentCore runtime, this method automatically:
-   * - Uses the Step Functions execution ID as the AgentCore session ID for automatic tracking
-   * - Passes the entire Step Functions input as the payload to the agent
-   * - Configures IAM permissions for bedrock-agentcore:InvokeAgentRuntime
+   * **Important**: AWS Step Functions does not currently support the bedrock-agentcore service
+   * in CallAwsService tasks. AgentCore Runtime cannot be used with Step Functions at this time.
+   * Please use Lambda runtime for Step Functions integration.
    *
-   * AgentCore Session Management:
-   * The session ID is automatically set to the Step Functions execution ID (JsonPath.executionId),
-   * which provides unique session per Step Functions execution, automatic correlation between
-   * Step Functions and AgentCore sessions, and simplified debugging and tracing.
+   * For Lambda runtime, this method automatically:
+   * - Creates a LambdaInvoke task
+   * - Passes the specified payload to the Lambda function
+   * - Configures the result path for the task output
    *
    * Permissions:
    * For Lambda runtime, the Step Functions execution role will be granted lambda:InvokeFunction.
-   * For AgentCore runtime, the Step Functions execution role will be granted bedrock-agentcore:InvokeAgentRuntime.
    *
    * @param scope The construct scope for creating the task
    * @param id The construct ID for the task
    * @param props Task configuration properties
    * @returns Step Functions task (IChainable) for agent invocation
+   * @throws Error if AgentCore runtime is used (not yet supported by Step Functions)
    */
   public createStepFunctionsTask(
     scope: Construct,
@@ -430,35 +429,18 @@ export abstract class BaseAgent extends Construct {
         ...(props.resultSelector && { resultSelector: props.resultSelector }),
       });
     } else {
-      // AgentCore invocation via CallAwsService task
-      const agentCoreRuntime = this.runtime as AgentCoreAgentRuntime;
-
-      // Create AWS service call task to invoke AgentCore Runtime API
-      // Reference: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-invoke-agent.html
-      return new CallAwsService(scope, id, {
-        service: 'bedrock-agentcore',
-        action: 'invokeAgentRuntime',
-        parameters: {
-          // AgentCore Runtime ARN
-          'AgentRuntimeArn': agentCoreRuntime.agentCoreAgent.attrAgentRuntimeArn,
-          // AgentCore Runtime Endpoint ARN
-          'AgentRuntimeEndpointArn': agentCoreRuntime.agentCoreEndpoint.attrAgentRuntimeEndpointArn,
-          // Use Step Functions execution ID as session ID for automatic tracking
-          // This provides unique session per execution and enables correlation
-          'SessionId': JsonPath.executionId,
-          // Pass entire Step Functions input as payload
-          // The payload will be available to the agent code
-          'InputText.$': '$',
-        },
-        resultPath: resultPath,
-        ...(props.resultSelector && { resultSelector: props.resultSelector }),
-        // IAM permissions required for invoking AgentCore Runtime
-        iamResources: [
-          agentCoreRuntime.agentCoreAgent.attrAgentRuntimeArn,
-          agentCoreRuntime.agentCoreEndpoint.attrAgentRuntimeEndpointArn,
-        ],
-        iamAction: 'bedrock-agentcore:InvokeAgentRuntime',
-      });
+      // AgentCore Runtime is not yet supported in Step Functions
+      throw new Error(
+        '[UnsupportedRuntime] Step Functions integration with AgentCore Runtime is not yet supported.\n\n' +
+        'AWS Step Functions does not currently support the bedrock-agentcore service in CallAwsService tasks.\n' +
+        'Attempting to use bedrock-agentcore results in the error:\n' +
+        '  "SCHEMA_VALIDATION_FAILED: The resource provided arn:aws:states:::aws-sdk:bedrock-agentcore:invokeAgentRuntime is not recognized"\n\n' +
+        'Workarounds:\n' +
+        '  1. Use Lambda runtime instead of AgentCore runtime for Step Functions integration\n' +
+        '  2. Invoke AgentCore Runtime directly from Lambda functions (not through Step Functions)\n' +
+        '  3. Wait for AWS to add bedrock-agentcore support to Step Functions\n\n' +
+        'Monitor https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html for updates.',
+      );
     }
   }
 }

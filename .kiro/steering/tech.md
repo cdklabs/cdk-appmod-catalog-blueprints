@@ -13,6 +13,25 @@
 - **constructs**: v10.0.5 - CDK construct base classes
 - **@aws-cdk/aws-lambda-python-alpha**: v2.218.0-alpha.0 - Python Lambda support
 
+## Development Workflow
+
+### CRITICAL: Manual Build Process
+**After making any changes to source code in `use-cases/`, DO NOT automatically trigger recompile commands.**
+
+The user will manually run the build commands when ready:
+```bash
+npm run compile          # Compile TypeScript
+npm run package:js       # Package for JavaScript/TypeScript
+```
+
+This applies to all code changes including:
+- Construct implementations
+- Runtime configurations
+- Agent framework updates
+- Utility functions
+
+**Exception:** You may suggest the commands the user should run, but never execute them automatically.
+
 ## Testing & Quality
 
 - **Jest**: Unit testing framework with ts-jest

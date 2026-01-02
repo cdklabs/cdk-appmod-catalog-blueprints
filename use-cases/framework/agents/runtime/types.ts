@@ -354,7 +354,7 @@ export interface AgentCoreRuntimeConfig extends BaseRuntimeConfig {
  * 2. Adapt agent entrypoint (Lambda handler vs AgentCore @app.entrypoint)
  * 3. Update observability configuration (Powertools vs ADOT)
  * 4. Adjust timeout and memory settings for new runtime
- * 5. Update Step Functions integration (LambdaInvoke vs CallAwsService)
+ * 5. Update Step Functions integration (LambdaInvoke only - AgentCore not yet supported)
  * 6. Test thoroughly in non-production environment
  *
  * Cost Considerations:

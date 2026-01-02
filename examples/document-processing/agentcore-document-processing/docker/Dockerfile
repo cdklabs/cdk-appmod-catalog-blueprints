@@ -18,7 +18,7 @@ COPY --from=builder /opt/python /opt/python
 COPY agent-code/ ${LAMBDA_TASK_ROOT}/
 
 # Set Python path to include dependencies
-ENV PYTHONPATH="${LAMBDA_TASK_ROOT}:/opt/python:${PYTHONPATH}"
+ENV PYTHONPATH="${LAMBDA_TASK_ROOT}:/opt/python"
 
 # Set entrypoint for AgentCore
 # AgentCore will invoke the batch_agentcore.py module

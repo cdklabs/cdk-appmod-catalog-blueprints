@@ -6,13 +6,14 @@
 
 ## Overview
 
-This example demonstrates insurance claims processing using the `BatchAgent` construct with three different runtime configurations:
+This example demonstrates insurance claims processing using the `BatchAgent` construct with different runtime configurations:
 
 1. **Lambda Runtime** - Traditional Lambda functions (baseline)
-2. **AgentCore Runtime (DIRECT_CODE)** - ZIP-based deployment to S3
-3. **AgentCore Runtime (CONTAINER)** - Docker container deployment to ECR
+2. **AgentCore Runtime (CONTAINER)** - Docker container deployment to ECR
 
-All three implementations use the same agent logic and tools, showcasing how the AgentCore runtime enables longer execution times and more flexible deployment options compared to Lambda.
+> **Note**: AgentCore Runtime with DIRECT_CODE deployment (ZIP-based S3 deployment) is not yet fully supported and is commented out in the example. It will be available in a future release.
+
+Both implementations use the same agent logic and tools, showcasing how the AgentCore runtime enables longer execution times and more flexible deployment options compared to Lambda.
 
 **Use Case**: Insurance claims validation, policy verification, document cross-referencing
 
@@ -33,15 +34,16 @@ The agent automatically analyzes insurance claims by:
 - **Best For**: Short-duration tasks, event-driven workloads, cost-sensitive applications
 - **Limitations**: 15-minute timeout, 10GB memory limit
 
-### AgentCore Runtime (DIRECT_CODE)
+### AgentCore Runtime (DIRECT_CODE) - Coming Soon
 - **Max Execution Time**: 2 hours (configurable)
 - **Deployment**: ZIP archive uploaded to S3
 - **Best For**: Long-running tasks, Python-based agents, teams without Docker expertise
 - **Benefits**: Extended execution time, no Docker required
+- **Status**: Not yet fully supported - use CONTAINER deployment instead
 
 ### AgentCore Runtime (CONTAINER)
 - **Max Execution Time**: 4 hours (configurable)
-- **Deployment**: Docker container in ECR
+- **Deployment**: Docker container in ECR (ARM64 architecture required)
 - **Best For**: Complex dependencies, multi-language agents, production deployments
 - **Benefits**: Maximum flexibility, custom dependencies, reproducible builds
 
@@ -60,21 +62,22 @@ The agent automatically analyzes insurance claims by:
 - CDK CLI installed (`npm install -g aws-cdk`)
 - Node.js 18+
 - Amazon Bedrock model access (Claude 3.5 Sonnet)
-- Docker (for CONTAINER deployment only)
+- Docker (for CONTAINER deployment - must support ARM64/linux/arm64 builds)
 
-### Deploy All Stacks
+### Deploy Stacks
 ```bash
 cd examples/document-processing/agentcore-document-processing
 npm install
 npm run build
 
-# Deploy all three stacks
+# Deploy all available stacks
 npx cdk deploy --all --require-approval never
 
 # Or deploy individually
 npx cdk deploy DocumentProcessingLambdaStack
-npx cdk deploy DocumentProcessingAgentCoreDirectStack
 npx cdk deploy DocumentProcessingAgentCoreContainerStack
+
+# Note: DocumentProcessingAgentCoreDirectStack is commented out (not yet supported)
 ```
 
 ## Usage Example
@@ -115,15 +118,10 @@ aws lambda invoke \
 cat response.json
 ```
 
-#### AgentCore Runtime (DIRECT_CODE)
+#### AgentCore Runtime (DIRECT_CODE) - Not Yet Available
 ```bash
-RUNTIME_ARN=$(aws cloudformation describe-stacks \
-  --stack-name DocumentProcessingAgentCoreDirectStack \
-  --query 'Stacks[0].Outputs[?OutputKey==`AgentRuntimeArn`].OutputValue' \
-  --output text)
-
-# Invoke via AWS SDK or API
-# (AgentCore invocation API details depend on final implementation)
+# This deployment method is not yet supported
+# Use CONTAINER deployment instead
 ```
 
 #### AgentCore Runtime (CONTAINER)
@@ -213,22 +211,23 @@ new BatchAgent(this, 'Agent', {
 });
 ```
 
-### AgentCore Runtime (DIRECT_CODE)
+### AgentCore Runtime (DIRECT_CODE) - Coming Soon
 ```typescript
-new BatchAgent(this, 'Agent', {
-  agentName: 'InsuranceClaimsAgentCoreDirect',
-  // ... agent definition
-  runtime: {
-    type: AgentRuntimeType.AGENTCORE,
-    config: {
-      deploymentMethod: AgentCoreDeploymentMethod.DIRECT_CODE,
-      codeBucket: 'my-code-bucket',
-      codeKey: 'agents/agent-code.zip',
-      timeout: Duration.hours(2),
-      memorySize: 2048,
-    },
-  },
-});
+// Not yet supported - use CONTAINER deployment instead
+// new BatchAgent(this, 'Agent', {
+//   agentName: 'InsuranceClaimsAgentCoreDirect',
+//   // ... agent definition
+//   runtime: {
+//     type: AgentRuntimeType.AGENTCORE,
+//     config: {
+//       deploymentMethod: AgentCoreDeploymentMethod.DIRECT_CODE,
+//       codeBucket: 'my-code-bucket',
+//       codeKey: 'agents/agent-code.zip',
+//       timeout: Duration.hours(2),
+//       memorySize: 2048,
+//     },
+//   },
+// });
 ```
 
 ### AgentCore Runtime (CONTAINER)
@@ -289,7 +288,6 @@ npx cdk destroy --all
 
 # Or destroy individually
 npx cdk destroy DocumentProcessingLambdaStack
-npx cdk destroy DocumentProcessingAgentCoreDirectStack
 npx cdk destroy DocumentProcessingAgentCoreContainerStack
 ```
 

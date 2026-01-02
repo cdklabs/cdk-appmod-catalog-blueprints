@@ -34,7 +34,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@cdklabs/cdk-appmod-catalog-blueprints": "file:../../..",
+    "@cdklabs/cdk-appmod-catalog-blueprints": "file:../../../dist/js/cdk-appmod-catalog-blueprints@0.0.0.jsii.tgz",
     "aws-cdk-lib": "^2.218.0",
     "constructs": "^10.0.5"
   }

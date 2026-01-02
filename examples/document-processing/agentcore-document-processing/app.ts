@@ -17,13 +17,14 @@ new DocumentProcessingLambdaStack(app, 'DocumentProcessingLambdaStack', {
 });
 
 // AgentCore runtime with DIRECT_CODE deployment
-new DocumentProcessingAgentCoreDirectStack(app, 'DocumentProcessingAgentCoreDirectStack', {
-  description: 'Document Processing with AgentCore Runtime (DIRECT_CODE deployment)',
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
-});
+// NOTE: DIRECT_CODE deployment is not yet fully supported. Uncomment when available.
+// new DocumentProcessingAgentCoreDirectStack(app, 'DocumentProcessingAgentCoreDirectStack', {
+//   description: 'Document Processing with AgentCore Runtime (DIRECT_CODE deployment)',
+//   env: {
+//     account: process.env.CDK_DEFAULT_ACCOUNT,
+//     region: process.env.CDK_DEFAULT_REGION,
+//   },
+// });
 
 // AgentCore runtime with CONTAINER deployment
 new DocumentProcessingAgentCoreContainerStack(app, 'DocumentProcessingAgentCoreContainerStack', {

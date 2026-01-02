@@ -5,7 +5,7 @@ import { RemovalPolicy } from 'aws-cdk-lib';
 import { CfnRuntime, CfnRuntimeEndpoint } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { IVpc, SubnetSelection, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Grant, IGrantable, IRole, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { LogGroup, RetentionDays, ILogGroup } from 'aws-cdk-lib/aws-logs';
+import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 import { IBucket, Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { IAgentRuntime } from './runtime-interface';
@@ -78,7 +78,7 @@ export interface AgentCoreAgentRuntimeProps {
   /**
    * Removal policy for the log group
    *
-   * @default RemovalPolicy.RETAIN
+   * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
 }
@@ -102,7 +102,7 @@ export interface AgentCoreAgentRuntimeProps {
  *   - Full control over runtime environment
  *   - Support for any programming language
  *   - Custom system dependencies
- *   - ARM64 architecture required
+ *   - **REQUIRED: ARM64 architecture** (linux/arm64)
  *
  * Note: Direct code deployment (ZIP archive) may be supported in future versions.
  * Check AWS documentation for the latest deployment options.
@@ -154,7 +154,7 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
 
     // Create execution role for AgentCore
     this.executionRole = props.role || new Role(this, 'ExecutionRole', {
-      assumedBy: new ServicePrincipal('agentcore.amazonaws.com'),
+      assumedBy: new ServicePrincipal('bedrock-agentcore.amazonaws.com'),
       description: `Execution role for AgentCore runtime: ${props.agentName}`,
     });
 
@@ -169,11 +169,61 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
           '[InvalidRuntimeConfig] imageUri is required for CONTAINER deployment method',
         );
       }
+      
+      const imageUri = props.config.imageUri;
       agentRuntimeArtifact = {
         containerConfiguration: {
-          containerUri: props.config.imageUri,
+          containerUri: imageUri,
         },
       };
+
+      // Grant ECR permissions to pull the container image
+      // AgentCore validates these permissions during runtime creation
+      // All permissions must be in place before the CfnRuntime is created
+      
+      // GetAuthorizationToken always requires wildcard resource
+      this.executionRole.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['ecr:GetAuthorizationToken'],
+        resources: ['*'],
+      }));
+
+      // Grant permissions to pull images from ECR
+      // Extract repository ARN from image URI for specific permissions
+      // Format: <account>.dkr.ecr.<region>.amazonaws.com/<repository>:<tag>
+      const ecrMatch = imageUri.match(/^(\d+)\.dkr\.ecr\.([^.]+)\.amazonaws\.com\/([^:]+)/);
+      
+      if (ecrMatch) {
+        const [, accountId, region, repositoryName] = ecrMatch;
+        const repositoryArn = `arn:aws:ecr:${region}:${accountId}:repository/${repositoryName}`;
+        
+        this.executionRole.addToPrincipalPolicy(new PolicyStatement({
+          actions: [
+            'ecr:BatchGetImage',
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:DescribeImages',
+            'ecr:DescribeRepositories',
+          ],
+          resources: [repositoryArn],
+        }));
+      } else {
+        // Fallback to wildcard if we can't parse the URI
+        console.warn(
+          `Could not parse ECR repository from image URI: ${imageUri}. ` +
+          'Using wildcard permissions. For better security, ensure image URI follows format: ' +
+          '<account>.dkr.ecr.<region>.amazonaws.com/<repository>:<tag>',
+        );
+        this.executionRole.addToPrincipalPolicy(new PolicyStatement({
+          actions: [
+            'ecr:BatchGetImage',
+            'ecr:GetDownloadUrlForLayer',
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:DescribeImages',
+            'ecr:DescribeRepositories',
+          ],
+          resources: ['*'],
+        }));
+      }
     } else {
       // Direct code deployment using S3 ZIP archive
       // Note: As of the current CDK version, direct code deployment may not be fully supported
@@ -229,6 +279,8 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
     }
 
     // Create AgentCore agent runtime configuration
+    // Note: The execution role must have all necessary permissions before this point
+    // as BedrockAgentCore validates ECR access during runtime creation
     this.agentCoreAgent = new CfnRuntime(this, 'Runtime', {
       agentRuntimeName: props.agentName,
       roleArn: this.executionRole.roleArn,
@@ -237,24 +289,35 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
       description: props.instruction, // Use instruction as description
       environmentVariables: this.environmentVariables,
     });
+    
+    // Add explicit dependency to ensure role is fully created with all policies
+    // before the runtime attempts to validate ECR access
+    this.agentCoreAgent.node.addDependency(this.executionRole);
+
+    // Set invocation ARN from the runtime
+    this.invocationArn = this.agentCoreAgent.attrAgentRuntimeArn;
 
     // Create AgentCore runtime endpoint
     // The endpoint is required for invoking the agent runtime
+    // Must be created after the runtime to avoid circular dependencies
+    // Name must match pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$ (alphanumeric and underscore only)
     this.agentCoreEndpoint = new CfnRuntimeEndpoint(this, 'Endpoint', {
       agentRuntimeId: this.agentCoreAgent.attrAgentRuntimeId,
-      name: `${props.agentName}-endpoint`,
+      name: `${props.agentName}_endpoint`,
     });
+    
+    // Explicitly set dependency to ensure endpoint is created after runtime
+    this.agentCoreEndpoint.addDependency(this.agentCoreAgent);
 
-    this.invocationArn = this.agentCoreAgent.attrAgentRuntimeArn;
-
-    // Create log group for AgentCore agent runtime logs
     // AgentCore automatically creates logs at: /aws/bedrock-agentcore/runtimes/<runtime-id>-<endpoint-name>/runtime-logs
-    // This log group is for additional application logs if needed
-    this.logGroup = new LogGroup(this, 'LogGroup', {
-      logGroupName: `/aws/bedrock-agentcore/runtimes/${props.agentName}`,
-      removalPolicy: props.removalPolicy || RemovalPolicy.RETAIN,
-      retention: RetentionDays.ONE_WEEK,
-    });
+    // We don't create a custom log group to avoid conflicts with the automatically created one
+    // The logGroup property is left undefined to indicate logs are managed by AgentCore
+    this.logGroup = undefined;
+
+    // Apply removal policy to the runtime and endpoint
+    const removalPolicy = props.removalPolicy || RemovalPolicy.DESTROY;
+    this.agentCoreAgent.applyRemovalPolicy(removalPolicy);
+    this.agentCoreEndpoint.applyRemovalPolicy(removalPolicy);
 
     // Note: For observability, agent code should include ADOT dependencies:
     // - aws-opentelemetry-distro>=0.10.0
