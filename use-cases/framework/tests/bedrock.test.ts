@@ -1,12 +1,12 @@
 import { Stack } from 'aws-cdk-lib';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
-import { BedrockCrossRegionInferencePrefix, BedrockModelUtils } from '../bedrock/bedrock';
+import { BedrockCrossRegionInferencePrefix, BedrockModelUtils, DEFAULT_BEDROCK_MODEL } from '../bedrock/bedrock';
 
 describe('BedrockModelUtils', () => {
   let stack: Stack;
   const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
 
-  beforeEach(() => {
+  beforeAll(() => {
     stack = new Stack(undefined, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
@@ -44,7 +44,7 @@ describe('BedrockModelUtils', () => {
   test('deriveActualModelId uses default model when not specified', () => {
     const modelId = BedrockModelUtils.deriveActualModelId();
 
-    expect(modelId).toBe(FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0.modelId);
+    expect(modelId).toBe(DEFAULT_BEDROCK_MODEL.modelId);
   });
 
   test('generateModelIAMPermissions creates policy for foundation model', () => {

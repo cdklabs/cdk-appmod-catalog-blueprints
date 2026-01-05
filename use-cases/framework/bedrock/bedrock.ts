@@ -17,12 +17,19 @@ export enum BedrockCrossRegionInferencePrefix {
   EU = 'eu',
 }
 
+/**
+ * Default Bedrock foundation model used across the library.
+ *
+ * @default Claude Sonnet 4.5 (anthropic.claude-sonnet-4-5-20250929-v1:0)
+ */
+export const DEFAULT_BEDROCK_MODEL = new FoundationModelIdentifier('anthropic.claude-sonnet-4-5-20250929-v1:0');
+
 export interface BedrockModelProps {
   /**
-     * Foundation model to use
-     *
-     * @default FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0
-     */
+   * Foundation model to use
+   *
+   * @default DEFAULT_BEDROCK_MODEL (Claude Sonnet 4.5)
+   */
   readonly fmModelId?: FoundationModelIdentifier;
 
   /**
@@ -63,7 +70,7 @@ export class BedrockModelUtils {
   }
 
   private static deriveDefaults(props?: BedrockModelProps): Record<string, any> {
-    const fmModelId = props?.fmModelId || FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0;
+    const fmModelId = props?.fmModelId || DEFAULT_BEDROCK_MODEL;
     const crossRegionPrefix = props?.crossRegionInferencePrefix || BedrockCrossRegionInferencePrefix.US;
 
     return {

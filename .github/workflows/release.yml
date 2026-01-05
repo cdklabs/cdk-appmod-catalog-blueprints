@@ -28,6 +28,8 @@ jobs:
         run: |-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
@@ -109,6 +111,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -154,6 +158,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -201,6 +207,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -243,6 +251,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
