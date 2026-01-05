@@ -314,7 +314,7 @@ describe('AgenticDocumentProcessing', () => {
           AssumeRolePolicyDocument: {
             Statement: Match.arrayWith([
               Match.objectLike({
-                Principal: { Service: 'agentcore.amazonaws.com' },
+                Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
               }),
             ]),
           },

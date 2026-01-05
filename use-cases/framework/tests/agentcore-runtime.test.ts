@@ -9,25 +9,25 @@ import { AgentCoreAgentRuntime } from '../agents/runtime/agentcore-runtime';
 import { AgentRuntimeType, AgentCoreDeploymentMethod } from '../agents/runtime/types';
 
 describe('AgentCoreAgentRuntime', () => {
-  let containerStack: Stack;
+  let mainStack: Stack;
   let directCodeStack: Stack;
-  let methodsStack: Stack;
-  let vpcStack: Stack;
 
-  let containerTemplate: Template;
-  let methodsTemplate: Template;
-  let vpcTemplate: Template;
+  let mainTemplate: Template;
 
   let containerRuntime: AgentCoreAgentRuntime;
   let methodsRuntime: AgentCoreAgentRuntime;
   let customRoleRuntime: AgentCoreAgentRuntime;
+  // @ts-ignore - Variable is used to create resources in the stack
+  let vpcRuntime: AgentCoreAgentRuntime;
 
   beforeAll(() => {
-    // Container deployment stack - tests CONTAINER deployment method
-    containerStack = new Stack(undefined, 'ContainerStack', {
+    // Main stack - consolidates container, methods, and VPC tests into one stack
+    mainStack = new Stack(undefined, 'MainStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
-    containerRuntime = new AgentCoreAgentRuntime(containerStack, 'DefaultContainerRuntime', {
+
+    // Test 1: Basic container deployment
+    containerRuntime = new AgentCoreAgentRuntime(mainStack, 'DefaultContainerRuntime', {
       agentName: 'test-container-agent',
       foundationModel: 'anthropic.claude-v2',
       instruction: 'You are a helpful assistant',
@@ -36,7 +36,9 @@ describe('AgentCoreAgentRuntime', () => {
         imageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
       },
     });
-    new AgentCoreAgentRuntime(containerStack, 'CustomConfigRuntime', {
+
+    // Test 2: Custom configuration
+    new AgentCoreAgentRuntime(mainStack, 'CustomConfigRuntime', {
       agentName: 'custom-config-agent',
       foundationModel: 'anthropic.claude-v2',
       instruction: 'You are a specialized assistant',
@@ -50,10 +52,12 @@ describe('AgentCoreAgentRuntime', () => {
         DEBUG: 'true',
       },
     });
-    const customRole = new Role(containerStack, 'CustomRole', {
-      assumedBy: new ServicePrincipal('agentcore.amazonaws.com'),
+
+    // Test 3: Custom role
+    const customRole = new Role(mainStack, 'CustomRole', {
+      assumedBy: new ServicePrincipal('bedrock-agentcore.amazonaws.com'),
     });
-    customRoleRuntime = new AgentCoreAgentRuntime(containerStack, 'CustomRoleRuntime', {
+    customRoleRuntime = new AgentCoreAgentRuntime(mainStack, 'CustomRoleRuntime', {
       agentName: 'custom-role-agent',
       foundationModel: 'anthropic.claude-v2',
       instruction: 'You are an assistant with custom role',
@@ -63,25 +67,15 @@ describe('AgentCoreAgentRuntime', () => {
         imageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/role-agent:latest',
       },
     });
-    // Add policy to custom role for testing
     customRoleRuntime.addToRolePolicy(
       new PolicyStatement({
         actions: ['kms:Decrypt'],
         resources: ['*'],
       }),
     );
-    containerTemplate = Template.fromStack(containerStack);
 
-    // Direct code deployment stack - tests DIRECT_CODE deployment method (should throw error)
-    directCodeStack = new Stack(undefined, 'DirectCodeStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-
-    // Methods stack - tests runtime methods (grantInvoke, addEnvironment, addToRolePolicy)
-    methodsStack = new Stack(undefined, 'MethodsStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-    methodsRuntime = new AgentCoreAgentRuntime(methodsStack, 'MethodsRuntime', {
+    // Test 4: Methods testing (grantInvoke, addEnvironment, addToRolePolicy)
+    methodsRuntime = new AgentCoreAgentRuntime(mainStack, 'MethodsRuntime', {
       agentName: 'methods-agent',
       foundationModel: 'anthropic.claude-v2',
       instruction: 'You are a test assistant',
@@ -95,23 +89,20 @@ describe('AgentCoreAgentRuntime', () => {
       },
     });
 
-    // Test grantInvoke
-    const invokerRole = new Role(methodsStack, 'InvokerRole', {
+    const invokerRole = new Role(mainStack, 'InvokerRole', {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
-    const role2 = new Role(methodsStack, 'Role2', {
+    const role2 = new Role(mainStack, 'Role2', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
     methodsRuntime.grantInvoke(invokerRole);
     methodsRuntime.grantInvoke(role2);
 
-    // Test addEnvironment
     methodsRuntime.addEnvironment('MODEL_ID', 'anthropic.claude-v2');
     methodsRuntime.addEnvironment('TEMPERATURE', '0.7');
     methodsRuntime.addEnvironment('ADDED_VAR', 'added');
-    methodsRuntime.addEnvironment('DEBUG', 'true'); // Overwrite existing
+    methodsRuntime.addEnvironment('DEBUG', 'true');
 
-    // Test addToRolePolicy
     methodsRuntime.addToRolePolicy(
       new PolicyStatement({
         actions: ['s3:GetObject'],
@@ -131,14 +122,9 @@ describe('AgentCoreAgentRuntime', () => {
       }),
     );
 
-    methodsTemplate = Template.fromStack(methodsStack);
-
-    // VPC stack - tests VPC configuration (currently logs warning)
-    vpcStack = new Stack(undefined, 'VpcStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-    const vpc = new Vpc(vpcStack, 'Vpc');
-    new AgentCoreAgentRuntime(vpcStack, 'VpcRuntime', {
+    // Test 5: VPC configuration
+    const vpc = new Vpc(mainStack, 'Vpc');
+    vpcRuntime = new AgentCoreAgentRuntime(mainStack, 'VpcRuntime', {
       agentName: 'vpc-agent',
       foundationModel: 'anthropic.claude-v2',
       instruction: 'You are a VPC assistant',
@@ -151,12 +137,19 @@ describe('AgentCoreAgentRuntime', () => {
         vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       },
     });
-    vpcTemplate = Template.fromStack(vpcStack);
+
+    // Generate single template for all tests
+    mainTemplate = Template.fromStack(mainStack);
+
+    // Direct code deployment stack - only for error testing (no resources created)
+    directCodeStack = new Stack(undefined, 'DirectCodeStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
   });
 
   describe('Runtime Creation - CONTAINER Deployment', () => {
     test('creates AgentCore runtime with CONTAINER deployment', () => {
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         AgentRuntimeName: 'test-container-agent',
         AgentRuntimeArtifact: {
           ContainerConfiguration: {
@@ -167,7 +160,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('creates AgentCore runtime with PUBLIC network mode', () => {
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         NetworkConfiguration: {
           NetworkMode: 'PUBLIC',
         },
@@ -175,8 +168,8 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('creates AgentCore runtime endpoint', () => {
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
-        Name: 'test-container-agent-endpoint',
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+        Name: 'test-container-agent_endpoint',
         AgentRuntimeId: Match.objectLike({
           'Fn::GetAtt': Match.arrayWith([
             Match.stringLikeRegexp('DefaultContainerRuntime.*'),
@@ -186,15 +179,15 @@ describe('AgentCoreAgentRuntime', () => {
       });
     });
 
-    test('creates CloudWatch log group for AgentCore runtime', () => {
-      containerTemplate.hasResourceProperties('AWS::Logs::LogGroup', {
-        LogGroupName: '/aws/bedrock-agentcore/runtimes/test-container-agent',
-        RetentionInDays: 7,
-      });
+    test('does not create CloudWatch log group (managed by AgentCore)', () => {
+      // AgentCore automatically creates logs at: /aws/bedrock-agentcore/runtimes/<runtime-id>-<endpoint-name>/runtime-logs
+      // We don't create a custom log group to avoid conflicts
+      const logGroups = mainTemplate.findResources('AWS::Logs::LogGroup');
+      expect(Object.keys(logGroups).length).toBe(0);
     });
 
     test('creates AgentCore runtime with custom configuration', () => {
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         AgentRuntimeName: 'custom-config-agent',
         Description: 'You are a specialized assistant',
         EnvironmentVariables: Match.objectLike({
@@ -207,7 +200,7 @@ describe('AgentCoreAgentRuntime', () => {
     test('creates AgentCore runtime with provided IAM role', () => {
       expect(customRoleRuntime.executionRole).toBeDefined();
 
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         AgentRuntimeName: 'custom-role-agent',
         RoleArn: Match.objectLike({
           'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('CustomRole.*'), 'Arn']),
@@ -216,51 +209,58 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('creates expected number of AgentCore runtimes', () => {
-      const runtimes = containerTemplate.findResources('AWS::BedrockAgentCore::Runtime');
-      expect(Object.keys(runtimes).length).toBe(3); // DefaultContainerRuntime, CustomConfigRuntime, CustomRoleRuntime
+      const runtimes = mainTemplate.findResources('AWS::BedrockAgentCore::Runtime');
+      // Now we have 5 runtimes in one stack: DefaultContainerRuntime, CustomConfigRuntime, CustomRoleRuntime, MethodsRuntime, VpcRuntime
+      expect(Object.keys(runtimes).length).toBe(5);
     });
 
     test('creates expected number of AgentCore runtime endpoints', () => {
-      const endpoints = containerTemplate.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
-      expect(Object.keys(endpoints).length).toBe(3); // One endpoint per runtime
+      const endpoints = mainTemplate.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
+      // One endpoint per runtime
+      expect(Object.keys(endpoints).length).toBe(5);
     });
 
-    test('uses RETAIN removal policy by default', () => {
-      containerTemplate.hasResourceProperties('AWS::Logs::LogGroup', {
-        LogGroupName: '/aws/bedrock-agentcore/runtimes/test-container-agent',
-      });
-
-      // Check that the log group has RETAIN policy (default)
-      const logGroups = containerTemplate.findResources('AWS::Logs::LogGroup');
-      const testLogGroup = Object.values(logGroups).find(
-        (lg: any) => lg.Properties.LogGroupName === '/aws/bedrock-agentcore/runtimes/test-container-agent',
+    test('applies DESTROY removal policy by default to runtime and endpoint', () => {
+      // Check that runtime has DESTROY policy (default)
+      const runtimes = mainTemplate.findResources('AWS::BedrockAgentCore::Runtime');
+      const testRuntime = Object.values(runtimes).find(
+        (rt: any) => rt.Properties.AgentRuntimeName === 'test-container-agent',
       );
-      expect(testLogGroup).toBeDefined();
-      // RETAIN is the default, so DeletionPolicy should be RETAIN
-      expect((testLogGroup as any).DeletionPolicy).toBe('Retain');
+      expect(testRuntime).toBeDefined();
+      expect((testRuntime as any).DeletionPolicy).toBe('Delete');
+      expect((testRuntime as any).UpdateReplacePolicy).toBe('Delete');
+
+      // Check that endpoint has DESTROY policy
+      const endpoints = mainTemplate.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
+      const testEndpoint = Object.values(endpoints).find(
+        (ep: any) => ep.Properties.Name === 'test-container-agent_endpoint',
+      );
+      expect(testEndpoint).toBeDefined();
+      expect((testEndpoint as any).DeletionPolicy).toBe('Delete');
+      expect((testEndpoint as any).UpdateReplacePolicy).toBe('Delete');
     });
 
     test('applies custom removal policy when specified', () => {
       const stack = new Stack(undefined, 'RemovalPolicyStack');
-      new AgentCoreAgentRuntime(stack, 'DeleteRuntime', {
-        agentName: 'delete-agent',
+      new AgentCoreAgentRuntime(stack, 'RetainRuntime', {
+        agentName: 'retain-agent',
         foundationModel: 'anthropic.claude-v2',
         instruction: 'Test',
         config: {
           deploymentMethod: AgentCoreDeploymentMethod.CONTAINER,
           imageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/test:latest',
         },
-        removalPolicy: RemovalPolicy.DESTROY,
+        removalPolicy: RemovalPolicy.RETAIN,
       });
 
       const template = Template.fromStack(stack);
-      const logGroups = template.findResources('AWS::Logs::LogGroup');
-      const deleteLogGroup = Object.values(logGroups).find(
-        (lg: any) => lg.Properties.LogGroupName === '/aws/bedrock-agentcore/runtimes/delete-agent',
+      const runtimes = template.findResources('AWS::BedrockAgentCore::Runtime');
+      const retainRuntime = Object.values(runtimes).find(
+        (rt: any) => rt.Properties.AgentRuntimeName === 'retain-agent',
       );
-      expect(deleteLogGroup).toBeDefined();
-      expect((deleteLogGroup as any).UpdateReplacePolicy).toBe('Delete');
-      expect((deleteLogGroup as any).DeletionPolicy).toBe('Delete');
+      expect(retainRuntime).toBeDefined();
+      expect((retainRuntime as any).UpdateReplacePolicy).toBe('Retain');
+      expect((retainRuntime as any).DeletionPolicy).toBe('Retain');
     });
   });
 
@@ -377,7 +377,7 @@ describe('AgentCoreAgentRuntime', () => {
   describe('VPC Configuration', () => {
     test('creates AgentCore runtime with VPC configuration warning', () => {
       // VPC configuration currently logs a warning and uses PUBLIC mode
-      vpcTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         NetworkConfiguration: {
           NetworkMode: 'PUBLIC',
         },
@@ -385,7 +385,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('grants VPC permissions to execution role when VPC is provided', () => {
-      vpcTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -404,7 +404,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('creates VPC resources when network is provided', () => {
-      const vpcs = vpcTemplate.findResources('AWS::EC2::VPC');
+      const vpcs = mainTemplate.findResources('AWS::EC2::VPC');
       expect(Object.keys(vpcs).length).toBeGreaterThan(0);
     });
   });
@@ -425,8 +425,10 @@ describe('AgentCoreAgentRuntime', () => {
       expect(typeof containerRuntime.invocationArn).toBe('string');
     });
 
-    test('exposes log group', () => {
-      expect(containerRuntime.logGroup).toBeDefined();
+    test('exposes log group as undefined (managed by AgentCore)', () => {
+      // AgentCore automatically creates and manages logs
+      // The logGroup property is undefined to indicate logs are managed by AgentCore
+      expect(containerRuntime.logGroup).toBeUndefined();
     });
 
     test('exposes underlying AgentCore runtime', () => {
@@ -441,7 +443,7 @@ describe('AgentCoreAgentRuntime', () => {
   describe('grantInvoke()', () => {
     test('grants bedrock-agentcore:InvokeAgentRuntime permission to grantee', () => {
       // Check that InvokerRole has a policy with bedrock-agentcore:InvokeAgentRuntime
-      const policies = methodsTemplate.findResources('AWS::IAM::Policy');
+      const policies = mainTemplate.findResources('AWS::IAM::Policy');
       const invokerPolicy = Object.values(policies).find((policy: any) => {
         return (
           policy.Properties.Roles &&
@@ -460,7 +462,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('grants invoke permission with both runtime and endpoint ARNs', () => {
-      const policies = methodsTemplate.findResources('AWS::IAM::Policy');
+      const policies = mainTemplate.findResources('AWS::IAM::Policy');
       const invokerPolicy = Object.values(policies).find((policy: any) =>
         policy.Properties.Roles?.some((role: any) => role.Ref?.includes('InvokerRole')),
       );
@@ -479,7 +481,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('grants invoke permission to multiple grantees', () => {
-      const policies = methodsTemplate.findResources('AWS::IAM::Policy');
+      const policies = mainTemplate.findResources('AWS::IAM::Policy');
 
       // Check that both InvokerRole and Role2 have policies
       const invokerPolicy = Object.values(policies).find((policy: any) =>
@@ -503,7 +505,7 @@ describe('AgentCoreAgentRuntime', () => {
 
   describe('addEnvironment()', () => {
     test('environment variables are included in runtime configuration', () => {
-      methodsTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         EnvironmentVariables: Match.objectLike({
           INITIAL_VAR: 'initial',
           DEBUG: 'true',
@@ -517,7 +519,7 @@ describe('AgentCoreAgentRuntime', () => {
 
   describe('addToRolePolicy()', () => {
     test('adds IAM policy statement to execution role', () => {
-      methodsTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -531,7 +533,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('adds multiple IAM policy statements', () => {
-      methodsTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -552,7 +554,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('attaches policy to correct execution role', () => {
-      methodsTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -569,7 +571,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('policy statements are attached to provided custom role', () => {
-      containerTemplate.hasResourceProperties('AWS::IAM::Policy', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -588,14 +590,14 @@ describe('AgentCoreAgentRuntime', () => {
 
   describe('IAM Role Configuration', () => {
     test('creates execution role with AgentCore service principal', () => {
-      containerTemplate.hasResourceProperties('AWS::IAM::Role', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: 'agentcore.amazonaws.com',
+                Service: 'bedrock-agentcore.amazonaws.com',
               },
             }),
           ]),
@@ -604,7 +606,7 @@ describe('AgentCoreAgentRuntime', () => {
     });
 
     test('execution role has description', () => {
-      containerTemplate.hasResourceProperties('AWS::IAM::Role', {
+      mainTemplate.hasResourceProperties('AWS::IAM::Role', {
         Description: Match.stringLikeRegexp('Execution role for AgentCore runtime:.*'),
       });
     });
@@ -613,7 +615,7 @@ describe('AgentCoreAgentRuntime', () => {
       expect(customRoleRuntime.executionRole).toBeDefined();
 
       // Verify the custom role is used
-      containerTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      mainTemplate.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
         AgentRuntimeName: 'custom-role-agent',
         RoleArn: Match.objectLike({
           'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('CustomRole.*'), 'Arn']),

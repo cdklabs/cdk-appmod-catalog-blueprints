@@ -59,10 +59,12 @@ describe('QueuedS3Adapter', () => {
   let customBucketStack: Stack;
   let customPrefixStack: Stack;
   let customQueueStack: Stack;
+  let removalStack: Stack;
   let defaultTemplate: Template;
   let customBucketTemplate: Template;
   let customPrefixTemplate: Template;
   let customQueueTemplate: Template;
+  let removalTemplate: Template;
 
   beforeAll(() => {
     defaultStack = new Stack();
@@ -106,10 +108,19 @@ describe('QueuedS3Adapter', () => {
     });
     customQueueConstruct.createStateMachine();
 
+    removalStack = new Stack();
+    const removalAdapter = new QueuedS3Adapter();
+    const removalConstruct = new TestDocumentProcessing(removalStack, 'RemovalTest', {
+      ingressAdapter: removalAdapter,
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+    removalConstruct.createStateMachine();
+
     defaultTemplate = Template.fromStack(defaultStack);
     customBucketTemplate = Template.fromStack(customBucketStack);
     customPrefixTemplate = Template.fromStack(customPrefixStack);
     customQueueTemplate = Template.fromStack(customQueueStack);
+    removalTemplate = Template.fromStack(removalStack);
   });
 
   describe('S3 bucket configuration', () => {
@@ -292,16 +303,7 @@ describe('QueuedS3Adapter', () => {
 
   describe('Removal policy', () => {
     test('applies removal policy to resources', () => {
-      const stack = new Stack();
-      const adapter = new QueuedS3Adapter();
-      const construct = new TestDocumentProcessing(stack, 'RemovalTest', {
-        ingressAdapter: adapter,
-        removalPolicy: RemovalPolicy.RETAIN,
-      });
-      construct.createStateMachine();
-      const template = Template.fromStack(stack);
-
-      template.hasResource('AWS::SQS::Queue', {
+      removalTemplate.hasResource('AWS::SQS::Queue', {
         DeletionPolicy: 'Retain',
         UpdateReplacePolicy: 'Retain',
       });

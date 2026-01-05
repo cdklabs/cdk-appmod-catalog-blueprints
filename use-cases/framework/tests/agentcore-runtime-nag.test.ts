@@ -24,6 +24,19 @@ describe('AgentCoreAgentRuntime CDK Nag', () => {
       },
     });
 
+    // Suppress ECR GetAuthorizationToken wildcard requirement
+    NagSuppressions.addResourceSuppressions(
+      stack,
+      [
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'ECR GetAuthorizationToken requires wildcard resource by AWS design - see https://docs.aws.amazon.com/AmazonECR/latest/userguide/security_iam_id-based-policy-examples.html',
+          appliesTo: ['Resource::*'],
+        },
+      ],
+      true,
+    );
+
     Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
 
     const warnings = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('AwsSolutions-.*'));
@@ -60,6 +73,19 @@ describe('AgentCoreAgentRuntime CDK Nag', () => {
         TEMPERATURE: '0.7',
       },
     });
+
+    // Suppress ECR GetAuthorizationToken wildcard requirement
+    NagSuppressions.addResourceSuppressions(
+      stack,
+      [
+        {
+          id: 'AwsSolutions-IAM5',
+          reason: 'ECR GetAuthorizationToken requires wildcard resource by AWS design - see https://docs.aws.amazon.com/AmazonECR/latest/userguide/security_iam_id-based-policy-examples.html',
+          appliesTo: ['Resource::*'],
+        },
+      ],
+      true,
+    );
 
     Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
 

@@ -169,7 +169,7 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
           '[InvalidRuntimeConfig] imageUri is required for CONTAINER deployment method',
         );
       }
-      
+
       const imageUri = props.config.imageUri;
       agentRuntimeArtifact = {
         containerConfiguration: {
@@ -180,7 +180,7 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
       // Grant ECR permissions to pull the container image
       // AgentCore validates these permissions during runtime creation
       // All permissions must be in place before the CfnRuntime is created
-      
+
       // GetAuthorizationToken always requires wildcard resource
       this.executionRole.addToPrincipalPolicy(new PolicyStatement({
         actions: ['ecr:GetAuthorizationToken'],
@@ -191,11 +191,11 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
       // Extract repository ARN from image URI for specific permissions
       // Format: <account>.dkr.ecr.<region>.amazonaws.com/<repository>:<tag>
       const ecrMatch = imageUri.match(/^(\d+)\.dkr\.ecr\.([^.]+)\.amazonaws\.com\/([^:]+)/);
-      
+
       if (ecrMatch) {
         const [, accountId, region, repositoryName] = ecrMatch;
         const repositoryArn = `arn:aws:ecr:${region}:${accountId}:repository/${repositoryName}`;
-        
+
         this.executionRole.addToPrincipalPolicy(new PolicyStatement({
           actions: [
             'ecr:BatchGetImage',
@@ -289,7 +289,7 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
       description: props.instruction, // Use instruction as description
       environmentVariables: this.environmentVariables,
     });
-    
+
     // Add explicit dependency to ensure role is fully created with all policies
     // before the runtime attempts to validate ECR access
     this.agentCoreAgent.node.addDependency(this.executionRole);
@@ -305,7 +305,7 @@ export class AgentCoreAgentRuntime extends Construct implements IAgentRuntime {
       agentRuntimeId: this.agentCoreAgent.attrAgentRuntimeId,
       name: `${props.agentName}_endpoint`,
     });
-    
+
     // Explicitly set dependency to ensure endpoint is created after runtime
     this.agentCoreEndpoint.addDependency(this.agentCoreAgent);
 

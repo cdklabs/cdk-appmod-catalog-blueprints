@@ -282,12 +282,12 @@ describe('BatchAgent', () => {
       });
     });
 
-    test('creates IAM role with agentcore.amazonaws.com service principal', () => {
+    test('creates IAM role with bedrock-agentcore.amazonaws.com service principal', () => {
       agentCoreTemplate.hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
-              Principal: { Service: 'agentcore.amazonaws.com' },
+              Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
             }),
           ]),
         },

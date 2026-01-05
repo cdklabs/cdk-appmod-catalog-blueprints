@@ -236,7 +236,7 @@ AgentCore currently supports container-based deployment:
   - Full control over runtime environment
   - Support for any programming language
   - Custom system dependencies
-  - ARM64 architecture required
+  - **REQUIRED: ARM64 architecture** (linux/arm64)
 
 Note: Direct code deployment (ZIP archive) may be supported in future versions.
 Check AWS documentation for the latest deployment options.

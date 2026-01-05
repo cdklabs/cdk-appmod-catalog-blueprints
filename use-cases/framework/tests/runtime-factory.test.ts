@@ -192,7 +192,8 @@ describe('AgentRuntimeFactory', () => {
     test('AgentCore runtime has correct properties', () => {
       expect(agentCoreRuntime.executionRole).toBeDefined();
       expect(agentCoreRuntime.invocationArn).toBeDefined();
-      expect(agentCoreRuntime.logGroup).toBeDefined();
+      // logGroup is undefined for AgentCore (managed by AgentCore service)
+      expect(agentCoreRuntime.logGroup).toBeUndefined();
     });
 
     test('creates AgentCore runtime resource', () => {
@@ -231,7 +232,7 @@ describe('AgentRuntimeFactory', () => {
               Action: 'sts:AssumeRole',
               Effect: 'Allow',
               Principal: {
-                Service: 'agentcore.amazonaws.com',
+                Service: 'bedrock-agentcore.amazonaws.com',
               },
             },
           ],
@@ -243,10 +244,11 @@ describe('AgentRuntimeFactory', () => {
       agentCoreTemplate.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
     });
 
-    test('creates CloudWatch log group', () => {
-      agentCoreTemplate.hasResourceProperties('AWS::Logs::LogGroup', {
-        LogGroupName: '/aws/bedrock-agentcore/runtimes/test-agentcore-agent',
-      });
+    test('does not create CloudWatch log group (managed by AgentCore)', () => {
+      // AgentCore automatically creates and manages logs
+      // No log group should be created by the construct
+      const logGroups = agentCoreTemplate.findResources('AWS::Logs::LogGroup');
+      expect(Object.keys(logGroups).length).toBe(0);
     });
   });
 
