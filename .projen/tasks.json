@@ -48,6 +48,27 @@
         }
       ]
     },
+    "build:no-test": {
+      "name": "build:no-test",
+      "description": "Build and package without running tests",
+      "steps": [
+        {
+          "spawn": "default"
+        },
+        {
+          "spawn": "pre-compile"
+        },
+        {
+          "spawn": "compile"
+        },
+        {
+          "spawn": "post-compile"
+        },
+        {
+          "spawn": "package:js"
+        }
+      ]
+    },
     "bump": {
       "name": "bump",
       "description": "Bumps version based on latest git tag and generates a changelog entry",

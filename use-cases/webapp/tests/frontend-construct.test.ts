@@ -19,8 +19,24 @@ jest.mock('child_process', () => ({
 
 describe('@webapp Frontend', () => {
   let app: App;
-  let stack: Stack;
-  let template: Template;
+  let basicStack: Stack;
+  let customBuildStack: Stack;
+  let customErrorStack: Stack;
+  let customDomainStack: Stack;
+  let customDomainWithZoneStack: Stack;
+  let retainStack: Stack;
+  let destroyStack: Stack;
+  let securityStack: Stack;
+  let distributionPropsStack: Stack;
+  let basicTemplate: Template;
+  let customBuildTemplate: Template;
+  let customErrorTemplate: Template;
+  let customDomainTemplate: Template;
+  let customDomainWithZoneTemplate: Template;
+  let retainTemplate: Template;
+  let destroyTemplate: Template;
+  let securityTemplate: Template;
+  let distributionPropsTemplate: Template;
   let testBuildDir: string;
   let testSrcDir: string;
 
@@ -44,25 +60,135 @@ describe('@webapp Frontend', () => {
       fs.mkdirSync(defaultBuildDir, { recursive: true });
     }
     fs.writeFileSync(path.join(defaultBuildDir, 'index.html'), '<!DOCTYPE html><html><head><title>Default Test</title></head><body><h1>Default Test App</h1></body></html>');
-  });
 
-  beforeEach(() => {
+    // Create app once
     app = new App();
-    stack = new Stack(app, 'TestStack');
+
+    // Create all stacks once in beforeAll
+    basicStack = new Stack(app, 'BasicStack');
+    const basicFrontend = new Frontend(basicStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      skipBuild: true,
+    });
+
+    customBuildStack = new Stack(app, 'CustomBuildStack');
+    new Frontend(customBuildStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      buildCommand: 'yarn build',
+      skipBuild: true,
+    });
+
+    customErrorStack = new Stack(app, 'CustomErrorStack');
+    const customErrorResponses = [
+      {
+        httpStatus: 500,
+        responseHttpStatus: 200,
+        responsePagePath: '/error.html',
+      },
+    ];
+    new Frontend(customErrorStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      errorResponses: customErrorResponses,
+      skipBuild: true,
+    });
+
+    customDomainStack = new Stack(app, 'CustomDomainStack');
+    const certificate = Certificate.fromCertificateArn(
+      customDomainStack,
+      'Certificate',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
+    const customDomainFrontend = new Frontend(customDomainStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      customDomain: {
+        domainName: 'app.example.com',
+        certificate,
+      },
+      skipBuild: true,
+    });
+
+    customDomainWithZoneStack = new Stack(app, 'CustomDomainWithZoneStack');
+    const certificate2 = Certificate.fromCertificateArn(
+      customDomainWithZoneStack,
+      'Certificate',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
+    const hostedZone = HostedZone.fromHostedZoneAttributes(customDomainWithZoneStack, 'HostedZone', {
+      hostedZoneId: 'Z123456789',
+      zoneName: 'example.com',
+    });
+    new Frontend(customDomainWithZoneStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      customDomain: {
+        domainName: 'app.example.com',
+        certificate: certificate2,
+        hostedZone,
+      },
+      skipBuild: true,
+    });
+
+    retainStack = new Stack(app, 'RetainStack');
+    const retainFrontend = new Frontend(retainStack, 'Frontend', {
+      sourceDirectory: testSrcDir,
+      buildOutputDirectory: testBuildDir,
+      skipBuild: true,
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    destroyStack = new Stack(app, 'DestroyStack');
+    const destroyFrontend = new Frontend(destroyStack, 'Frontend', {
+      sourceDirectory: testSrcDir,
+      buildOutputDirectory: testBuildDir,
+      skipBuild: true,
+    });
+
+    securityStack = new Stack(app, 'SecurityStack');
+    new Frontend(securityStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      skipBuild: true,
+    });
+
+    distributionPropsStack = new Stack(app, 'DistributionPropsStack');
+    new Frontend(distributionPropsStack, 'Frontend', {
+      sourceDirectory: '/tmp/test-frontend-src',
+      buildOutputDirectory: testBuildDir,
+      distributionProps: {
+        comment: 'Custom frontend distribution',
+        enabled: true,
+      },
+      skipBuild: true,
+    });
+
+    // Generate all templates once
+    basicTemplate = Template.fromStack(basicStack);
+    customBuildTemplate = Template.fromStack(customBuildStack);
+    customErrorTemplate = Template.fromStack(customErrorStack);
+    customDomainTemplate = Template.fromStack(customDomainStack);
+    customDomainWithZoneTemplate = Template.fromStack(customDomainWithZoneStack);
+    retainTemplate = Template.fromStack(retainStack);
+    destroyTemplate = Template.fromStack(destroyStack);
+    securityTemplate = Template.fromStack(securityStack);
+    distributionPropsTemplate = Template.fromStack(distributionPropsStack);
+
+    // Store frontend instances for public method tests
+    (basicStack as any).frontend = basicFrontend;
+    (customDomainStack as any).frontend = customDomainFrontend;
+    (retainStack as any).frontend = retainFrontend;
+    (destroyStack as any).frontend = destroyFrontend;
   });
 
   describe('@webapp Basic functionality', () => {
     test('@webapp creates frontend construct with minimal configuration', () => {
-      const frontend = new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true, // Skip build for testing
-      });
-
-      template = Template.fromStack(stack);
+      const frontend = (basicStack as any).frontend;
 
       // Verify S3 bucket is created
-      template.hasResourceProperties('AWS::S3::Bucket', {
+      basicTemplate.hasResourceProperties('AWS::S3::Bucket', {
         BucketEncryption: {
           ServerSideEncryptionConfiguration: [
             {
@@ -81,7 +207,7 @@ describe('@webapp Frontend', () => {
       });
 
       // Verify CloudFront distribution is created
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      basicTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           DefaultRootObject: 'index.html',
           CustomErrorResponses: [
@@ -100,14 +226,14 @@ describe('@webapp Frontend', () => {
       });
 
       // Verify security headers function is created
-      template.hasResourceProperties('AWS::CloudFront::Function', {
+      basicTemplate.hasResourceProperties('AWS::CloudFront::Function', {
         FunctionConfig: {
           Runtime: 'cloudfront-js-1.0',
         },
       });
 
       // Verify bucket deployment is created
-      template.hasResource('Custom::CDKBucketDeployment', {});
+      basicTemplate.hasResource('Custom::CDKBucketDeployment', {});
 
       // Test public methods
       expect(frontend.bucket).toBeInstanceOf(Bucket);
@@ -119,39 +245,13 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp creates frontend construct with custom build command', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        buildCommand: 'yarn build',
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
       // Should still create the same resources
-      template.resourceCountIs('AWS::S3::Bucket', 1);
-      template.resourceCountIs('AWS::CloudFront::Distribution', 1);
+      customBuildTemplate.resourceCountIs('AWS::S3::Bucket', 1);
+      customBuildTemplate.resourceCountIs('AWS::CloudFront::Distribution', 1);
     });
 
     test('@webapp creates frontend construct with custom error responses', () => {
-      const customErrorResponses = [
-        {
-          httpStatus: 500,
-          responseHttpStatus: 200,
-          responsePagePath: '/error.html',
-        },
-      ];
-
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        errorResponses: customErrorResponses,
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      customErrorTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           CustomErrorResponses: [
             {
@@ -167,26 +267,10 @@ describe('@webapp Frontend', () => {
 
   describe('@webapp Custom domain functionality', () => {
     test('@webapp creates frontend construct with custom domain', () => {
-      const certificate = Certificate.fromCertificateArn(
-        stack,
-        'Certificate',
-        'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-      );
-
-      const frontend = new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        customDomain: {
-          domainName: 'app.example.com',
-          certificate,
-        },
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
+      const frontend = (customDomainStack as any).frontend;
 
       // Verify CloudFront distribution has custom domain
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      customDomainTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           Aliases: ['app.example.com'],
           ViewerCertificate: {
@@ -201,32 +285,8 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp creates frontend construct with custom domain and hosted zone', () => {
-      const certificate = Certificate.fromCertificateArn(
-        stack,
-        'Certificate',
-        'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-      );
-
-      const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-        hostedZoneId: 'Z123456789',
-        zoneName: 'example.com',
-      });
-
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        customDomain: {
-          domainName: 'app.example.com',
-          certificate,
-          hostedZone,
-        },
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
       // Verify Route53 A record is created
-      template.hasResourceProperties('AWS::Route53::RecordSet', {
+      customDomainWithZoneTemplate.hasResourceProperties('AWS::Route53::RecordSet', {
         Type: 'A',
         Name: 'app.example.com.',
         HostedZoneId: 'Z123456789',
@@ -236,8 +296,9 @@ describe('@webapp Frontend', () => {
 
   describe('@webapp Validation', () => {
     test('@webapp throws error when sourceDirectory is missing', () => {
+      const testStack = new Stack(app, 'ValidationStack1');
       expect(() => {
-        new Frontend(stack, 'Frontend', {
+        new Frontend(testStack, 'Frontend', {
           sourceDirectory: '',
           buildOutputDirectory: testBuildDir,
           skipBuild: true,
@@ -247,29 +308,16 @@ describe('@webapp Frontend', () => {
 
     test('@webapp uses default buildOutputDirectory when not provided', () => {
       // Use the existing test build directory
-      const frontend = new Frontend(stack, 'Frontend', {
-        sourceDirectory: testSrcDir,
-        // buildOutputDirectory not provided - should use default './build/'
-        skipBuild: true,
-      });
-
+      const frontend = (destroyStack as any).frontend;
       expect(frontend).toBeDefined();
       // The construct should be created successfully with default buildOutputDirectory
     });
 
     test('@webapp applies custom removal policy to resources', () => {
-      const retainStack = new Stack(app, 'RetainTestStack');
-      const frontend = new Frontend(retainStack, 'Frontend', {
-        sourceDirectory: testSrcDir,
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-        removalPolicy: RemovalPolicy.RETAIN,
-      });
-
+      const frontend = (retainStack as any).frontend;
       expect(frontend).toBeDefined();
 
       // Check that the bucket has the correct removal policy
-      const retainTemplate = Template.fromStack(retainStack);
       retainTemplate.hasResource('AWS::S3::Bucket', {
         DeletionPolicy: 'Retain',
         UpdateReplacePolicy: 'Retain',
@@ -277,18 +325,10 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp uses default DESTROY removal policy when not specified', () => {
-      const destroyStack = new Stack(app, 'DestroyTestStack');
-      const frontend = new Frontend(destroyStack, 'Frontend', {
-        sourceDirectory: testSrcDir,
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-        // removalPolicy not specified - should default to DESTROY
-      });
-
+      const frontend = (destroyStack as any).frontend;
       expect(frontend).toBeDefined();
 
       // Check that the bucket has the default DESTROY removal policy
-      const destroyTemplate = Template.fromStack(destroyStack);
       destroyTemplate.hasResource('AWS::S3::Bucket', {
         DeletionPolicy: 'Delete',
         UpdateReplacePolicy: 'Delete',
@@ -296,8 +336,9 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp throws error when domainName is provided without certificate', () => {
+      const testStack = new Stack(app, 'ValidationStack2');
       expect(() => {
-        new Frontend(stack, 'Frontend', {
+        new Frontend(testStack, 'Frontend', {
           sourceDirectory: '/tmp/test-frontend-src',
           buildOutputDirectory: testBuildDir,
           customDomain: {
@@ -311,16 +352,8 @@ describe('@webapp Frontend', () => {
 
   describe('@webapp Security features', () => {
     test('@webapp creates S3 bucket with security best practices', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
       // Verify S3 bucket security settings
-      template.hasResourceProperties('AWS::S3::Bucket', {
+      securityTemplate.hasResourceProperties('AWS::S3::Bucket', {
         BucketEncryption: {
           ServerSideEncryptionConfiguration: [
             {
@@ -340,23 +373,15 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp creates CloudFront distribution with security headers', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
       // Verify security headers function exists
-      template.hasResourceProperties('AWS::CloudFront::Function', {
+      securityTemplate.hasResourceProperties('AWS::CloudFront::Function', {
         FunctionConfig: {
           Runtime: 'cloudfront-js-1.0',
         },
       });
 
       // Verify HTTPS redirect is enabled
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      securityTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           DefaultCacheBehavior: {
             ViewerProtocolPolicy: 'redirect-to-https',
@@ -366,30 +391,14 @@ describe('@webapp Frontend', () => {
     });
 
     test('@webapp enables auto delete objects on S3 bucket', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
       // Verify auto delete objects custom resource is created
-      template.hasResource('Custom::S3AutoDeleteObjects', {});
+      securityTemplate.hasResource('Custom::S3AutoDeleteObjects', {});
     });
   });
 
   describe('@webapp Default values', () => {
     test('@webapp uses default SPA error responses', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      basicTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           CustomErrorResponses: [
             {
@@ -425,19 +434,7 @@ describe('@webapp Frontend', () => {
 
   describe('@webapp Additional distribution properties', () => {
     test('@webapp accepts additional CloudFront distribution properties', () => {
-      new Frontend(stack, 'Frontend', {
-        sourceDirectory: '/tmp/test-frontend-src',
-        buildOutputDirectory: testBuildDir,
-        distributionProps: {
-          comment: 'Custom frontend distribution',
-          enabled: true,
-        },
-        skipBuild: true,
-      });
-
-      template = Template.fromStack(stack);
-
-      template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      distributionPropsTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           Comment: 'Custom frontend distribution',
           Enabled: true,

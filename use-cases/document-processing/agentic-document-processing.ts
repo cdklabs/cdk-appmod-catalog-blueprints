@@ -1,4 +1,3 @@
-import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { DocumentProcessingStepType } from './base-document-processing';
 import { BedrockDocumentProcessing, BedrockDocumentProcessingProps } from './bedrock-document-processing';
@@ -23,17 +22,20 @@ export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
     const processingAgentProps = agentProps.processingAgentParameters;
     const batchAgent = new BatchAgent(this, 'IDPBatchAgent', processingAgentProps);
 
+    // Grant adapter IAM policies to agent execution role
+    // This works for both Lambda and AgentCore runtimes
     const adapterPolicyStatements = this.ingressAdapter.generateAdapterIAMPolicies();
     for (const statement of adapterPolicyStatements) {
-      batchAgent.agentRole.addToPrincipalPolicy(statement);
+      batchAgent.runtime.executionRole.addToPrincipalPolicy(statement);
     }
 
-    return new LambdaInvoke(this, 'ProcessingStep', {
-      lambdaFunction: batchAgent.agentFunction,
+    // Use createStepFunctionsTask to support both Lambda and AgentCore runtimes
+    // The method automatically handles the differences between Lambda and AgentCore invocation
+    return batchAgent.createStepFunctionsTask(this, 'ProcessingStep', {
       resultPath: '$.processingResult',
       resultSelector: {
         'result.$': '$.Payload.result',
       },
-    });
+    }) as DocumentProcessingStepType;
   }
 }
