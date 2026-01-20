@@ -1,0 +1,94 @@
+{
+  "compromised_accounts": [
+    {
+      "account_number": "4532-1234-5678-9012",
+      "account_type": "credit_card",
+      "compromise_date": "2024-06-15",
+      "compromise_type": "data_breach",
+      "status": "active_fraud",
+      "reported_by": "Financial Institution Alert",
+      "notes": "Account used in multiple fraudulent transactions across different merchants"
+    },
+    {
+      "account_number": "6011-9876-5432-1098",
+      "account_type": "credit_card",
+      "compromise_date": "2024-07-22",
+      "compromise_type": "phishing_attack",
+      "status": "active_fraud",
+      "reported_by": "Cardholder Report",
+      "notes": "Credentials stolen via phishing email, used for unauthorized purchases"
+    },
+    {
+      "account_number": "ACH-987654321",
+      "account_type": "bank_account",
+      "compromise_date": "2024-05-10",
+      "compromise_type": "account_takeover",
+      "status": "monitoring",
+      "reported_by": "Bank Security Team",
+      "notes": "ACH routing information compromised, multiple unauthorized transfers detected"
+    },
+    {
+      "account_number": "3782-8224-6310-005",
+      "account_type": "credit_card",
+      "compromise_date": "2024-08-03",
+      "compromise_type": "card_skimming",
+      "status": "active_fraud",
+      "reported_by": "Merchant Alert",
+      "notes": "Card details captured via skimming device at compromised terminal"
+    },
+    {
+      "account_number": "5555-4444-3333-2222",
+      "account_type": "credit_card",
+      "compromise_date": "2024-04-28",
+      "compromise_type": "data_breach",
+      "status": "resolved",
+      "reported_by": "Third-Party Vendor Breach",
+      "notes": "Part of large-scale vendor breach, card reissued but still flagged"
+    },
+    {
+      "account_number": "WIRE-123456789",
+      "account_type": "wire_transfer",
+      "compromise_date": "2024-07-05",
+      "compromise_type": "business_email_compromise",
+      "status": "active_fraud",
+      "reported_by": "Corporate Security",
+      "notes": "Wire transfer credentials compromised via BEC attack, multiple fraudulent wires sent"
+    },
+    {
+      "account_number": "1234-5678-9012-3456",
+      "account_type": "debit_card",
+      "compromise_date": "2024-06-30",
+      "compromise_type": "malware",
+      "status": "monitoring",
+      "reported_by": "Fraud Detection System",
+      "notes": "Debit card information stolen via point-of-sale malware"
+    },
+    {
+      "account_number": "ACH-555123456",
+      "account_type": "bank_account",
+      "compromise_date": "2024-08-12",
+      "compromise_type": "insider_threat",
+      "status": "active_fraud",
+      "reported_by": "Internal Audit",
+      "notes": "Account information accessed by unauthorized employee, used for fraudulent transactions"
+    },
+    {
+      "account_number": "9876-5432-1098-7654",
+      "account_type": "credit_card",
+      "compromise_date": "2024-05-20",
+      "compromise_type": "synthetic_identity",
+      "status": "active_fraud",
+      "reported_by": "Credit Bureau Alert",
+      "notes": "Card issued to synthetic identity, used for fraud ring operations"
+    },
+    {
+      "account_number": "PAYPAL-789456123",
+      "account_type": "payment_account",
+      "compromise_date": "2024-07-18",
+      "compromise_type": "credential_stuffing",
+      "status": "monitoring",
+      "reported_by": "Payment Processor",
+      "notes": "Account credentials compromised via credential stuffing attack, unauthorized transfers made"
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "baseline_statistics": {
+    "by_vendor": {
+      "Acme Office Supplies Inc": {
+        "average_amount": 850.50,
+        "std_deviation": 320.75,
+        "transaction_count": 145,
+        "min_amount": 125.00,
+        "max_amount": 2500.00,
+        "typical_frequency_days": 14
+      },
+      "TechCore Solutions LLC": {
+        "average_amount": 3500.00,
+        "std_deviation": 1200.00,
+        "transaction_count": 78,
+        "min_amount": 800.00,
+        "max_amount": 8500.00,
+        "typical_frequency_days": 30
+      },
+      "Reliable Logistics Corp": {
+        "average_amount": 1250.00,
+        "std_deviation": 450.00,
+        "transaction_count": 210,
+        "min_amount": 300.00,
+        "max_amount": 3200.00,
+        "typical_frequency_days": 7
+      },
+      "Green Energy Systems Inc": {
+        "average_amount": 5200.00,
+        "std_deviation": 2100.00,
+        "transaction_count": 42,
+        "min_amount": 1500.00,
+        "max_amount": 12000.00,
+        "typical_frequency_days": 60
+      },
+      "Professional Consulting Partners": {
+        "average_amount": 4800.00,
+        "std_deviation": 1800.00,
+        "transaction_count": 65,
+        "min_amount": 2000.00,
+        "max_amount": 10000.00,
+        "typical_frequency_days": 30
+      },
+      "Metro Construction LLC": {
+        "average_amount": 8500.00,
+        "std_deviation": 3500.00,
+        "transaction_count": 38,
+        "min_amount": 2500.00,
+        "max_amount": 25000.00,
+        "typical_frequency_days": 45
+      },
+      "DataSecure Technologies": {
+        "average_amount": 2800.00,
+        "std_deviation": 950.00,
+        "transaction_count": 92,
+        "min_amount": 500.00,
+        "max_amount": 6500.00,
+        "typical_frequency_days": 21
+      },
+      "Quality Manufacturing Co": {
+        "average_amount": 6200.00,
+        "std_deviation": 2400.00,
+        "transaction_count": 55,
+        "min_amount": 1800.00,
+        "max_amount": 15000.00,
+        "typical_frequency_days": 30
+      },
+      "Horizon Marketing Group": {
+        "average_amount": 3200.00,
+        "std_deviation": 1100.00,
+        "transaction_count": 88,
+        "min_amount": 800.00,
+        "max_amount": 7500.00,
+        "typical_frequency_days": 28
+      },
+      "Precision Engineering Inc": {
+        "average_amount": 7800.00,
+        "std_deviation": 3200.00,
+        "transaction_count": 47,
+        "min_amount": 2000.00,
+        "max_amount": 18000.00,
+        "typical_frequency_days": 40
+      }
+    },
+    "by_category": {
+      "office_supplies": {
+        "average_amount": 650.00,
+        "std_deviation": 280.00,
+        "transaction_count": 520,
+        "typical_range": {
+          "min": 50.00,
+          "max": 2000.00
+        }
+      },
+      "it_services": {
+        "average_amount": 3200.00,
+        "std_deviation": 1400.00,
+        "transaction_count": 285,
+        "typical_range": {
+          "min": 500.00,
+          "max": 10000.00
+        }
+      },
+      "logistics_shipping": {
+        "average_amount": 1100.00,
+        "std_deviation": 520.00,
+        "transaction_count": 450,
+        "typical_range": {
+          "min": 200.00,
+          "max": 4000.00
+        }
+      },
+      "consulting_services": {
+        "average_amount": 4500.00,
+        "std_deviation": 2000.00,
+        "transaction_count": 195,
+        "typical_range": {
+          "min": 1500.00,
+          "max": 12000.00
+        }
+      },
+      "construction_maintenance": {
+        "average_amount": 7200.00,
+        "std_deviation": 3800.00,
+        "transaction_count": 125,
+        "typical_range": {
+          "min": 1000.00,
+          "max": 30000.00
+        }
+      },
+      "marketing_advertising": {
+        "average_amount": 2800.00,
+        "std_deviation": 1200.00,
+        "transaction_count": 220,
+        "typical_range": {
+          "min": 500.00,
+          "max": 8000.00
+        }
+      },
+      "manufacturing_supplies": {
+        "average_amount": 5500.00,
+        "std_deviation": 2600.00,
+        "transaction_count": 165,
+        "typical_range": {
+          "min": 1000.00,
+          "max": 20000.00
+        }
+      },
+      "utilities_energy": {
+        "average_amount": 4200.00,
+        "std_deviation": 1800.00,
+        "transaction_count": 310,
+        "typical_range": {
+          "min": 800.00,
+          "max": 12000.00
+        }
+      },
+      "professional_services": {
+        "average_amount": 3800.00,
+        "std_deviation": 1600.00,
+        "transaction_count": 240,
+        "typical_range": {
+          "min": 1000.00,
+          "max": 10000.00
+        }
+      },
+      "travel_expenses": {
+        "average_amount": 1850.00,
+        "std_deviation": 750.00,
+        "transaction_count": 380,
+        "typical_range": {
+          "min": 300.00,
+          "max": 5000.00
+        }
+      }
+    },
+    "temporal_patterns": {
+      "weekend_transaction_rate": 0.05,
+      "holiday_transaction_rate": 0.02,
+      "peak_transaction_days": ["Tuesday", "Wednesday", "Thursday"],
+      "low_transaction_days": ["Saturday", "Sunday"],
+      "typical_business_hours": {
+        "start": "08:00",
+        "end": "18:00"
+      }
+    },
+    "geographic_patterns": {
+      "typical_states": [
+        "California",
+        "Texas",
+        "New York",
+        "Florida",
+        "Illinois",
+        "Pennsylvania",
+        "Ohio",
+        "Georgia",
+        "North Carolina",
+        "Michigan"
+      ],
+      "unusual_locations": [
+        "International transactions without prior history",
+        "High-risk countries",
+        "Locations inconsistent with vendor registration"
+      ]
+    },
+    "fraud_indicators": {
+      "rounded_amount_threshold": 0.8,
+      "duplicate_invoice_window_days": 90,
+      "z_score_threshold": 3.0,
+      "frequency_anomaly_threshold": 2.5,
+      "amount_spike_multiplier": 3.0
+    }
+  }
+}

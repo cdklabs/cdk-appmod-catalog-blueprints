@@ -54,6 +54,7 @@ Thumbs.db
 .DS_Store
 **/.DS_Store
 **/.venv
+**/__pycache__
 /test-reports/
 junit.xml
 /coverage/
