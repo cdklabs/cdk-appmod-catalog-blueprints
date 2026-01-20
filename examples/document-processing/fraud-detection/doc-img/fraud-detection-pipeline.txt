@@ -1,0 +1,60 @@
+Fraud Detection Pipeline Architecture Diagram
+
+This is a placeholder for the architecture diagram. 
+The actual PNG diagram should be created showing the following flow:
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                     Fraud Detection Pipeline                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+1. User uploads financial document
+   ↓
+2. S3 Bucket (raw/ prefix) - KMS encrypted
+   ↓ (S3 Event Notification)
+3. SQS Queue
+   ↓
+4. SQS Consumer Lambda
+   ↓ (Starts execution)
+5. Step Functions Workflow
+   │
+   ├─→ Classification Lambda (Bedrock Claude 3.5 Sonnet)
+   │   └─→ Identifies document type (invoice, receipt, bank statement)
+   │
+   └─→ Fraud Detection Agent Lambda (Bedrock Claude 3.5 Sonnet)
+       │
+       ├─→ Tool: metadata_analyzer.py
+       │   └─→ Extracts EXIF, timestamps, software signatures
+       │
+       ├─→ Tool: pattern_matcher.py
+       │   └─→ Checks duplicate invoices, rounded amounts, formatting
+       │
+       ├─→ Tool: anomaly_detector.py
+       │   └─→ Statistical analysis, outlier detection
+       │
+       └─→ Tool: database_lookup.py
+           └─→ Blacklist check, vendor verification
+       
+       ↓
+6. Fraud Assessment Output (JSON)
+   {
+     "risk_score": 0-100,
+     "risk_level": "LOW|MEDIUM|HIGH|CRITICAL",
+     "findings": {...},
+     "indicators": [...],
+     "recommended_actions": [...]
+   }
+
+Key Components:
+- S3 Bucket: KMS-encrypted document storage
+- SQS Queue: Reliable event processing
+- Step Functions: Workflow orchestration
+- Classification Lambda: Document type identification
+- Fraud Detection Agent: Multi-tool fraud analysis
+- CloudWatch: Metrics and logs with data protection
+
+To create the actual PNG diagram:
+1. Use a diagramming tool (draw.io, Lucidchart, etc.)
+2. Follow the flow described above
+3. Use AWS service icons for S3, SQS, Lambda, Step Functions, Bedrock
+4. Save as fraud-detection-pipeline.png in this directory
+5. Ensure the diagram is clear and professional

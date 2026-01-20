@@ -1,0 +1,109 @@
+{
+  "blacklisted_vendors": [
+    {
+      "vendor_name": "QuickPay Solutions LLC",
+      "tax_id": "98-7654321",
+      "reason": "Multiple confirmed cases of invoice fraud and identity theft",
+      "date_added": "2024-03-15",
+      "severity": "critical"
+    },
+    {
+      "vendor_name": "Global Tech Services Inc",
+      "tax_id": "45-6789012",
+      "reason": "Shell company used for money laundering operations",
+      "date_added": "2024-06-22",
+      "severity": "critical"
+    },
+    {
+      "vendor_name": "Premier Office Supplies",
+      "tax_id": "12-3456789",
+      "reason": "Systematic overbilling and duplicate invoice submissions",
+      "date_added": "2024-01-10",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Apex Consulting Group",
+      "tax_id": "78-9012345",
+      "reason": "Fraudulent billing for services never rendered",
+      "date_added": "2024-05-08",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Metro Maintenance Co",
+      "tax_id": "34-5678901",
+      "reason": "Falsified invoices with inflated labor costs",
+      "date_added": "2024-02-28",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Digital Solutions Partners",
+      "tax_id": "56-7890123",
+      "reason": "Identity theft - impersonating legitimate business",
+      "date_added": "2024-07-14",
+      "severity": "critical"
+    },
+    {
+      "vendor_name": "Nationwide Logistics LLC",
+      "tax_id": "23-4567890",
+      "reason": "Phantom vendor scheme with fabricated delivery records",
+      "date_added": "2024-04-19",
+      "severity": "critical"
+    },
+    {
+      "vendor_name": "Elite Professional Services",
+      "tax_id": "67-8901234",
+      "reason": "Kickback scheme and fraudulent contract manipulation",
+      "date_added": "2024-08-05",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Rapid Response IT",
+      "tax_id": "89-0123456",
+      "reason": "Billing for unauthorized and fictitious IT services",
+      "date_added": "2024-03-30",
+      "severity": "medium"
+    },
+    {
+      "vendor_name": "Universal Supply Chain",
+      "tax_id": "01-2345678",
+      "reason": "Counterfeit goods distribution and invoice manipulation",
+      "date_added": "2024-06-11",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Prestige Marketing Group",
+      "tax_id": "90-1234567",
+      "reason": "Fraudulent advertising charges and phantom campaigns",
+      "date_added": "2024-05-25",
+      "severity": "medium"
+    },
+    {
+      "vendor_name": "Advanced Systems Corp",
+      "tax_id": "11-2233445",
+      "reason": "Systematic invoice duplication across multiple clients",
+      "date_added": "2024-07-30",
+      "severity": "high"
+    },
+    {
+      "vendor_name": "Coastal Shipping Services",
+      "tax_id": "22-3344556",
+      "reason": "Fraudulent shipping charges for non-existent deliveries",
+      "date_added": "2024-04-07",
+      "severity": "medium"
+    },
+    {
+      "vendor_name": "Prime Contractors Inc",
+      "tax_id": "33-4455667",
+      "reason": "Bid rigging and fraudulent subcontractor billing",
+      "date_added": "2024-02-14",
+      "severity": "critical"
+    },
+    {
+      "vendor_name": "TechVision Solutions",
+      "tax_id": "44-5566778",
+      "reason": "Software licensing fraud and unauthorized charges",
+      "date_added": "2024-08-20",
+      "severity": "medium"
+    }
+  ]
+}

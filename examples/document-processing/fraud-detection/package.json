@@ -1,0 +1,22 @@
+{
+  "name": "fraud-detection-example",
+  "version": "0.1.0",
+  "bin": {
+    "fraud-detection-example": "app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@cdklabs/cdk-appmod-catalog-blueprints": "^1.4.0",
+    "aws-cdk-lib": "^2.225.0",
+    "constructs": "^10.0.5",
+    "source-map-support": "^0.5.21"
+  }
+}
