@@ -57,7 +57,7 @@ const project = new CdklabsConstructLibrary({
     '.DS_Store',
     '**/.DS_Store',
     '**/.venv',
-    '**/__pycache__'
+    '**/__pycache__',
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
