@@ -1,13 +1,16 @@
 import { RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { createTestApp } from '../../utilities/test-utils';
 import { EventbridgeBroker } from '../foundation/eventbridge-broker';
 
 describe('EventbridgeBroker', () => {
+  let app: ReturnType<typeof createTestApp>;
   let stack: Stack;
 
   beforeEach(() => {
-    stack = new Stack();
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack');
   });
 
   test('creates EventBus with KMS encryption', () => {

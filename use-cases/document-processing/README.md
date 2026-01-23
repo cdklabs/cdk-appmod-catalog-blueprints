@@ -209,3 +209,267 @@ interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps 
 ### Example Implementations
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing) 
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
+
+## PDF Chunking for Large Documents
+
+The `BedrockDocumentProcessing` and `AgenticDocumentProcessing` constructs support automatic PDF chunking for processing large documents that exceed Amazon Bedrock model limits.
+
+### When to Use Chunking
+
+Enable chunking when processing:
+- **Large PDFs**: Documents with more than 100 pages
+- **Token-heavy documents**: Documents exceeding ~150,000 tokens
+- **Variable density documents**: Documents with mixed content (text, images, tables)
+- **Complex documents**: Technical manuals, legal contracts, research papers
+
+### Enabling Chunking
+
+```typescript
+import { BedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+// Enable chunking with default configuration
+new BedrockDocumentProcessing(this, 'DocProcessor', {
+  enableChunking: true,
+});
+
+// Enable chunking with custom configuration
+new BedrockDocumentProcessing(this, 'DocProcessor', {
+  enableChunking: true,
+  chunkingConfig: {
+    strategy: 'hybrid',
+    pageThreshold: 50,
+    tokenThreshold: 100000,
+    processingMode: 'parallel',
+    maxConcurrency: 5,
+  },
+});
+```
+
+### Chunking Strategies
+
+The chunking system supports three strategies, each optimized for different document types:
+
+#### Strategy Comparison Table
+
+| Strategy | Best For | Analysis Speed | Token Accuracy | Complexity |
+|----------|----------|----------------|----------------|------------|
+| **hybrid** (recommended) | Most documents | Moderate | High | Medium |
+| **token-based** | Variable density | Slower | Highest | Medium |
+| **fixed-pages** (legacy) | Uniform density | Fastest | Low | Simple |
+
+#### 1. Hybrid Strategy (RECOMMENDED)
+
+The hybrid strategy balances both token count and page limits, making it the best choice for most documents. It ensures chunks respect model token limits while preventing excessively large chunks.
+
+**How it works:**
+1. Analyzes document to estimate tokens per page
+2. Creates chunks that target a specific token count
+3. Enforces a hard page limit per chunk
+4. Adds token-based overlap for context continuity
+
+**Configuration:**
+```typescript
+chunkingConfig: {
+  strategy: 'hybrid',
+  pageThreshold: 100,           // Trigger chunking if pages > 100
+  tokenThreshold: 150000,       // OR if tokens > 150K
+  targetTokensPerChunk: 80000,  // Aim for ~80K tokens per chunk
+  maxPagesPerChunk: 99,         // Hard limit of 99 pages per chunk (Bedrock limit is 100)
+  overlapTokens: 5000,          // 5K token overlap for context
+}
+```
+
+**Best for:**
+- General-purpose document processing
+- Documents with mixed content density
+- When you want balanced performance and accuracy
+
+#### 2. Token-Based Strategy
+
+The token-based strategy splits documents based on estimated token count, ensuring no chunk exceeds model limits. Best for documents with highly variable content density.
+
+**How it works:**
+1. Analyzes document to estimate tokens per page
+2. Creates chunks that don't exceed the maximum token limit
+3. Adds token-based overlap for context continuity
+4. Chunk sizes vary based on content density
+
+**Configuration:**
+```typescript
+chunkingConfig: {
+  strategy: 'token-based',
+  tokenThreshold: 150000,       // Trigger chunking if tokens > 150K
+  maxTokensPerChunk: 100000,    // Max 100K tokens per chunk
+  overlapTokens: 5000,          // 5K token overlap for context
+}
+```
+
+**Best for:**
+- Documents with variable content density
+- Technical documents with code blocks
+- Documents with many images or tables
+- When token accuracy is critical
+
+#### 3. Fixed-Pages Strategy (Legacy)
+
+The fixed-pages strategy uses simple page-based splitting. It's fast but may exceed token limits for dense documents.
+
+**How it works:**
+1. Counts total pages in document
+2. Splits into fixed-size chunks by page count
+3. Adds page-based overlap for context continuity
+4. All chunks have the same number of pages (except the last)
+
+**Configuration:**
+```typescript
+chunkingConfig: {
+  strategy: 'fixed-pages',
+  pageThreshold: 100,  // Trigger chunking if pages > 100
+  chunkSize: 50,       // 50 pages per chunk
+  overlapPages: 5,     // 5 page overlap for context
+}
+```
+
+**Best for:**
+- Documents with uniform content density
+- Simple text documents
+- When processing speed is critical
+- Legacy compatibility
+
+**⚠️ Warning:** This strategy may create chunks that exceed model token limits for dense documents. Use hybrid or token-based strategies for better reliability.
+
+### Processing Modes
+
+Control how chunks are processed:
+
+| Mode | Description | Speed | Cost |
+|------|-------------|-------|------|
+| **parallel** | Process multiple chunks simultaneously | Fast | Higher |
+| **sequential** | Process chunks one at a time | Slow | Lower |
+
+```typescript
+// Parallel processing (default) - faster but higher cost
+chunkingConfig: {
+  processingMode: 'parallel',
+  maxConcurrency: 10,  // Process up to 10 chunks at once
+}
+
+// Sequential processing - slower but cost-optimized
+chunkingConfig: {
+  processingMode: 'sequential',
+}
+```
+
+### Aggregation Strategies
+
+Control how results from multiple chunks are combined:
+
+| Strategy | Description | Best For |
+|----------|-------------|----------|
+| **majority-vote** | Most frequent classification wins | General use |
+| **weighted-vote** | Early chunks weighted higher | Documents with key info at start |
+| **first-chunk** | Use first chunk's classification | Cover pages, headers |
+
+```typescript
+chunkingConfig: {
+  aggregationStrategy: 'majority-vote',  // Default
+  minSuccessThreshold: 0.5,  // At least 50% of chunks must succeed
+}
+```
+
+### Configuration Defaults
+
+When `enableChunking` is true but no `chunkingConfig` is provided, these defaults are used:
+
+| Parameter | Default Value | Description |
+|-----------|---------------|-------------|
+| `strategy` | `'hybrid'` | Chunking strategy |
+| `pageThreshold` | `100` | Pages to trigger chunking |
+| `tokenThreshold` | `150000` | Tokens to trigger chunking |
+| `chunkSize` | `50` | Pages per chunk (fixed-pages) |
+| `overlapPages` | `5` | Overlap pages (fixed-pages) |
+| `maxTokensPerChunk` | `100000` | Max tokens per chunk (token-based) |
+| `overlapTokens` | `5000` | Overlap tokens (token-based, hybrid) |
+| `targetTokensPerChunk` | `80000` | Target tokens per chunk (hybrid) |
+| `maxPagesPerChunk` | `99` | Max pages per chunk (hybrid) - Bedrock limit is 100 |
+| `processingMode` | `'parallel'` | Processing mode |
+| `maxConcurrency` | `10` | Max parallel chunks |
+| `aggregationStrategy` | `'majority-vote'` | Result aggregation |
+| `minSuccessThreshold` | `0.5` | Min success rate |
+
+### Configuration Precedence
+
+Configuration values are resolved in the following order (highest to lowest priority):
+
+1. **Per-document configuration**: Passed in the chunking request
+2. **Construct configuration**: Provided via `chunkingConfig` prop
+3. **Environment variables**: Set on the Lambda function
+4. **Default values**: Built-in defaults
+
+### Chunking Workflow
+
+When chunking is enabled, the document processing workflow is enhanced:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        PDF Chunking Workflow                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  1. PDF Analysis & Chunking Lambda                                      │
+│     ├─ Analyze PDF (page count, token estimation)                       │
+│     ├─ Decide if chunking needed (based on thresholds)                  │
+│     └─ If needed: Split PDF, upload chunks to S3                        │
+│                                                                         │
+│  2. Choice State: Requires Chunking?                                    │
+│     ├─ NO  → Standard workflow (Classification → Processing)            │
+│     └─ YES → Chunked workflow (see below)                               │
+│                                                                         │
+│  3. Chunked Workflow:                                                   │
+│     ├─ Map State: Process each chunk                                    │
+│     │   ├─ Classification (per chunk)                                   │
+│     │   └─ Processing (per chunk)                                       │
+│     ├─ Aggregation Lambda                                               │
+│     │   ├─ Majority vote for classification                             │
+│     │   └─ Deduplicate entities                                         │
+│     ├─ DynamoDB Update (store aggregated result)                        │
+│     └─ Cleanup Lambda (delete temporary chunks)                         │
+│                                                                         │
+│  4. Move to processed/ prefix                                           │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### DynamoDB Schema Extensions
+
+When chunking is enabled, additional fields are stored in DynamoDB:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `ChunkingEnabled` | String | Whether chunking was applied ("true"/"false") |
+| `ChunkingStrategy` | String | Strategy used (hybrid, token-based, fixed-pages) |
+| `TokenAnalysis` | String (JSON) | Token analysis results |
+| `ChunkMetadata` | String (JSON) | Array of chunk metadata |
+| `AggregatedResult` | String (JSON) | Final aggregated result |
+
+### Error Handling
+
+The chunking system includes comprehensive error handling:
+
+- **Invalid PDF**: Document moved to `failed/` prefix with error logged
+- **Corrupted PDF**: Graceful handling with partial processing if possible
+- **Chunk processing failure**: Continues with remaining chunks, marks result as partial
+- **Aggregation failure**: Preserves individual chunk results
+- **Cleanup failure**: Logs error but doesn't fail workflow (S3 lifecycle handles cleanup)
+
+### Observability
+
+When chunking is enabled, additional CloudWatch metrics are emitted:
+
+- `ChunkingOperations`: Count of chunking operations by strategy
+- `ChunkCount`: Average and max chunks per document
+- `TokensPerChunk`: Average and p99 tokens per chunk
+- `ChunkProcessingTime`: Processing time per chunk
+- `ChunkFailureRate`: Percentage of failed chunks
+- `AggregationTime`: Time to aggregate results
+
+All log entries include `documentId`, `chunkIndex`, and `correlationId` for traceability.

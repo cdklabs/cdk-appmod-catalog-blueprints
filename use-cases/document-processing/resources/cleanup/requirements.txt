@@ -1,0 +1,5 @@
+# Cleanup Lambda Dependencies
+# Requirements: 8.4
+
+# AWS SDK for Python (S3 operations)
+boto3>=1.26.0

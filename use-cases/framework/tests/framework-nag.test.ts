@@ -4,6 +4,7 @@ import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
+import { createTestApp } from '../../utilities/test-utils';
 import { BatchAgent } from '../agents/batch-agent';
 import { AccessLog } from '../foundation/access-log';
 import { EventbridgeBroker } from '../foundation/eventbridge-broker';
@@ -14,7 +15,8 @@ const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V
 describe('Framework CDK Nag Tests', () => {
   describe('AccessLog', () => {
     test('passes CDK Nag checks', () => {
-      const stack = new Stack(undefined, 'TestStack', {
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
       });
 
@@ -36,7 +38,8 @@ describe('Framework CDK Nag Tests', () => {
 
   describe('Network', () => {
     test('passes CDK Nag checks for public VPC', () => {
-      const stack = new Stack();
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack');
       new Network(stack, 'Network');
 
       Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
@@ -53,7 +56,8 @@ describe('Framework CDK Nag Tests', () => {
     });
 
     test('passes CDK Nag checks for private VPC', () => {
-      const stack = new Stack();
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack');
       new Network(stack, 'Network', { private: true });
 
       Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
@@ -70,7 +74,8 @@ describe('Framework CDK Nag Tests', () => {
     });
 
     test('passes CDK Nag checks for existing VPC from lookup', () => {
-      const stack = new Stack(undefined, 'TestStack', {
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
       });
       Network.useExistingVPCFromLookup(stack, 'Network', {
@@ -85,7 +90,8 @@ describe('Framework CDK Nag Tests', () => {
 
   describe('EventbridgeBroker', () => {
     test('passes CDK Nag checks', () => {
-      const stack = new Stack();
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack');
       new EventbridgeBroker(stack, 'Broker', {
         eventSource: 'test.source',
       });
@@ -98,7 +104,8 @@ describe('Framework CDK Nag Tests', () => {
 
   describe('BatchAgent', () => {
     test('passes CDK Nag checks', () => {
-      const stack = new Stack(undefined, 'TestStack', {
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
       });
 
@@ -146,7 +153,8 @@ describe('Framework CDK Nag Tests', () => {
     });
 
     test('passes CDK Nag checks with VPC configuration', () => {
-      const stack = new Stack(undefined, 'TestStack', {
+      const app = createTestApp();
+      const stack = new Stack(app, 'TestStack', {
         env: { account: '123456789012', region: 'us-east-1' },
       });
 

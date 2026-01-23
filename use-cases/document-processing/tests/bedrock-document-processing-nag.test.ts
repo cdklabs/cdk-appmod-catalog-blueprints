@@ -1,14 +1,15 @@
-import { App, Stack, Aspects } from 'aws-cdk-lib';
+import { Stack, Aspects } from 'aws-cdk-lib';
 import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { AccessLog } from '../../framework';
 import { EventbridgeBroker } from '../../framework/foundation/eventbridge-broker';
+import { createTestApp } from '../../utilities/test-utils';
 import { QueuedS3Adapter } from '../adapter';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 
-// Create app and stack
-const app = new App();
+// Create app and stack with bundling disabled for faster tests
+const app = createTestApp();
 const stack = new Stack(app, 'TestStack', {
   env: {
     account: '123456789012',

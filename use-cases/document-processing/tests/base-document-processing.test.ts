@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -7,6 +7,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { AccessLog } from '../../framework';
 import { EventbridgeBroker } from '../../framework/foundation/eventbridge-broker';
+import { createTestApp } from '../../utilities/test-utils';
 import { QueuedS3Adapter } from '../adapter';
 import { BaseDocumentProcessing, DocumentProcessingStepType } from '../base-document-processing';
 
@@ -51,6 +52,14 @@ class TestDocumentProcessing extends BaseDocumentProcessing {
 
   protected postProcessingStep(): DocumentProcessingStepType | undefined {
     return undefined;
+  }
+
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
   }
 
   public createStateMachine() {
@@ -111,6 +120,14 @@ class TestDocumentProcessingWithEnrichment extends BaseDocumentProcessing {
     return undefined;
   }
 
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
+  }
+
   public createStateMachine() {
     return this.handleStateMachineCreation('test-state-machine-enrichment');
   }
@@ -169,31 +186,111 @@ class TestDocumentProcessingWithPostProcessing extends BaseDocumentProcessing {
     });
   }
 
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
+  }
+
   public createStateMachine() {
     return this.handleStateMachineCreation('test-state-machine-post-processing');
   }
 }
 
+// Test implementation with preprocessing step
+class TestDocumentProcessingWithPreprocessing extends BaseDocumentProcessing {
+  private classificationFn: Function;
+  private processingFn: Function;
+  private preprocessingFn: Function;
+
+  constructor(scope: any, id: string, props: any) {
+    super(scope, id, props);
+
+    this.preprocessingFn = new Function(this, 'PreprocessingFn', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = async () => ({ preprocessed: true });'),
+    });
+
+    this.classificationFn = new Function(this, 'ClassificationFn', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = async () => ({ documentClassification: "TEST" });'),
+    });
+
+    this.processingFn = new Function(this, 'ProcessingFn', {
+      runtime: Runtime.NODEJS_20_X,
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = async () => ({ result: {} });'),
+    });
+  }
+
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return new LambdaInvoke(this, 'MockPreprocessing', {
+      lambdaFunction: this.preprocessingFn,
+      resultPath: '$.preprocessingResult',
+    });
+  }
+
+  protected classificationStep(): DocumentProcessingStepType {
+    return new LambdaInvoke(this, 'MockClassification', {
+      lambdaFunction: this.classificationFn,
+      resultPath: '$.classificationResult',
+    });
+  }
+
+  protected processingStep(): DocumentProcessingStepType {
+    return new LambdaInvoke(this, 'MockProcessing', {
+      lambdaFunction: this.processingFn,
+      resultPath: '$.processingResult',
+    });
+  }
+
+  protected enrichmentStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected postProcessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
+  }
+
+  public createStateMachine() {
+    return this.handleStateMachineCreation('test-state-machine-preprocessing');
+  }
+}
+
 describe('BaseDocumentProcessing', () => {
+  let app: App;
   let minimalStack: Stack;
   let customStack: Stack;
   let enrichmentStack: Stack;
   let postProcessingStack: Stack;
+  let preprocessingStack: Stack;
   let eventBridgeStack: Stack;
   let minimalTemplate: Template;
   let customTemplate: Template;
   let enrichmentTemplate: Template;
   let postProcessingTemplate: Template;
+  let preprocessingTemplate: Template;
   let eventBridgeTemplate: Template;
 
   beforeAll(() => {
+    // Use createTestApp() to skip bundling and speed up tests
+    app = createTestApp();
+
     // Minimal configuration
-    minimalStack = new Stack();
+    minimalStack = new Stack(app, 'MinimalStack');
     const minimalConstruct = new TestDocumentProcessing(minimalStack, 'MinimalTest', {});
     minimalConstruct.createStateMachine();
 
     // Custom configuration with custom table, bucket, and timeout
-    customStack = new Stack();
+    customStack = new Stack(app, 'CustomStack');
     const customTable = new Table(customStack, 'CustomTable', {
       partitionKey: { name: 'DocumentId', type: AttributeType.STRING },
     });
@@ -215,17 +312,22 @@ describe('BaseDocumentProcessing', () => {
     customConstruct.createStateMachine();
 
     // With enrichment step
-    enrichmentStack = new Stack();
+    enrichmentStack = new Stack(app, 'EnrichmentStack');
     const enrichmentConstruct = new TestDocumentProcessingWithEnrichment(enrichmentStack, 'EnrichmentTest', {});
     enrichmentConstruct.createStateMachine();
 
     // With post-processing step
-    postProcessingStack = new Stack();
+    postProcessingStack = new Stack(app, 'PostProcessingStack');
     const postProcessingConstruct = new TestDocumentProcessingWithPostProcessing(postProcessingStack, 'PostProcessingTest', {});
     postProcessingConstruct.createStateMachine();
 
+    // With preprocessing step
+    preprocessingStack = new Stack(app, 'PreprocessingStack');
+    const preprocessingConstruct = new TestDocumentProcessingWithPreprocessing(preprocessingStack, 'PreprocessingTest', {});
+    preprocessingConstruct.createStateMachine();
+
     // With EventBridge broker
-    eventBridgeStack = new Stack();
+    eventBridgeStack = new Stack(app, 'EventBridgeStack');
     const broker = new EventbridgeBroker(eventBridgeStack, 'TestBroker', {
       name: 'test-broker',
       eventSource: 'test-source',
@@ -240,6 +342,7 @@ describe('BaseDocumentProcessing', () => {
     customTemplate = Template.fromStack(customStack);
     enrichmentTemplate = Template.fromStack(enrichmentStack);
     postProcessingTemplate = Template.fromStack(postProcessingStack);
+    preprocessingTemplate = Template.fromStack(preprocessingStack);
     eventBridgeTemplate = Template.fromStack(eventBridgeStack);
   });
 
@@ -538,7 +641,8 @@ describe('BaseDocumentProcessing', () => {
 
   describe('Observability', () => {
     test('creates construct without observability by default', () => {
-      const stack = new Stack();
+      const testApp = createTestApp();
+      const stack = new Stack(testApp, 'NoObservabilityStack');
       const construct = new TestDocumentProcessing(stack, 'NoObservability', {
         enableObservability: false,
       });
@@ -551,7 +655,8 @@ describe('BaseDocumentProcessing', () => {
     });
 
     test('enables observability when configured', () => {
-      const stack = new Stack();
+      const testApp = createTestApp();
+      const stack = new Stack(testApp, 'WithObservabilityStack');
       const construct = new TestDocumentProcessing(stack, 'WithObservability', {
         enableObservability: true,
       });
@@ -572,6 +677,39 @@ describe('BaseDocumentProcessing', () => {
       minimalTemplate.resourceCountIs('AWS::S3::Bucket', 1);
       minimalTemplate.resourceCountIs('AWS::SQS::Queue', 2);
       minimalTemplate.resourceCountIs('AWS::StepFunctions::StateMachine', 1);
+    });
+  });
+
+  describe('Preprocessing integration', () => {
+    test('includes preprocessing Lambda when provided', () => {
+      // Verify preprocessing Lambda exists
+      const lambdas = preprocessingTemplate.findResources('AWS::Lambda::Function');
+      const hasPreprocessingLambda = Object.values(lambdas).some((lambda: any) =>
+        lambda.Properties?.Code?.ZipFile?.includes('preprocessed: true'),
+      );
+
+      expect(hasPreprocessingLambda).toBe(true);
+    });
+
+    test('workflow without preprocessing uses standard flow (backward compatibility)', () => {
+      // Minimal template has no preprocessing, should start with InitMetadata
+      const stateMachine = minimalTemplate.findResources('AWS::StepFunctions::StateMachine');
+      const stateMachineKey = Object.keys(stateMachine)[0];
+      const definitionString = stateMachine[stateMachineKey].Properties.DefinitionString;
+
+      const definition = JSON.parse(definitionString['Fn::Join'][1].join(''));
+
+      // Should start with InitMetadata when no preprocessing
+      expect(definition.StartAt).toMatch(/InitMetadata/);
+    });
+
+    test('state machine is created successfully with preprocessing class', () => {
+      // Verify state machine is created successfully
+      preprocessingTemplate.resourceCountIs('AWS::StepFunctions::StateMachine', 1);
+
+      // Verify it has Lambda functions
+      const lambdaCount = Object.keys(preprocessingTemplate.findResources('AWS::Lambda::Function')).length;
+      expect(lambdaCount).toBeGreaterThanOrEqual(3);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { App, Stack, Aspects, RemovalPolicy } from 'aws-cdk-lib';
+import { Stack, Aspects, RemovalPolicy } from 'aws-cdk-lib';
 import { Template, Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Vpc, FlowLog, FlowLogResourceType, FlowLogTrafficType, SecurityGroup, InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -6,9 +6,10 @@ import { DatabaseCluster, DatabaseClusterEngine, AuroraPostgresEngineVersion, Cl
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { DataLoader, DatabaseEngine, FileType } from '../data-loader';
+import { createTestApp } from '../test-utils';
 
 // Create app and stack
-const app = new App();
+const app = createTestApp();
 const stack = new Stack(app, 'TestStack', {
   env: {
     account: '123456789012',

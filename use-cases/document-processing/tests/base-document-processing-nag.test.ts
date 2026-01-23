@@ -1,4 +1,4 @@
-import { App, Stack, Aspects } from 'aws-cdk-lib';
+import { Stack, Aspects } from 'aws-cdk-lib';
 import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -6,6 +6,7 @@ import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { AccessLog } from '../../framework';
 import { EventbridgeBroker } from '../../framework/foundation/eventbridge-broker';
+import { createTestApp } from '../../utilities/test-utils';
 import { QueuedS3Adapter } from '../adapter';
 import { BaseDocumentProcessing, DocumentProcessingStepType } from '../base-document-processing';
 
@@ -52,13 +53,21 @@ class TestDocumentProcessing extends BaseDocumentProcessing {
     return undefined;
   }
 
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
+  }
+
   public createStateMachine() {
     return this.handleStateMachineCreation('test-state-machine');
   }
 }
 
 // Create app and stack
-const app = new App();
+const app = createTestApp();
 const stack = new Stack(app, 'TestStack', {
   env: {
     account: '123456789012',

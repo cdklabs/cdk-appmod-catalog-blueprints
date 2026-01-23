@@ -92,10 +92,23 @@ export class QueuedS3Adapter implements IAdapter {
     this.adapterProps = adapterProps;
     this.resources = {};
     this.prefixes = {
-      raw: this.adapterProps.rawPrefix || 'raw/',
-      processed: this.adapterProps.processedPrefix || 'processed/',
-      failed: this.adapterProps.failedPrefix || 'failed/',
+      raw: this.normalizePrefix(this.adapterProps.rawPrefix, 'raw/'),
+      processed: this.normalizePrefix(this.adapterProps.processedPrefix, 'processed/'),
+      failed: this.normalizePrefix(this.adapterProps.failedPrefix, 'failed/'),
     };
+  }
+
+  /**
+   * Ensures a prefix ends with '/'.
+   * @param prefix - The prefix to normalize
+   * @param defaultValue - Default value if prefix is undefined
+   * @returns The normalized prefix ending with '/'
+   */
+  private normalizePrefix(prefix: string | undefined, defaultValue: string): string {
+    if (prefix === undefined) {
+      return defaultValue;
+    }
+    return prefix.endsWith('/') ? prefix : `${prefix}/`;
   }
 
   init(scope: Construct, props: BaseDocumentProcessingProps): void {
@@ -114,9 +127,9 @@ export class QueuedS3Adapter implements IAdapter {
     const bucket = this.adapterProps.bucket || new Bucket(scope, 'DocumentProcessingBucket', {
       autoDeleteObjects: (props.removalPolicy && props.removalPolicy === RemovalPolicy.DESTROY) || !props.removalPolicy ? true : false,
       removalPolicy: props.removalPolicy || RemovalPolicy.DESTROY,
-      encryption: BucketEncryption.KMS,
+      encryption: BucketEncryption.KMS, // Uses AWS-managed KMS key for encryption at rest
       enforceSSL: true,
-      bucketKeyEnabled: true,
+      bucketKeyEnabled: true, // Reduces KMS costs by using S3 Bucket Keys
     });
 
     this.resources.bucket = bucket;
@@ -269,21 +282,22 @@ export class QueuedS3Adapter implements IAdapter {
     return statements;
   }
 
-  createFailedChain(scope: Construct): Chain {
+  createFailedChain(scope: Construct, idPrefix?: string): Chain {
     const bucket: Bucket = this.resources.bucket;
+    const prefix = idPrefix ? `${idPrefix}-` : '';
 
-    const failedChain = new CallAwsService(scope, 'CopyToFailed', {
+    const failedChain = new CallAwsService(scope, `${prefix}CopyToFailed`, {
       service: 's3',
       action: 'copyObject',
       parameters: {
         Bucket: JsonPath.stringAt('$.content.bucket'),
         CopySource: JsonPath.format('{}/{}', JsonPath.stringAt('$.content.bucket'), JsonPath.stringAt('$.content.key')),
-        Key: JsonPath.format(`${this.prefixes.failed}/{}`, JsonPath.stringAt('$.content.filename')),
+        Key: JsonPath.format(`${this.prefixes.failed}{}/{}`, JsonPath.stringAt('$.documentId'), JsonPath.stringAt('$.content.filename')),
       },
       iamResources: [`${bucket.bucketArn}/*`],
       resultPath: JsonPath.DISCARD,
     }).next(
-      new CallAwsService(scope, 'DeleteFromRaw', {
+      new CallAwsService(scope, `${prefix}DeleteFromRaw`, {
         service: 's3',
         action: 'deleteObject',
         parameters: {
@@ -298,21 +312,22 @@ export class QueuedS3Adapter implements IAdapter {
     return failedChain;
   }
 
-  createSuccessChain(scope: Construct): Chain {
+  createSuccessChain(scope: Construct, idPrefix?: string): Chain {
     const bucket: Bucket = this.resources.bucket;
+    const prefix = idPrefix ? `${idPrefix}-` : '';
 
-    const chain = new CallAwsService(scope, 'CopyToProcessed', {
+    const chain = new CallAwsService(scope, `${prefix}CopyToProcessed`, {
       service: 's3',
       action: 'copyObject',
       parameters: {
         Bucket: JsonPath.stringAt('$.content.bucket'),
         CopySource: JsonPath.format('{}/{}', JsonPath.stringAt('$.content.bucket'), JsonPath.stringAt('$.content.key')),
-        Key: JsonPath.format(`${this.prefixes.processed}/{}`, JsonPath.stringAt('$.content.filename')),
+        Key: JsonPath.format(`${this.prefixes.processed}{}/{}`, JsonPath.stringAt('$.documentId'), JsonPath.stringAt('$.content.filename')),
       },
       iamResources: [`${bucket.bucketArn}/*`],
       resultPath: JsonPath.DISCARD,
     }).next(
-      new CallAwsService(scope, 'DeleteFromRawSuccess', {
+      new CallAwsService(scope, `${prefix}DeleteFromRawSuccess`, {
         service: 's3',
         action: 'deleteObject',
         parameters: {

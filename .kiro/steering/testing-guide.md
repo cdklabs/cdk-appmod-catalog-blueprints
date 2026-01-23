@@ -13,6 +13,66 @@ This repository uses a comprehensive testing approach:
 - **CDK Nag Tests**: Automated security and compliance checking
 - **Property-Based Tests**: Verify universal properties across all inputs (when applicable)
 
+## Test Performance Optimization: Skipping Bundling
+
+### Why Skip Bundling?
+
+CDK constructs like `NodejsFunction` and `PythonFunction` automatically bundle Lambda code during synthesis. This bundling (using esbuild or Docker) can significantly slow down unit tests, especially when you have many tests creating stacks.
+
+Since Lambda code bundling is typically tested separately (in integration tests or deployment), you can skip it in unit tests to dramatically improve test execution time.
+
+### How to Skip Bundling
+
+Use the `createTestApp()` utility from `use-cases/utilities/test-utils.ts`:
+
+```typescript
+import { Stack } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { createTestApp } from '../../test-utils';
+import { MyConstruct } from '../my-construct';
+
+describe('MyConstruct', () => {
+  test('creates resources correctly', () => {
+    // Use createTestApp() instead of new App()
+    const app = createTestApp();
+    const stack = new Stack(app, 'TestStack');
+    
+    new MyConstruct(stack, 'Test', { /* props */ });
+    
+    const template = Template.fromStack(stack);
+    // ... assertions
+  });
+});
+```
+
+### How It Works
+
+The `createTestApp()` function creates a CDK App with the `aws:cdk:bundling-stacks` context set to an empty array:
+
+```typescript
+export function createTestApp(props?: AppProps): App {
+  return new App({
+    ...props,
+    context: {
+      'aws:cdk:bundling-stacks': [],
+      ...props?.context,
+    },
+  });
+}
+```
+
+This tells CDK to skip bundling for all stacks during synthesis.
+
+### When to Use
+
+- **Unit tests**: Always use `createTestApp()` for faster test execution
+- **CDK Nag tests**: Use `createTestApp()` since you're testing security compliance, not bundling
+- **Integration tests**: May want to use regular `new App()` if testing actual bundled code
+
+### Performance Impact
+
+Skipping bundling can reduce test execution time by 50-80% depending on the number of Lambda functions in your constructs.
+
 ## Test Organization
 
 ```
@@ -25,6 +85,7 @@ use-cases/
 │       ├── base-document-processing-nag.test.ts
 │       ├── bedrock-document-processing.test.ts
 │       └── bedrock-document-processing-nag.test.ts
+├── test-utils.ts  # Test utilities including createTestApp()
 ```
 
 ## Running Tests
@@ -63,8 +124,9 @@ npm test -- --coverage
 ### Basic Structure
 
 ```typescript
-import { App, Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import { createTestApp } from '../../test-utils';
 import { MyConstruct } from '../my-construct';
 
 describe('MyConstruct', () => {
@@ -72,7 +134,8 @@ describe('MyConstruct', () => {
   let stack: Stack;
   
   beforeEach(() => {
-    app = new App();
+    // Use createTestApp() to skip bundling and speed up tests
+    app = createTestApp();
     stack = new Stack(app, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' }
     });
@@ -98,6 +161,7 @@ describe('MyConstruct', () => {
           }]
         }
       });
+
     });
     
     test('creates Lambda function with correct runtime', () => {
@@ -331,6 +395,130 @@ NagSuppressions.addResourceSuppressions(lambda, [{
 ```
 
 ## Testing Lambda Functions
+
+### Python Testing Setup with Virtual Environment
+
+**Always use a virtual environment for Python testing** to ensure isolated, reproducible test environments.
+
+#### Creating and Activating Virtual Environment
+
+```bash
+# Navigate to the Python resource directory
+cd use-cases/document-processing/resources/cleanup
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment (macOS/Linux)
+source venv/bin/activate
+
+# Activate virtual environment (Windows)
+# venv\Scripts\activate
+
+# Verify activation (should show venv path)
+which python
+```
+
+#### Installing Dependencies
+
+```bash
+# Install test dependencies
+pip install pytest pytest-cov hypothesis moto boto3
+
+# Install project dependencies if requirements.txt exists
+pip install -r requirements.txt
+
+# For development, you may want to install in editable mode
+pip install -e .
+```
+
+#### Running Python Tests
+
+```bash
+# Ensure virtual environment is activated
+source venv/bin/activate
+
+# Run all tests in directory
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest test_handler.py
+
+# Run specific test function
+pytest test_handler.py::test_handler_success
+
+# Run with coverage
+pytest --cov=. --cov-report=html
+
+# Run property-based tests with more examples
+pytest --hypothesis-seed=0
+```
+
+#### Virtual Environment Best Practices
+
+1. **One venv per Python resource directory**: Each Lambda function or tool directory should have its own `venv/`
+2. **Add venv to .gitignore**: Virtual environments should not be committed
+3. **Document dependencies**: Always maintain a `requirements.txt` file
+4. **Deactivate when done**: Run `deactivate` when finished testing
+
+```bash
+# Deactivate virtual environment when done
+deactivate
+```
+
+#### Example Directory Structure
+
+```
+use-cases/document-processing/resources/
+├── cleanup/
+│   ├── handler.py
+│   ├── requirements.txt
+│   ├── test_handler.py
+│   └── venv/              # Not committed to git
+├── aggregation/
+│   ├── handler.py
+│   ├── requirements.txt
+│   ├── test_handler.py
+│   └── venv/              # Not committed to git
+└── pdf-chunking/
+    ├── handler.py
+    ├── chunking_strategies.py
+    ├── requirements.txt
+    ├── test_handler.py
+    ├── test_chunking_strategies.py
+    └── venv/              # Not committed to git
+```
+
+#### Quick Setup Script
+
+Create a `setup_test_env.sh` script in Python resource directories:
+
+```bash
+#!/bin/bash
+# setup_test_env.sh - Quick setup for Python testing
+
+# Create venv if it doesn't exist
+if [ ! -d "venv" ]; then
+    python3 -m venv venv
+    echo "Created virtual environment"
+fi
+
+# Activate venv
+source venv/bin/activate
+
+# Install dependencies
+pip install --upgrade pip
+pip install pytest pytest-cov hypothesis moto boto3
+
+if [ -f "requirements.txt" ]; then
+    pip install -r requirements.txt
+fi
+
+echo "Virtual environment ready. Run 'pytest' to execute tests."
+```
 
 ### Python Lambda Tests
 
@@ -798,4 +986,121 @@ test('my test', () => {
   console.log('Debug info:', someValue);
   // Test code
 });
+```
+
+## Python Virtual Environment Troubleshooting
+
+### Common Issues and Solutions
+
+#### "ModuleNotFoundError" when running tests
+
+**Problem**: Python can't find installed packages.
+
+**Solution**: Ensure virtual environment is activated:
+```bash
+# Check if venv is active (should show venv path)
+which python
+
+# If not active, activate it
+source venv/bin/activate
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+#### Wrong Python version
+
+**Problem**: Tests fail due to Python version mismatch.
+
+**Solution**: Create venv with specific Python version:
+```bash
+# Remove old venv
+rm -rf venv
+
+# Create with specific version
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+#### "Permission denied" on venv creation
+
+**Problem**: Can't create virtual environment.
+
+**Solution**: Check directory permissions or use `--system-site-packages`:
+```bash
+# Check permissions
+ls -la
+
+# Alternative: use user directory
+python3 -m venv ~/.venvs/my-project
+source ~/.venvs/my-project/bin/activate
+```
+
+#### Tests pass locally but fail in CI
+
+**Problem**: Different environments between local and CI.
+
+**Solution**: Pin exact versions in requirements.txt:
+```bash
+# Generate pinned requirements
+pip freeze > requirements.txt
+
+# Or use pip-tools for better dependency management
+pip install pip-tools
+pip-compile requirements.in
+```
+
+#### Cleaning up virtual environments
+
+```bash
+# Deactivate first
+deactivate
+
+# Remove venv directory
+rm -rf venv
+
+# Recreate fresh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### CI/CD Python Testing
+
+For CI pipelines, set up virtual environments in workflow:
+
+```yaml
+# .github/workflows/python-tests.yml
+name: Python Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        working-directory: use-cases/document-processing/resources/cleanup
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install pytest pytest-cov hypothesis moto boto3
+          pip install -r requirements.txt
+      - name: Run tests
+        working-directory: use-cases/document-processing/resources/cleanup
+        run: |
+          source venv/bin/activate
+          pytest -v --cov=. --cov-report=xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: use-cases/document-processing/resources/cleanup/coverage.xml
 ```

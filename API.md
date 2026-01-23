@@ -2270,8 +2270,11 @@ const agenticDocumentProcessingProps: AgenticDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.aggregationPrompt">aggregationPrompt</a></code> | <code>string</code> | Custom prompt template for aggregating results from multiple chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.chunkingConfig">chunkingConfig</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a></code> | Configuration for PDF chunking behavior. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.enableChunking">enableChunking</a></code> | <code>boolean</code> | Enable PDF chunking for large documents. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
@@ -2426,6 +2429,65 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
+##### `aggregationPrompt`<sup>Optional</sup> <a name="aggregationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.aggregationPrompt"></a>
+
+```typescript
+public readonly aggregationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_AGGREGATION_PROMPT
+
+Custom prompt template for aggregating results from multiple chunks.
+
+Used when chunking is enabled to merge processing results from all chunks
+into a single coherent result.
+
+The prompt receives the concatenated processing results from all chunks
+and should instruct the model to synthesize them into a unified output.
+
+---
+
+##### `chunkingConfig`<sup>Optional</sup> <a name="chunkingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.chunkingConfig"></a>
+
+```typescript
+public readonly chunkingConfig: ChunkingConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a>
+- *Default:* undefined (uses default configuration when enableChunking is true)
+
+Configuration for PDF chunking behavior.
+
+Only applies when `enableChunking` is true. Allows customization of:
+- **Chunking strategy**: How documents are split (fixed-pages, token-based, or hybrid)
+- **Thresholds**: When to trigger chunking based on page count or token count
+- **Chunk size and overlap**: Control chunk boundaries and context preservation
+- **Processing mode**: Parallel (faster) or sequential (cost-optimized)
+- **Aggregation strategy**: How to combine results from multiple chunks
+
+## Default Configuration
+
+If not provided, uses sensible defaults optimized for most use cases:
+- Strategy: `'hybrid'` (recommended - balances token and page limits)
+- Page threshold: 100 pages
+- Token threshold: 150,000 tokens
+- Processing mode: `'parallel'`
+- Max concurrency: 10
+- Aggregation strategy: `'majority-vote'`
+
+## Strategy Comparison
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| `hybrid` | Most documents | Balances token/page limits | Slightly more complex |
+| `token-based` | Variable density | Respects model limits | Slower analysis |
+| `fixed-pages` | Uniform density | Simple, fast | May exceed token limits |
+
+> [{@link ChunkingConfig } for detailed configuration options]({@link ChunkingConfig } for detailed configuration options)
+
+---
+
 ##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.classificationBedrockModel"></a>
 
 ```typescript
@@ -2450,6 +2512,37 @@ public readonly classificationPrompt: string;
 Custom prompt template for document classification.
 
 Must include placeholder for document content.
+
+---
+
+##### `enableChunking`<sup>Optional</sup> <a name="enableChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessingProps.property.enableChunking"></a>
+
+```typescript
+public readonly enableChunking: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable PDF chunking for large documents.
+
+When enabled, documents exceeding configured thresholds will be automatically
+split into chunks, processed in parallel or sequentially, and results aggregated.
+
+This feature is useful for:
+- Processing large PDFs (>100 pages)
+- Handling documents that exceed Bedrock token limits (~200K tokens)
+- Improving processing reliability for complex documents
+- Processing documents with variable content density
+
+The chunking workflow:
+1. Analyzes PDF to determine page count and estimate token count
+2. Decides if chunking is needed based on configured thresholds
+3. If chunking is needed, splits PDF into chunks and uploads to S3
+4. Processes each chunk through classification and extraction
+5. Aggregates results using majority voting for classification
+6. Deduplicates entities across chunks
+7. Cleans up temporary chunk files from S3
 
 ---
 
@@ -2591,6 +2684,173 @@ public readonly key: string;
 ```
 
 - *Type:* string
+
+---
+
+### AggregatedResult <a name="AggregatedResult" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult"></a>
+
+Aggregated result from processing all chunks.
+
+Combines classification and extraction results into final output.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.Initializer"></a>
+
+```typescript
+import { AggregatedResult } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const aggregatedResult: AggregatedResult = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.chunksSummary">chunksSummary</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary">ChunksSummary</a></code> | Summary of chunk processing results. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.classification">classification</a></code> | <code>string</code> | Final document classification (from majority vote or other strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.classificationConfidence">classificationConfidence</a></code> | <code>number</code> | Confidence score for the classification (0-1). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.entities">entities</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity">Entity</a>[]</code> | Deduplicated entities from all chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.partialResult">partialResult</a></code> | <code>boolean</code> | Indicates if result is partial due to chunk failures. |
+
+---
+
+##### `chunksSummary`<sup>Required</sup> <a name="chunksSummary" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.chunksSummary"></a>
+
+```typescript
+public readonly chunksSummary: ChunksSummary;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary">ChunksSummary</a>
+
+Summary of chunk processing results.
+
+---
+
+##### `classification`<sup>Required</sup> <a name="classification" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.classification"></a>
+
+```typescript
+public readonly classification: string;
+```
+
+- *Type:* string
+
+Final document classification (from majority vote or other strategy).
+
+---
+
+##### `classificationConfidence`<sup>Required</sup> <a name="classificationConfidence" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.classificationConfidence"></a>
+
+```typescript
+public readonly classificationConfidence: number;
+```
+
+- *Type:* number
+
+Confidence score for the classification (0-1).
+
+For majority vote: (count of majority / total chunks)
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+##### `entities`<sup>Required</sup> <a name="entities" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.entities"></a>
+
+```typescript
+public readonly entities: Entity[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity">Entity</a>[]
+
+Deduplicated entities from all chunks.
+
+Entities without page numbers are deduplicated by (type, value).
+Entities with page numbers are preserved even if duplicated.
+
+---
+
+##### `partialResult`<sup>Required</sup> <a name="partialResult" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregatedResult.property.partialResult"></a>
+
+```typescript
+public readonly partialResult: boolean;
+```
+
+- *Type:* boolean
+
+Indicates if result is partial due to chunk failures.
+
+True if fewer than minSuccessThreshold chunks succeeded.
+
+---
+
+### AggregationRequest <a name="AggregationRequest" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest"></a>
+
+Request payload for aggregation Lambda.
+
+Contains results from all processed chunks.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.Initializer"></a>
+
+```typescript
+import { AggregationRequest } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const aggregationRequest: AggregationRequest = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.chunkResults">chunkResults</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult">ChunkResult</a>[]</code> | Results from all processed chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.aggregationStrategy">aggregationStrategy</a></code> | <code>string</code> | Strategy to use for aggregation. |
+
+---
+
+##### `chunkResults`<sup>Required</sup> <a name="chunkResults" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.chunkResults"></a>
+
+```typescript
+public readonly chunkResults: ChunkResult[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult">ChunkResult</a>[]
+
+Results from all processed chunks.
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+##### `aggregationStrategy`<sup>Optional</sup> <a name="aggregationStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.AggregationRequest.property.aggregationStrategy"></a>
+
+```typescript
+public readonly aggregationStrategy: string;
+```
+
+- *Type:* string
+- *Default:* 'majority-vote'
+
+Strategy to use for aggregation.
 
 ---
 
@@ -3102,8 +3362,11 @@ const bedrockDocumentProcessingProps: BedrockDocumentProcessingProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.aggregationPrompt">aggregationPrompt</a></code> | <code>string</code> | Custom prompt template for aggregating results from multiple chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.chunkingConfig">chunkingConfig</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a></code> | Configuration for PDF chunking behavior. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.enableChunking">enableChunking</a></code> | <code>boolean</code> | Enable PDF chunking for large documents. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
@@ -3257,6 +3520,65 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
+##### `aggregationPrompt`<sup>Optional</sup> <a name="aggregationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.aggregationPrompt"></a>
+
+```typescript
+public readonly aggregationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_AGGREGATION_PROMPT
+
+Custom prompt template for aggregating results from multiple chunks.
+
+Used when chunking is enabled to merge processing results from all chunks
+into a single coherent result.
+
+The prompt receives the concatenated processing results from all chunks
+and should instruct the model to synthesize them into a unified output.
+
+---
+
+##### `chunkingConfig`<sup>Optional</sup> <a name="chunkingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.chunkingConfig"></a>
+
+```typescript
+public readonly chunkingConfig: ChunkingConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a>
+- *Default:* undefined (uses default configuration when enableChunking is true)
+
+Configuration for PDF chunking behavior.
+
+Only applies when `enableChunking` is true. Allows customization of:
+- **Chunking strategy**: How documents are split (fixed-pages, token-based, or hybrid)
+- **Thresholds**: When to trigger chunking based on page count or token count
+- **Chunk size and overlap**: Control chunk boundaries and context preservation
+- **Processing mode**: Parallel (faster) or sequential (cost-optimized)
+- **Aggregation strategy**: How to combine results from multiple chunks
+
+## Default Configuration
+
+If not provided, uses sensible defaults optimized for most use cases:
+- Strategy: `'hybrid'` (recommended - balances token and page limits)
+- Page threshold: 100 pages
+- Token threshold: 150,000 tokens
+- Processing mode: `'parallel'`
+- Max concurrency: 10
+- Aggregation strategy: `'majority-vote'`
+
+## Strategy Comparison
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| `hybrid` | Most documents | Balances token/page limits | Slightly more complex |
+| `token-based` | Variable density | Respects model limits | Slower analysis |
+| `fixed-pages` | Uniform density | Simple, fast | May exceed token limits |
+
+> [{@link ChunkingConfig } for detailed configuration options]({@link ChunkingConfig } for detailed configuration options)
+
+---
+
 ##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.classificationBedrockModel"></a>
 
 ```typescript
@@ -3281,6 +3603,37 @@ public readonly classificationPrompt: string;
 Custom prompt template for document classification.
 
 Must include placeholder for document content.
+
+---
+
+##### `enableChunking`<sup>Optional</sup> <a name="enableChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessingProps.property.enableChunking"></a>
+
+```typescript
+public readonly enableChunking: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable PDF chunking for large documents.
+
+When enabled, documents exceeding configured thresholds will be automatically
+split into chunks, processed in parallel or sequentially, and results aggregated.
+
+This feature is useful for:
+- Processing large PDFs (>100 pages)
+- Handling documents that exceed Bedrock token limits (~200K tokens)
+- Improving processing reliability for complex documents
+- Processing documents with variable content density
+
+The chunking workflow:
+1. Analyzes PDF to determine page count and estimate token count
+2. Decides if chunking is needed based on configured thresholds
+3. If chunking is needed, splits PDF into chunks and uploads to S3
+4. Processes each chunk through classification and extraction
+5. Aggregates results using majority voting for classification
+6. Deduplicates entities across chunks
+7. Cleans up temporary chunk files from S3
 
 ---
 
@@ -3412,6 +3765,1062 @@ public readonly useCrossRegionInference: boolean;
 Enable cross-region inference for Bedrock models to improve availability and performance.
 
 When enabled, uses inference profiles instead of direct model invocation.
+
+---
+
+### ChunkClassificationResult <a name="ChunkClassificationResult" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult"></a>
+
+Classification result for a chunk.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult.Initializer"></a>
+
+```typescript
+import { ChunkClassificationResult } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkClassificationResult: ChunkClassificationResult = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult.property.documentClassification">documentClassification</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult.property.confidence">confidence</a></code> | <code>number</code> | *No description.* |
+
+---
+
+##### `documentClassification`<sup>Required</sup> <a name="documentClassification" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult.property.documentClassification"></a>
+
+```typescript
+public readonly documentClassification: string;
+```
+
+- *Type:* string
+
+---
+
+##### `confidence`<sup>Optional</sup> <a name="confidence" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult.property.confidence"></a>
+
+```typescript
+public readonly confidence: number;
+```
+
+- *Type:* number
+
+---
+
+### ChunkingConfig <a name="ChunkingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig"></a>
+
+Comprehensive configuration for PDF chunking behavior.
+
+This interface provides fine-grained control over how large PDF documents are
+split into manageable chunks for processing. The chunking system supports three
+strategies, each optimized for different document types and use cases.
+
+## Chunking Strategies
+
+### 1. Hybrid Strategy (RECOMMENDED)
+Balances both token count and page limits for optimal chunking. Best for most
+documents as it respects model token limits while preventing excessively large chunks.
+
+### 2. Token-Based Strategy
+Splits documents based on estimated token count. Best for documents with variable
+content density (e.g., mixed text and images, tables, charts).
+
+### 3. Fixed-Pages Strategy (Legacy)
+Simple page-based splitting. Fast but may exceed token limits for dense documents.
+Use only for documents with uniform content density.
+
+## Processing Modes
+
+- **parallel**: Process multiple chunks simultaneously (faster, higher cost)
+- **sequential**: Process chunks one at a time (slower, lower cost)
+
+## Aggregation Strategies
+
+- **majority-vote**: Most frequent classification wins (recommended)
+- **weighted-vote**: Early chunks weighted higher
+- **first-chunk**: Use first chunk's classification only
+
+## Default Values
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| strategy | 'hybrid' | Chunking strategy |
+| pageThreshold | 100 | Pages to trigger chunking |
+| tokenThreshold | 150000 | Tokens to trigger chunking |
+| chunkSize | 50 | Pages per chunk (fixed-pages) |
+| overlapPages | 5 | Overlap pages (fixed-pages) |
+| maxTokensPerChunk | 100000 | Max tokens per chunk (token-based) |
+| overlapTokens | 5000 | Overlap tokens (token-based, hybrid) |
+| targetTokensPerChunk | 80000 | Target tokens per chunk (hybrid) |
+| maxPagesPerChunk | 99 | Max pages per chunk (hybrid) |
+| processingMode | 'parallel' | Processing mode |
+| maxConcurrency | 10 | Max parallel chunks |
+| aggregationStrategy | 'majority-vote' | Result aggregation |
+| minSuccessThreshold | 0.5 | Min success rate for valid result |
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.Initializer"></a>
+
+```typescript
+import { ChunkingConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkingConfig: ChunkingConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.aggregationStrategy">aggregationStrategy</a></code> | <code>string</code> | Strategy for aggregating results from multiple chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.chunkSize">chunkSize</a></code> | <code>number</code> | Number of pages per chunk (fixed-pages strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxConcurrency">maxConcurrency</a></code> | <code>number</code> | Maximum number of chunks to process concurrently (parallel mode only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxPagesPerChunk">maxPagesPerChunk</a></code> | <code>number</code> | Hard limit on pages per chunk (hybrid strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxTokensPerChunk">maxTokensPerChunk</a></code> | <code>number</code> | Maximum tokens per chunk (token-based strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.minSuccessThreshold">minSuccessThreshold</a></code> | <code>number</code> | Minimum percentage of chunks that must succeed for aggregation. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.overlapPages">overlapPages</a></code> | <code>number</code> | Number of overlapping pages between chunks (fixed-pages strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.overlapTokens">overlapTokens</a></code> | <code>number</code> | Number of overlapping tokens between chunks (token-based and hybrid strategies). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.pageThreshold">pageThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on page count (fixed-pages strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.processingMode">processingMode</a></code> | <code>string</code> | Processing mode for chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.strategy">strategy</a></code> | <code>string</code> | Chunking strategy to use. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.targetTokensPerChunk">targetTokensPerChunk</a></code> | <code>number</code> | Soft target for tokens per chunk (hybrid strategy). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.tokenThreshold">tokenThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on token count (token-based strategy). |
+
+---
+
+##### `aggregationStrategy`<sup>Optional</sup> <a name="aggregationStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.aggregationStrategy"></a>
+
+```typescript
+public readonly aggregationStrategy: string;
+```
+
+- *Type:* string
+- *Default:* 'majority-vote'
+
+Strategy for aggregating results from multiple chunks.
+
+**majority-vote**: Most frequent classification wins
+- **weighted-vote**: Early chunks weighted higher
+- **first-chunk**: Use first chunk's classification
+
+---
+
+##### `chunkSize`<sup>Optional</sup> <a name="chunkSize" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.chunkSize"></a>
+
+```typescript
+public readonly chunkSize: number;
+```
+
+- *Type:* number
+- *Default:* 50
+
+Number of pages per chunk (fixed-pages strategy).
+
+---
+
+##### `maxConcurrency`<sup>Optional</sup> <a name="maxConcurrency" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxConcurrency"></a>
+
+```typescript
+public readonly maxConcurrency: number;
+```
+
+- *Type:* number
+- *Default:* 10
+
+Maximum number of chunks to process concurrently (parallel mode only).
+
+Higher values increase speed but also cost.
+
+---
+
+##### `maxPagesPerChunk`<sup>Optional</sup> <a name="maxPagesPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxPagesPerChunk"></a>
+
+```typescript
+public readonly maxPagesPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 99
+
+Hard limit on pages per chunk (hybrid strategy).
+
+Note: Bedrock has a hard limit of 100 pages per PDF, so we default to 99
+to provide a safety margin.
+
+---
+
+##### `maxTokensPerChunk`<sup>Optional</sup> <a name="maxTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.maxTokensPerChunk"></a>
+
+```typescript
+public readonly maxTokensPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 100000
+
+Maximum tokens per chunk (token-based strategy).
+
+---
+
+##### `minSuccessThreshold`<sup>Optional</sup> <a name="minSuccessThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.minSuccessThreshold"></a>
+
+```typescript
+public readonly minSuccessThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 0.5 (50%)
+
+Minimum percentage of chunks that must succeed for aggregation.
+
+If fewer chunks succeed, the result is marked as partial failure.
+
+---
+
+##### `overlapPages`<sup>Optional</sup> <a name="overlapPages" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.overlapPages"></a>
+
+```typescript
+public readonly overlapPages: number;
+```
+
+- *Type:* number
+- *Default:* 5
+
+Number of overlapping pages between chunks (fixed-pages strategy).
+
+---
+
+##### `overlapTokens`<sup>Optional</sup> <a name="overlapTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.overlapTokens"></a>
+
+```typescript
+public readonly overlapTokens: number;
+```
+
+- *Type:* number
+- *Default:* 5000
+
+Number of overlapping tokens between chunks (token-based and hybrid strategies).
+
+---
+
+##### `pageThreshold`<sup>Optional</sup> <a name="pageThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.pageThreshold"></a>
+
+```typescript
+public readonly pageThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 100
+
+Threshold for triggering chunking based on page count (fixed-pages strategy).
+
+---
+
+##### `processingMode`<sup>Optional</sup> <a name="processingMode" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.processingMode"></a>
+
+```typescript
+public readonly processingMode: string;
+```
+
+- *Type:* string
+- *Default:* 'parallel'
+
+Processing mode for chunks.
+
+**parallel**: Process multiple chunks simultaneously (faster, higher cost)
+- **sequential**: Process chunks one at a time (slower, lower cost)
+
+---
+
+##### `strategy`<sup>Optional</sup> <a name="strategy" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.strategy"></a>
+
+```typescript
+public readonly strategy: string;
+```
+
+- *Type:* string
+- *Default:* 'hybrid'
+
+Chunking strategy to use.
+
+**hybrid** (RECOMMENDED): Balances token count and page limits
+- **token-based**: Respects model token limits, good for variable density
+- **fixed-pages**: Simple page-based splitting (legacy, not recommended)
+
+---
+
+##### `targetTokensPerChunk`<sup>Optional</sup> <a name="targetTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.targetTokensPerChunk"></a>
+
+```typescript
+public readonly targetTokensPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 80000
+
+Soft target for tokens per chunk (hybrid strategy).
+
+---
+
+##### `tokenThreshold`<sup>Optional</sup> <a name="tokenThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig.property.tokenThreshold"></a>
+
+```typescript
+public readonly tokenThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 150000
+
+Threshold for triggering chunking based on token count (token-based strategy).
+
+---
+
+### ChunkingConfigUsed <a name="ChunkingConfigUsed" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed"></a>
+
+Chunking configuration used for processing.
+
+Includes both user-provided and default values.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.Initializer"></a>
+
+```typescript
+import { ChunkingConfigUsed } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkingConfigUsed: ChunkingConfigUsed = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.strategy">strategy</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.totalPages">totalPages</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.totalTokens">totalTokens</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.chunkSize">chunkSize</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.maxPagesPerChunk">maxPagesPerChunk</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.maxTokensPerChunk">maxTokensPerChunk</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.overlapPages">overlapPages</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.overlapTokens">overlapTokens</a></code> | <code>number</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.processingMode">processingMode</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.targetTokensPerChunk">targetTokensPerChunk</a></code> | <code>number</code> | *No description.* |
+
+---
+
+##### `strategy`<sup>Required</sup> <a name="strategy" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.strategy"></a>
+
+```typescript
+public readonly strategy: string;
+```
+
+- *Type:* string
+
+---
+
+##### `totalPages`<sup>Required</sup> <a name="totalPages" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.totalPages"></a>
+
+```typescript
+public readonly totalPages: number;
+```
+
+- *Type:* number
+
+---
+
+##### `totalTokens`<sup>Required</sup> <a name="totalTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.totalTokens"></a>
+
+```typescript
+public readonly totalTokens: number;
+```
+
+- *Type:* number
+
+---
+
+##### `chunkSize`<sup>Optional</sup> <a name="chunkSize" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.chunkSize"></a>
+
+```typescript
+public readonly chunkSize: number;
+```
+
+- *Type:* number
+
+---
+
+##### `maxPagesPerChunk`<sup>Optional</sup> <a name="maxPagesPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.maxPagesPerChunk"></a>
+
+```typescript
+public readonly maxPagesPerChunk: number;
+```
+
+- *Type:* number
+
+---
+
+##### `maxTokensPerChunk`<sup>Optional</sup> <a name="maxTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.maxTokensPerChunk"></a>
+
+```typescript
+public readonly maxTokensPerChunk: number;
+```
+
+- *Type:* number
+
+---
+
+##### `overlapPages`<sup>Optional</sup> <a name="overlapPages" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.overlapPages"></a>
+
+```typescript
+public readonly overlapPages: number;
+```
+
+- *Type:* number
+
+---
+
+##### `overlapTokens`<sup>Optional</sup> <a name="overlapTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.overlapTokens"></a>
+
+```typescript
+public readonly overlapTokens: number;
+```
+
+- *Type:* number
+
+---
+
+##### `processingMode`<sup>Optional</sup> <a name="processingMode" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.processingMode"></a>
+
+```typescript
+public readonly processingMode: string;
+```
+
+- *Type:* string
+
+---
+
+##### `targetTokensPerChunk`<sup>Optional</sup> <a name="targetTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed.property.targetTokensPerChunk"></a>
+
+```typescript
+public readonly targetTokensPerChunk: number;
+```
+
+- *Type:* number
+
+---
+
+### ChunkingRequest <a name="ChunkingRequest" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest"></a>
+
+Request payload for PDF analysis and chunking Lambda.
+
+Contains document information and chunking configuration.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.Initializer"></a>
+
+```typescript
+import { ChunkingRequest } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkingRequest: ChunkingRequest = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.content">content</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent">DocumentContent</a></code> | Document content location information. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.contentType">contentType</a></code> | <code>string</code> | Content type of the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.documentId">documentId</a></code> | <code>string</code> | Unique identifier for the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a></code> | Optional chunking configuration. |
+
+---
+
+##### `content`<sup>Required</sup> <a name="content" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.content"></a>
+
+```typescript
+public readonly content: DocumentContent;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent">DocumentContent</a>
+
+Document content location information.
+
+---
+
+##### `contentType`<sup>Required</sup> <a name="contentType" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.contentType"></a>
+
+```typescript
+public readonly contentType: string;
+```
+
+- *Type:* string
+
+Content type of the document.
+
+Typically 'file' for S3-based documents.
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Unique identifier for the document.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingRequest.property.config"></a>
+
+```typescript
+public readonly config: ChunkingConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a>
+
+Optional chunking configuration.
+
+If not provided, uses default configuration.
+
+---
+
+### ChunkingResponse <a name="ChunkingResponse" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse"></a>
+
+Response when chunking IS required.
+
+Document exceeds thresholds and has been split into chunks.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.Initializer"></a>
+
+```typescript
+import { ChunkingResponse } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkingResponse: ChunkingResponse = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.chunks">chunks</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata">ChunkMetadata</a>[]</code> | Array of chunk metadata for all created chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed">ChunkingConfigUsed</a></code> | Configuration used for chunking. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.requiresChunking">requiresChunking</a></code> | <code>boolean</code> | Indicates chunking is required. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.strategy">strategy</a></code> | <code>string</code> | Strategy used for chunking. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.tokenAnalysis">tokenAnalysis</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis">TokenAnalysis</a></code> | Token analysis results with detailed per-page information. |
+
+---
+
+##### `chunks`<sup>Required</sup> <a name="chunks" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.chunks"></a>
+
+```typescript
+public readonly chunks: ChunkMetadata[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata">ChunkMetadata</a>[]
+
+Array of chunk metadata for all created chunks.
+
+---
+
+##### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.config"></a>
+
+```typescript
+public readonly config: ChunkingConfigUsed;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfigUsed">ChunkingConfigUsed</a>
+
+Configuration used for chunking.
+
+Includes both user-provided and default values.
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+##### `requiresChunking`<sup>Required</sup> <a name="requiresChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.requiresChunking"></a>
+
+```typescript
+public readonly requiresChunking: boolean;
+```
+
+- *Type:* boolean
+
+Indicates chunking is required.
+
+---
+
+##### `strategy`<sup>Required</sup> <a name="strategy" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.strategy"></a>
+
+```typescript
+public readonly strategy: string;
+```
+
+- *Type:* string
+
+Strategy used for chunking.
+
+---
+
+##### `tokenAnalysis`<sup>Required</sup> <a name="tokenAnalysis" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkingResponse.property.tokenAnalysis"></a>
+
+```typescript
+public readonly tokenAnalysis: TokenAnalysis;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis">TokenAnalysis</a>
+
+Token analysis results with detailed per-page information.
+
+---
+
+### ChunkMetadata <a name="ChunkMetadata" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata"></a>
+
+Metadata about a single chunk of a document.
+
+Contains information about the chunk's position, size, and S3 location.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.Initializer"></a>
+
+```typescript
+import { ChunkMetadata } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkMetadata: ChunkMetadata = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.bucket">bucket</a></code> | <code>string</code> | S3 bucket containing the chunk file. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.chunkId">chunkId</a></code> | <code>string</code> | Unique identifier for this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.chunkIndex">chunkIndex</a></code> | <code>number</code> | Zero-based index of this chunk in the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.endPage">endPage</a></code> | <code>number</code> | Ending page number (zero-based, inclusive) of this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.estimatedTokens">estimatedTokens</a></code> | <code>number</code> | Estimated token count for this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.key">key</a></code> | <code>string</code> | S3 key for the chunk file. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.pageCount">pageCount</a></code> | <code>number</code> | Number of pages in this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.startPage">startPage</a></code> | <code>number</code> | Starting page number (zero-based) of this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.totalChunks">totalChunks</a></code> | <code>number</code> | Total number of chunks in the document. |
+
+---
+
+##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.bucket"></a>
+
+```typescript
+public readonly bucket: string;
+```
+
+- *Type:* string
+
+S3 bucket containing the chunk file.
+
+---
+
+##### `chunkId`<sup>Required</sup> <a name="chunkId" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.chunkId"></a>
+
+```typescript
+public readonly chunkId: string;
+```
+
+- *Type:* string
+
+Unique identifier for this chunk.
+
+Format: {documentId}_chunk_{index}
+
+---
+
+##### `chunkIndex`<sup>Required</sup> <a name="chunkIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.chunkIndex"></a>
+
+```typescript
+public readonly chunkIndex: number;
+```
+
+- *Type:* number
+
+Zero-based index of this chunk in the document.
+
+---
+
+##### `endPage`<sup>Required</sup> <a name="endPage" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.endPage"></a>
+
+```typescript
+public readonly endPage: number;
+```
+
+- *Type:* number
+
+Ending page number (zero-based, inclusive) of this chunk.
+
+---
+
+##### `estimatedTokens`<sup>Required</sup> <a name="estimatedTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.estimatedTokens"></a>
+
+```typescript
+public readonly estimatedTokens: number;
+```
+
+- *Type:* number
+
+Estimated token count for this chunk.
+
+Based on word-count heuristic (1.3 tokens per word).
+
+---
+
+##### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.key"></a>
+
+```typescript
+public readonly key: string;
+```
+
+- *Type:* string
+
+S3 key for the chunk file.
+
+Typically in chunks/ prefix.
+
+---
+
+##### `pageCount`<sup>Required</sup> <a name="pageCount" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.pageCount"></a>
+
+```typescript
+public readonly pageCount: number;
+```
+
+- *Type:* number
+
+Number of pages in this chunk.
+
+---
+
+##### `startPage`<sup>Required</sup> <a name="startPage" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.startPage"></a>
+
+```typescript
+public readonly startPage: number;
+```
+
+- *Type:* number
+
+Starting page number (zero-based) of this chunk.
+
+---
+
+##### `totalChunks`<sup>Required</sup> <a name="totalChunks" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata.property.totalChunks"></a>
+
+```typescript
+public readonly totalChunks: number;
+```
+
+- *Type:* number
+
+Total number of chunks in the document.
+
+---
+
+### ChunkProcessingResult <a name="ChunkProcessingResult" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult"></a>
+
+Processing result for a chunk.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult.Initializer"></a>
+
+```typescript
+import { ChunkProcessingResult } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkProcessingResult: ChunkProcessingResult = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult.property.entities">entities</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity">Entity</a>[]</code> | *No description.* |
+
+---
+
+##### `entities`<sup>Required</sup> <a name="entities" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult.property.entities"></a>
+
+```typescript
+public readonly entities: Entity[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity">Entity</a>[]
+
+---
+
+### ChunkResult <a name="ChunkResult" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult"></a>
+
+Result from processing a single chunk.
+
+Contains classification and extraction results, or error information.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.Initializer"></a>
+
+```typescript
+import { ChunkResult } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunkResult: ChunkResult = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.chunkId">chunkId</a></code> | <code>string</code> | Chunk identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.chunkIndex">chunkIndex</a></code> | <code>number</code> | Zero-based chunk index. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.classificationResult">classificationResult</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult">ChunkClassificationResult</a></code> | Optional classification result for this chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.error">error</a></code> | <code>string</code> | Error message if chunk processing failed. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.processingResult">processingResult</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult">ChunkProcessingResult</a></code> | Optional extraction result for this chunk. |
+
+---
+
+##### `chunkId`<sup>Required</sup> <a name="chunkId" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.chunkId"></a>
+
+```typescript
+public readonly chunkId: string;
+```
+
+- *Type:* string
+
+Chunk identifier.
+
+---
+
+##### `chunkIndex`<sup>Required</sup> <a name="chunkIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.chunkIndex"></a>
+
+```typescript
+public readonly chunkIndex: number;
+```
+
+- *Type:* number
+
+Zero-based chunk index.
+
+---
+
+##### `classificationResult`<sup>Optional</sup> <a name="classificationResult" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.classificationResult"></a>
+
+```typescript
+public readonly classificationResult: ChunkClassificationResult;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkClassificationResult">ChunkClassificationResult</a>
+
+Optional classification result for this chunk.
+
+---
+
+##### `error`<sup>Optional</sup> <a name="error" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.error"></a>
+
+```typescript
+public readonly error: string;
+```
+
+- *Type:* string
+
+Error message if chunk processing failed.
+
+---
+
+##### `processingResult`<sup>Optional</sup> <a name="processingResult" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunkResult.property.processingResult"></a>
+
+```typescript
+public readonly processingResult: ChunkProcessingResult;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkProcessingResult">ChunkProcessingResult</a>
+
+Optional extraction result for this chunk.
+
+---
+
+### ChunksSummary <a name="ChunksSummary" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary"></a>
+
+Summary of chunk processing results.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.Initializer"></a>
+
+```typescript
+import { ChunksSummary } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const chunksSummary: ChunksSummary = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.failedChunks">failedChunks</a></code> | <code>number</code> | Number of chunks that failed processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.successfulChunks">successfulChunks</a></code> | <code>number</code> | Number of chunks that processed successfully. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.totalChunks">totalChunks</a></code> | <code>number</code> | Total number of chunks created. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.totalTokensProcessed">totalTokensProcessed</a></code> | <code>number</code> | Optional total tokens processed across all chunks. |
+
+---
+
+##### `failedChunks`<sup>Required</sup> <a name="failedChunks" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.failedChunks"></a>
+
+```typescript
+public readonly failedChunks: number;
+```
+
+- *Type:* number
+
+Number of chunks that failed processing.
+
+---
+
+##### `successfulChunks`<sup>Required</sup> <a name="successfulChunks" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.successfulChunks"></a>
+
+```typescript
+public readonly successfulChunks: number;
+```
+
+- *Type:* number
+
+Number of chunks that processed successfully.
+
+---
+
+##### `totalChunks`<sup>Required</sup> <a name="totalChunks" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.totalChunks"></a>
+
+```typescript
+public readonly totalChunks: number;
+```
+
+- *Type:* number
+
+Total number of chunks created.
+
+---
+
+##### `totalTokensProcessed`<sup>Optional</sup> <a name="totalTokensProcessed" id="@cdklabs/cdk-appmod-catalog-blueprints.ChunksSummary.property.totalTokensProcessed"></a>
+
+```typescript
+public readonly totalTokensProcessed: number;
+```
+
+- *Type:* number
+
+Optional total tokens processed across all chunks.
+
+---
+
+### CleanupRequest <a name="CleanupRequest" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest"></a>
+
+Request payload for cleanup Lambda.
+
+Contains information about chunks to delete.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest.Initializer"></a>
+
+```typescript
+import { CleanupRequest } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const cleanupRequest: CleanupRequest = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest.property.chunks">chunks</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata">ChunkMetadata</a>[]</code> | Array of chunk metadata for chunks to delete. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+
+---
+
+##### `chunks`<sup>Required</sup> <a name="chunks" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest.property.chunks"></a>
+
+```typescript
+public readonly chunks: ChunkMetadata[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkMetadata">ChunkMetadata</a>[]
+
+Array of chunk metadata for chunks to delete.
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupRequest.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+### CleanupResponse <a name="CleanupResponse" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse"></a>
+
+Response from cleanup Lambda.
+
+Reports success and any errors encountered.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.Initializer"></a>
+
+```typescript
+import { CleanupResponse } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const cleanupResponse: CleanupResponse = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.deletedChunks">deletedChunks</a></code> | <code>number</code> | Number of chunks successfully deleted. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.errors">errors</a></code> | <code>string[]</code> | Array of error messages for failed deletions. |
+
+---
+
+##### `deletedChunks`<sup>Required</sup> <a name="deletedChunks" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.deletedChunks"></a>
+
+```typescript
+public readonly deletedChunks: number;
+```
+
+- *Type:* number
+
+Number of chunks successfully deleted.
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+##### `errors`<sup>Required</sup> <a name="errors" id="@cdklabs/cdk-appmod-catalog-blueprints.CleanupResponse.property.errors"></a>
+
+```typescript
+public readonly errors: string[];
+```
+
+- *Type:* string[]
+
+Array of error messages for failed deletions.
+
+Empty if all deletions succeeded.
 
 ---
 
@@ -3667,6 +5076,150 @@ Optional timeout for Lambda function (defaults to 15 minutes).
 
 ---
 
+### DocumentContent <a name="DocumentContent" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent"></a>
+
+Document content location information.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.Initializer"></a>
+
+```typescript
+import { DocumentContent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const documentContent: DocumentContent = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.bucket">bucket</a></code> | <code>string</code> | S3 bucket containing the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.filename">filename</a></code> | <code>string</code> | Original filename of the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.key">key</a></code> | <code>string</code> | S3 key for the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.location">location</a></code> | <code>string</code> | Storage location type (e.g., 's3'). |
+
+---
+
+##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.bucket"></a>
+
+```typescript
+public readonly bucket: string;
+```
+
+- *Type:* string
+
+S3 bucket containing the document.
+
+---
+
+##### `filename`<sup>Required</sup> <a name="filename" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.filename"></a>
+
+```typescript
+public readonly filename: string;
+```
+
+- *Type:* string
+
+Original filename of the document.
+
+---
+
+##### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.key"></a>
+
+```typescript
+public readonly key: string;
+```
+
+- *Type:* string
+
+S3 key for the document.
+
+---
+
+##### `location`<sup>Required</sup> <a name="location" id="@cdklabs/cdk-appmod-catalog-blueprints.DocumentContent.property.location"></a>
+
+```typescript
+public readonly location: string;
+```
+
+- *Type:* string
+
+Storage location type (e.g., 's3').
+
+---
+
+### Entity <a name="Entity" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity"></a>
+
+Extracted entity from document processing.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity.Initializer"></a>
+
+```typescript
+import { Entity } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const entity: Entity = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.type">type</a></code> | <code>string</code> | Type of entity (e.g., 'NAME', 'DATE', 'AMOUNT', 'ADDRESS'). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.value">value</a></code> | <code>string</code> | Value of the entity. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.chunkIndex">chunkIndex</a></code> | <code>number</code> | Optional chunk index where entity was found. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.page">page</a></code> | <code>number</code> | Optional page number where entity was found. |
+
+---
+
+##### `type`<sup>Required</sup> <a name="type" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.type"></a>
+
+```typescript
+public readonly type: string;
+```
+
+- *Type:* string
+
+Type of entity (e.g., 'NAME', 'DATE', 'AMOUNT', 'ADDRESS').
+
+---
+
+##### `value`<sup>Required</sup> <a name="value" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.value"></a>
+
+```typescript
+public readonly value: string;
+```
+
+- *Type:* string
+
+Value of the entity.
+
+---
+
+##### `chunkIndex`<sup>Optional</sup> <a name="chunkIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.chunkIndex"></a>
+
+```typescript
+public readonly chunkIndex: number;
+```
+
+- *Type:* number
+
+Optional chunk index where entity was found.
+
+---
+
+##### `page`<sup>Optional</sup> <a name="page" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity.property.page"></a>
+
+```typescript
+public readonly page: number;
+```
+
+- *Type:* number
+
+Optional page number where entity was found.
+
+Entities with page numbers are preserved even if duplicated.
+
+---
+
 ### EventbridgeBrokerProps <a name="EventbridgeBrokerProps" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBrokerProps"></a>
 
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBrokerProps.Initializer"></a>
@@ -3796,6 +5349,73 @@ public readonly executionOrder: number;
 - *Type:* number
 
 Execution order (lower numbers execute first).
+
+---
+
+### FixedPagesConfig <a name="FixedPagesConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig"></a>
+
+Configuration for fixed-pages chunking strategy.
+
+Splits documents by fixed page count (legacy approach).
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.Initializer"></a>
+
+```typescript
+import { FixedPagesConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const fixedPagesConfig: FixedPagesConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.chunkSize">chunkSize</a></code> | <code>number</code> | Number of pages per chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.overlapPages">overlapPages</a></code> | <code>number</code> | Number of overlapping pages between consecutive chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.pageThreshold">pageThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on page count. |
+
+---
+
+##### `chunkSize`<sup>Optional</sup> <a name="chunkSize" id="@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.chunkSize"></a>
+
+```typescript
+public readonly chunkSize: number;
+```
+
+- *Type:* number
+- *Default:* 50
+
+Number of pages per chunk.
+
+---
+
+##### `overlapPages`<sup>Optional</sup> <a name="overlapPages" id="@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.overlapPages"></a>
+
+```typescript
+public readonly overlapPages: number;
+```
+
+- *Type:* number
+- *Default:* 5
+
+Number of overlapping pages between consecutive chunks.
+
+Must be less than chunkSize.
+
+---
+
+##### `pageThreshold`<sup>Optional</sup> <a name="pageThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.FixedPagesConfig.property.pageThreshold"></a>
+
+```typescript
+public readonly pageThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 100
+
+Threshold for triggering chunking based on page count.
+
+Documents with pages > threshold will be chunked.
 
 ---
 
@@ -3933,6 +5553,109 @@ public readonly skipBuild: boolean;
 - *Type:* boolean
 
 Optional flag to skip the build process (useful for pre-built artifacts).
+
+---
+
+### HybridConfig <a name="HybridConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig"></a>
+
+Configuration for hybrid chunking strategy (RECOMMENDED).
+
+Balances token count and page limits for optimal chunking.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.Initializer"></a>
+
+```typescript
+import { HybridConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const hybridConfig: HybridConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.maxPagesPerChunk">maxPagesPerChunk</a></code> | <code>number</code> | Hard limit on pages per chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.overlapTokens">overlapTokens</a></code> | <code>number</code> | Number of overlapping tokens between consecutive chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.pageThreshold">pageThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on page count. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.targetTokensPerChunk">targetTokensPerChunk</a></code> | <code>number</code> | Soft target for tokens per chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.tokenThreshold">tokenThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on token count. |
+
+---
+
+##### `maxPagesPerChunk`<sup>Optional</sup> <a name="maxPagesPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.maxPagesPerChunk"></a>
+
+```typescript
+public readonly maxPagesPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 99
+
+Hard limit on pages per chunk.
+
+Prevents very large chunks even if token count is low.
+Note: Bedrock has a hard limit of 100 pages per PDF, so we default to 99
+to provide a safety margin.
+
+---
+
+##### `overlapTokens`<sup>Optional</sup> <a name="overlapTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.overlapTokens"></a>
+
+```typescript
+public readonly overlapTokens: number;
+```
+
+- *Type:* number
+- *Default:* 5000
+
+Number of overlapping tokens between consecutive chunks.
+
+Provides context continuity across chunks.
+
+---
+
+##### `pageThreshold`<sup>Optional</sup> <a name="pageThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.pageThreshold"></a>
+
+```typescript
+public readonly pageThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 100
+
+Threshold for triggering chunking based on page count.
+
+Documents with pages > threshold will be chunked.
+
+---
+
+##### `targetTokensPerChunk`<sup>Optional</sup> <a name="targetTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.targetTokensPerChunk"></a>
+
+```typescript
+public readonly targetTokensPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 80000
+
+Soft target for tokens per chunk.
+
+Chunks aim for this token count but respect maxPagesPerChunk.
+
+---
+
+##### `tokenThreshold`<sup>Optional</sup> <a name="tokenThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig.property.tokenThreshold"></a>
+
+```typescript
+public readonly tokenThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 150000
+
+Threshold for triggering chunking based on token count.
+
+Documents with tokens > threshold will be chunked.
 
 ---
 
@@ -4287,6 +6010,81 @@ public readonly vpcName: string;
 
 ---
 
+### NoChunkingResponse <a name="NoChunkingResponse" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse"></a>
+
+Response when chunking is NOT required.
+
+Document is below thresholds and will be processed without chunking.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.Initializer"></a>
+
+```typescript
+import { NoChunkingResponse } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const noChunkingResponse: NoChunkingResponse = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.documentId">documentId</a></code> | <code>string</code> | Document identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.reason">reason</a></code> | <code>string</code> | Human-readable reason why chunking was not applied. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.requiresChunking">requiresChunking</a></code> | <code>boolean</code> | Indicates chunking is not required. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.tokenAnalysis">tokenAnalysis</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis">TokenAnalysis</a></code> | Token analysis results. |
+
+---
+
+##### `documentId`<sup>Required</sup> <a name="documentId" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.documentId"></a>
+
+```typescript
+public readonly documentId: string;
+```
+
+- *Type:* string
+
+Document identifier.
+
+---
+
+##### `reason`<sup>Required</sup> <a name="reason" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.reason"></a>
+
+```typescript
+public readonly reason: string;
+```
+
+- *Type:* string
+
+Human-readable reason why chunking was not applied.
+
+Example: "Document has 50 pages, below threshold of 100"
+
+---
+
+##### `requiresChunking`<sup>Required</sup> <a name="requiresChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.requiresChunking"></a>
+
+```typescript
+public readonly requiresChunking: boolean;
+```
+
+- *Type:* boolean
+
+Indicates chunking is not required.
+
+---
+
+##### `tokenAnalysis`<sup>Required</sup> <a name="tokenAnalysis" id="@cdklabs/cdk-appmod-catalog-blueprints.NoChunkingResponse.property.tokenAnalysis"></a>
+
+```typescript
+public readonly tokenAnalysis: TokenAnalysis;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis">TokenAnalysis</a>
+
+Token analysis results.
+
+---
+
 ### ObservableProps <a name="ObservableProps" id="@cdklabs/cdk-appmod-catalog-blueprints.ObservableProps"></a>
 
 Additional properties that constructs implementing the IObservable interface should extend as part of their input props.
@@ -4454,6 +6252,150 @@ public readonly rawPrefix: string;
 S3 prefix where the raw files would be stored.
 
 This serves as the trigger point for processing
+
+---
+
+### TokenAnalysis <a name="TokenAnalysis" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis"></a>
+
+Token analysis results from PDF analysis.
+
+Provides information about document size and token distribution.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.Initializer"></a>
+
+```typescript
+import { TokenAnalysis } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const tokenAnalysis: TokenAnalysis = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.avgTokensPerPage">avgTokensPerPage</a></code> | <code>number</code> | Average tokens per page across the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.totalPages">totalPages</a></code> | <code>number</code> | Total number of pages in the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.totalTokens">totalTokens</a></code> | <code>number</code> | Total estimated tokens in the document. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.tokensPerPage">tokensPerPage</a></code> | <code>number[]</code> | Optional detailed token count for each page. |
+
+---
+
+##### `avgTokensPerPage`<sup>Required</sup> <a name="avgTokensPerPage" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.avgTokensPerPage"></a>
+
+```typescript
+public readonly avgTokensPerPage: number;
+```
+
+- *Type:* number
+
+Average tokens per page across the document.
+
+---
+
+##### `totalPages`<sup>Required</sup> <a name="totalPages" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.totalPages"></a>
+
+```typescript
+public readonly totalPages: number;
+```
+
+- *Type:* number
+
+Total number of pages in the document.
+
+---
+
+##### `totalTokens`<sup>Required</sup> <a name="totalTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.totalTokens"></a>
+
+```typescript
+public readonly totalTokens: number;
+```
+
+- *Type:* number
+
+Total estimated tokens in the document.
+
+---
+
+##### `tokensPerPage`<sup>Optional</sup> <a name="tokensPerPage" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis.property.tokensPerPage"></a>
+
+```typescript
+public readonly tokensPerPage: number[];
+```
+
+- *Type:* number[]
+
+Optional detailed token count for each page.
+
+Used for token-based and hybrid chunking strategies.
+
+---
+
+### TokenBasedConfig <a name="TokenBasedConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig"></a>
+
+Configuration for token-based chunking strategy.
+
+Splits documents based on estimated token count to respect model limits.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.Initializer"></a>
+
+```typescript
+import { TokenBasedConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const tokenBasedConfig: TokenBasedConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.maxTokensPerChunk">maxTokensPerChunk</a></code> | <code>number</code> | Maximum tokens per chunk. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.overlapTokens">overlapTokens</a></code> | <code>number</code> | Number of overlapping tokens between consecutive chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.tokenThreshold">tokenThreshold</a></code> | <code>number</code> | Threshold for triggering chunking based on token count. |
+
+---
+
+##### `maxTokensPerChunk`<sup>Optional</sup> <a name="maxTokensPerChunk" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.maxTokensPerChunk"></a>
+
+```typescript
+public readonly maxTokensPerChunk: number;
+```
+
+- *Type:* number
+- *Default:* 100000
+
+Maximum tokens per chunk.
+
+Ensures no chunk exceeds model token limits.
+
+---
+
+##### `overlapTokens`<sup>Optional</sup> <a name="overlapTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.overlapTokens"></a>
+
+```typescript
+public readonly overlapTokens: number;
+```
+
+- *Type:* number
+- *Default:* 5000
+
+Number of overlapping tokens between consecutive chunks.
+
+Provides context continuity across chunks.
+
+---
+
+##### `tokenThreshold`<sup>Optional</sup> <a name="tokenThreshold" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenBasedConfig.property.tokenThreshold"></a>
+
+```typescript
+public readonly tokenThreshold: number;
+```
+
+- *Type:* number
+- *Default:* 150000
+
+Threshold for triggering chunking based on token count.
+
+Documents with tokens > threshold will be chunked.
 
 ---
 
@@ -5273,7 +7215,7 @@ new PowertoolsConfig()
 
 | **Name** | **Description** |
 | --- | --- |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.generateDefaultLambdaConfig">generateDefaultLambdaConfig</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.generateDefaultLambdaConfig">generateDefaultLambdaConfig</a></code> | Generate default Lambda configuration for Powertools. |
 
 ---
 
@@ -5282,12 +7224,16 @@ new PowertoolsConfig()
 ```typescript
 import { PowertoolsConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
 
-PowertoolsConfig.generateDefaultLambdaConfig(enableObservability?: boolean, metricsNamespace?: string, serviceName?: string)
+PowertoolsConfig.generateDefaultLambdaConfig(enableObservability?: boolean, metricsNamespace?: string, serviceName?: string, logLevel?: string)
 ```
+
+Generate default Lambda configuration for Powertools.
 
 ###### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.generateDefaultLambdaConfig.parameter.enableObservability"></a>
 
 - *Type:* boolean
+
+Whether observability is enabled.
 
 ---
 
@@ -5295,11 +7241,25 @@ PowertoolsConfig.generateDefaultLambdaConfig(enableObservability?: boolean, metr
 
 - *Type:* string
 
+CloudWatch metrics namespace.
+
 ---
 
 ###### `serviceName`<sup>Optional</sup> <a name="serviceName" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.generateDefaultLambdaConfig.parameter.serviceName"></a>
 
 - *Type:* string
+
+Service name for logging and metrics.
+
+---
+
+###### `logLevel`<sup>Optional</sup> <a name="logLevel" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.generateDefaultLambdaConfig.parameter.logLevel"></a>
+
+- *Type:* string
+
+Log level (INFO, ERROR, DEBUG, WARNING).
+
+Defaults to INFO.
 
 ---
 
@@ -5346,7 +7306,7 @@ new QueuedS3Adapter(adapterProps?: QueuedS3AdapterProps)
 ##### `createFailedChain` <a name="createFailedChain" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain"></a>
 
 ```typescript
-public createFailedChain(scope: Construct): Chain
+public createFailedChain(scope: Construct, idPrefix?: string): Chain
 ```
 
 Create the adapter specific handler for failed processing.
@@ -5354,6 +7314,12 @@ Create the adapter specific handler for failed processing.
 ###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain.parameter.scope"></a>
 
 - *Type:* constructs.Construct
+
+---
+
+###### `idPrefix`<sup>Optional</sup> <a name="idPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createFailedChain.parameter.idPrefix"></a>
+
+- *Type:* string
 
 ---
 
@@ -5388,7 +7354,7 @@ Important: resource created should trigger the state machine
 ##### `createSuccessChain` <a name="createSuccessChain" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain"></a>
 
 ```typescript
-public createSuccessChain(scope: Construct): Chain
+public createSuccessChain(scope: Construct, idPrefix?: string): Chain
 ```
 
 Create the adapter specific handler for successful processing.
@@ -5396,6 +7362,12 @@ Create the adapter specific handler for successful processing.
 ###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain.parameter.scope"></a>
 
 - *Type:* constructs.Construct
+
+---
+
+###### `idPrefix`<sup>Optional</sup> <a name="idPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.QueuedS3Adapter.createSuccessChain.parameter.idPrefix"></a>
+
+- *Type:* string
 
 ---
 
@@ -5550,7 +7522,7 @@ Abstraction to enable different types of source triggers for the intelligent doc
 ##### `createFailedChain` <a name="createFailedChain" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createFailedChain"></a>
 
 ```typescript
-public createFailedChain(scope: Construct): Chain
+public createFailedChain(scope: Construct, idPrefix?: string): Chain
 ```
 
 Create the adapter specific handler for failed processing.
@@ -5560,6 +7532,14 @@ Create the adapter specific handler for failed processing.
 - *Type:* constructs.Construct
 
 Scope to use in relation to the CDK hierarchy.
+
+---
+
+###### `idPrefix`<sup>Optional</sup> <a name="idPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createFailedChain.parameter.idPrefix"></a>
+
+- *Type:* string
+
+Optional prefix for construct IDs to ensure uniqueness when called multiple times.
 
 ---
 
@@ -5600,7 +7580,7 @@ The parameters passed to the document processing L3 Construct.
 ##### `createSuccessChain` <a name="createSuccessChain" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createSuccessChain"></a>
 
 ```typescript
-public createSuccessChain(scope: Construct): Chain
+public createSuccessChain(scope: Construct, idPrefix?: string): Chain
 ```
 
 Create the adapter specific handler for successful processing.
@@ -5610,6 +7590,14 @@ Create the adapter specific handler for successful processing.
 - *Type:* constructs.Construct
 
 Scope to use in relation to the CDK hierarchy.
+
+---
+
+###### `idPrefix`<sup>Optional</sup> <a name="idPrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.IAdapter.createSuccessChain.parameter.idPrefix"></a>
+
+- *Type:* string
+
+Optional prefix for construct IDs to ensure uniqueness when called multiple times.
 
 ---
 
