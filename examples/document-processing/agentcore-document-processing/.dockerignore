@@ -1,0 +1,15 @@
+# Exclude everything except what we need
+*
+
+# Include agent-code directory
+!agent-code/
+!agent-code/**
+
+# Include docker directory (for Dockerfile)
+!docker/
+!docker/Dockerfile
+
+# Exclude Python cache from agent-code
+agent-code/__pycache__/
+agent-code/*.py[cod]
+agent-code/*$py.class

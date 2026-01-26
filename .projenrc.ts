@@ -23,6 +23,20 @@ const project = new CdklabsConstructLibrary({
   // Configure source and lib directories for use cases
   srcdir: 'use-cases',
   libdir: 'lib',
+  // Configure Jest to use 50% of available CPU cores
+  jestOptions: {
+    jestConfig: {
+      maxWorkers: '50%',
+    },
+  },
+  workflowBootstrapSteps: [
+    {
+      name: 'Free up disk space',
+      run: [
+        'docker system prune -af',
+      ].join('\n'),
+    },
+  ],
   gitignore: [
     'cdk.out',
     // macOS files
@@ -33,6 +47,14 @@ const project = new CdklabsConstructLibrary({
     '.Trashes',
     'ehthumbs.db',
     'Thumbs.db',
+    // Python cache files
+    '__pycache__/',
+    '**/__pycache__/',
+    '*.py[cod]',
+    '*$py.class',
+    // Python test files in resources directories
+    '**/resources/**/test_*.py',
+    '**/resources/**/*_test.py',
     // TypeScript compiled files
     '*.d.ts',
     '*.js.map',
@@ -185,6 +207,18 @@ project.addTask('build:fast', {
     { spawn: 'compile' },
     { spawn: 'post-compile' },
     { spawn: 'test' },
+    { spawn: 'package:js' }, // Only JS package for speed
+  ],
+});
+
+// Add build task that skips tests for quick local development
+project.addTask('build:no-test', {
+  description: 'Build and package without running tests',
+  steps: [
+    { spawn: 'default' },
+    { spawn: 'pre-compile' },
+    { spawn: 'compile' },
+    { spawn: 'post-compile' },
     { spawn: 'package:js' }, // Only JS package for speed
   ],
 });

@@ -19,6 +19,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
@@ -105,6 +107,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -143,6 +147,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -180,6 +186,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -217,6 +225,8 @@ jobs:
       - name: Restore build artifact permissions
         run: cd dist && setfacl --restore=permissions-backup.acl
         continue-on-error: true
+      - name: Free up disk space
+        run: docker system prune -af
       - name: Checkout
         uses: actions/checkout@v5
         with:

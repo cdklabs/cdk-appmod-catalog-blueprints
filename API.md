@@ -215,6 +215,293 @@ The bucket prefix used for organizing access logs.
 ---
 
 
+### AgentCoreAgentRuntime <a name="AgentCoreAgentRuntime" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a>
+
+AgentCore-based agent runtime implementation.
+
+This class provides an AgentCore Runtime implementation that conforms to the
+IAgentRuntime interface, allowing agents to use AgentCore as an execution
+environment alongside Lambda functions.
+
+AgentCore Runtime is suitable for:
+- Long-running, stateful operations (up to 8 hours)
+- Complex agent orchestration with session management
+- Workloads requiring extended execution time
+- Stateful conversations and multi-turn interactions
+
+AgentCore currently supports container-based deployment:
+- **CONTAINER**: Deploy as Docker container in ECR
+  - Full control over runtime environment
+  - Support for any programming language
+  - Custom system dependencies
+  - **REQUIRED: ARM64 architecture** (linux/arm64)
+
+Note: Direct code deployment (ZIP archive) may be supported in future versions.
+Check AWS documentation for the latest deployment options.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer"></a>
+
+```typescript
+import { AgentCoreAgentRuntime } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new AgentCoreAgentRuntime(scope: Construct, id: string, props: AgentCoreAgentRuntimeProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps">AgentCoreAgentRuntimeProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps">AgentCoreAgentRuntimeProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addEnvironment">addEnvironment</a></code> | Add an environment variable to the AgentCore runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addToRolePolicy">addToRolePolicy</a></code> | Add an IAM policy statement to the AgentCore execution role. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.grantInvoke">grantInvoke</a></code> | Grant permission to invoke this AgentCore runtime. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `addEnvironment` <a name="addEnvironment" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addEnvironment"></a>
+
+```typescript
+public addEnvironment(key: string, value: string): void
+```
+
+Add an environment variable to the AgentCore runtime.
+
+AgentCore uses a different mechanism for configuration compared to Lambda.
+Environment variables are stored internally and can be used for runtime
+configuration. The actual mechanism for passing these to the agent code
+depends on AgentCore capabilities.
+
+###### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addEnvironment.parameter.key"></a>
+
+- *Type:* string
+
+The environment variable name.
+
+---
+
+###### `value`<sup>Required</sup> <a name="value" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addEnvironment.parameter.value"></a>
+
+- *Type:* string
+
+The environment variable value.
+
+---
+
+##### `addToRolePolicy` <a name="addToRolePolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addToRolePolicy"></a>
+
+```typescript
+public addToRolePolicy(statement: PolicyStatement): void
+```
+
+Add an IAM policy statement to the AgentCore execution role.
+
+Grants the AgentCore runtime additional permissions to access AWS resources.
+
+###### `statement`<sup>Required</sup> <a name="statement" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.addToRolePolicy.parameter.statement"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement
+
+The IAM policy statement to add.
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): Grant
+```
+
+Grant permission to invoke this AgentCore runtime.
+
+Adds bedrock-agentcore:InvokeAgentRuntime permission to the grantee for
+this agent runtime. The permission requires both runtime and runtime-endpoint ARNs.
+
+Reference: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-invoke-agent.html
+Reference: https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal to grant invocation permissions to.
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.isConstruct"></a>
+
+```typescript
+import { AgentCoreAgentRuntime } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+AgentCoreAgentRuntime.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.agentCoreAgent">agentCoreAgent</a></code> | <code>aws-cdk-lib.aws_bedrockagentcore.CfnRuntime</code> | The underlying AgentCore runtime construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.agentCoreEndpoint">agentCoreEndpoint</a></code> | <code>aws-cdk-lib.aws_bedrockagentcore.CfnRuntimeEndpoint</code> | The AgentCore runtime endpoint construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.executionRole">executionRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM execution role for the AgentCore runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.invocationArn">invocationArn</a></code> | <code>string</code> | The ARN of the AgentCore runtime for invocation. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.runtimeType">runtimeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a></code> | The runtime type identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The CloudWatch log group for the AgentCore runtime. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentCoreAgent`<sup>Required</sup> <a name="agentCoreAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.agentCoreAgent"></a>
+
+```typescript
+public readonly agentCoreAgent: CfnRuntime;
+```
+
+- *Type:* aws-cdk-lib.aws_bedrockagentcore.CfnRuntime
+
+The underlying AgentCore runtime construct.
+
+---
+
+##### `agentCoreEndpoint`<sup>Required</sup> <a name="agentCoreEndpoint" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.agentCoreEndpoint"></a>
+
+```typescript
+public readonly agentCoreEndpoint: CfnRuntimeEndpoint;
+```
+
+- *Type:* aws-cdk-lib.aws_bedrockagentcore.CfnRuntimeEndpoint
+
+The AgentCore runtime endpoint construct.
+
+---
+
+##### `executionRole`<sup>Required</sup> <a name="executionRole" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.executionRole"></a>
+
+```typescript
+public readonly executionRole: IRole;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole
+
+The IAM execution role for the AgentCore runtime.
+
+---
+
+##### `invocationArn`<sup>Required</sup> <a name="invocationArn" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.invocationArn"></a>
+
+```typescript
+public readonly invocationArn: string;
+```
+
+- *Type:* string
+
+The ARN of the AgentCore runtime for invocation.
+
+---
+
+##### `runtimeType`<sup>Required</sup> <a name="runtimeType" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.runtimeType"></a>
+
+```typescript
+public readonly runtimeType: AgentRuntimeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a>
+
+The runtime type identifier.
+
+---
+
+##### `logGroup`<sup>Optional</sup> <a name="logGroup" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+The CloudWatch log group for the AgentCore runtime.
+
+---
+
+
 ### AgenticDocumentProcessing <a name="AgenticDocumentProcessing" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.Initializer"></a>
@@ -471,6 +758,8 @@ new BaseAgent(scope: Construct, id: string, props: BaseAgentProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.createStepFunctionsTask">createStepFunctionsTask</a></code> | Create a Step Functions task for invoking this agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.grantInvoke">grantInvoke</a></code> | Grant permission to invoke this agent. |
 
 ---
 
@@ -481,6 +770,78 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `createStepFunctionsTask` <a name="createStepFunctionsTask" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.createStepFunctionsTask"></a>
+
+```typescript
+public createStepFunctionsTask(scope: Construct, id: string, props?: AgentTaskProps): IChainable
+```
+
+Create a Step Functions task for invoking this agent.
+
+This method creates the appropriate Step Functions task based on the agent's
+runtime type:
+- Lambda Runtime: Creates a LambdaInvoke task that directly invokes the Lambda function
+- AgentCore Runtime: Creates a CallAwsService task that invokes the AgentCore Runtime API
+
+For AgentCore runtime, this method automatically:
+- Uses the Step Functions execution ID as the AgentCore session ID for automatic tracking
+- Passes the entire Step Functions input as the payload to the agent
+- Configures IAM permissions for bedrock-agentcore:InvokeAgentRuntime
+
+AgentCore Session Management:
+The session ID is automatically set to the Step Functions execution ID (JsonPath.executionId),
+which provides unique session per Step Functions execution, automatic correlation between
+Step Functions and AgentCore sessions, and simplified debugging and tracing.
+
+Permissions:
+For Lambda runtime, the Step Functions execution role will be granted lambda:InvokeFunction.
+For AgentCore runtime, the Step Functions execution role will be granted bedrock-agentcore:InvokeAgentRuntime.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.createStepFunctionsTask.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The construct scope for creating the task.
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.createStepFunctionsTask.parameter.id"></a>
+
+- *Type:* string
+
+The construct ID for the task.
+
+---
+
+###### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.createStepFunctionsTask.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps">AgentTaskProps</a>
+
+Task configuration properties.
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): Grant
+```
+
+Grant permission to invoke this agent.
+
+Adds the appropriate IAM permissions to the grantee to allow invocation
+of this agent. The specific permissions granted depend on the runtime type:
+- Lambda: lambda:InvokeFunction
+- AgentCore: bedrock-agentcore:InvokeAgentRuntime
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal to grant invocation permissions to.
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -527,10 +888,11 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM execution role for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The encryption key used for agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.runtime">runtime</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a></code> | The runtime implementation for this agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | The Lambda function for this agent (if using Lambda runtime). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | The Bedrock model configuration for this agent. |
 
 ---
 
@@ -546,23 +908,17 @@ The tree node.
 
 ---
 
-##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
+##### ~~`agentRole`~~<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole"></a>
+
+- *Deprecated:* Use runtime.executionRole instead. This property will be removed in a future version.
 
 ```typescript
-public readonly agentFunction: PythonFunction;
+public readonly agentRole: IRole;
 ```
 
-- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+- *Type:* aws-cdk-lib.aws_iam.IRole
 
----
-
-##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole"></a>
-
-```typescript
-public readonly agentRole: Role;
-```
-
-- *Type:* aws-cdk-lib.aws_iam.Role
+The IAM execution role for the agent.
 
 ---
 
@@ -574,6 +930,45 @@ public readonly encryptionKey: Key;
 
 - *Type:* aws-cdk-lib.aws_kms.Key
 
+The encryption key used for agent environment variables.
+
+This key encrypts sensitive data in environment variables for both
+Lambda and AgentCore runtimes.
+
+---
+
+##### `runtime`<sup>Required</sup> <a name="runtime" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.runtime"></a>
+
+```typescript
+public readonly runtime: IAgentRuntime;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a>
+
+The runtime implementation for this agent.
+
+Provides access to the underlying runtime (Lambda or AgentCore) for
+runtime-specific operations. Use this property to:
+- Grant invocation permissions
+- Add environment variables
+- Add IAM policy statements
+- Access runtime-specific properties
+
+---
+
+##### ~~`agentFunction`~~<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
+
+- *Deprecated:* Use runtime property for Lambda-specific access. This property will be removed in a future version.
+Returns undefined if the agent is using AgentCore runtime.
+
+```typescript
+public readonly agentFunction: PythonFunction;
+```
+
+- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+
+The Lambda function for this agent (if using Lambda runtime).
+
 ---
 
 ##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel"></a>
@@ -583,6 +978,8 @@ public readonly bedrockModel: BedrockModelProps;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+The Bedrock model configuration for this agent.
 
 ---
 
@@ -820,6 +1217,15 @@ This is part of the initial service dimension
 
 ### BatchAgent <a name="BatchAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent"></a>
 
+Batch processing agent implementation.
+
+BatchAgent provides a runtime-agnostic implementation for batch processing
+scenarios. It supports both Lambda and AgentCore runtimes, automatically
+selecting the appropriate entry file and configuration based on the runtime type.
+
+The agent processes batch requests using the specified prompt and can optionally
+expect JSON-formatted output for structured data processing.
+
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer"></a>
 
 ```typescript
@@ -859,6 +1265,8 @@ new BatchAgent(scope: Construct, id: string, props: BatchAgentProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.createStepFunctionsTask">createStepFunctionsTask</a></code> | Create a Step Functions task for invoking this agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.grantInvoke">grantInvoke</a></code> | Grant permission to invoke this agent. |
 
 ---
 
@@ -869,6 +1277,78 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `createStepFunctionsTask` <a name="createStepFunctionsTask" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.createStepFunctionsTask"></a>
+
+```typescript
+public createStepFunctionsTask(scope: Construct, id: string, props?: AgentTaskProps): IChainable
+```
+
+Create a Step Functions task for invoking this agent.
+
+This method creates the appropriate Step Functions task based on the agent's
+runtime type:
+- Lambda Runtime: Creates a LambdaInvoke task that directly invokes the Lambda function
+- AgentCore Runtime: Creates a CallAwsService task that invokes the AgentCore Runtime API
+
+For AgentCore runtime, this method automatically:
+- Uses the Step Functions execution ID as the AgentCore session ID for automatic tracking
+- Passes the entire Step Functions input as the payload to the agent
+- Configures IAM permissions for bedrock-agentcore:InvokeAgentRuntime
+
+AgentCore Session Management:
+The session ID is automatically set to the Step Functions execution ID (JsonPath.executionId),
+which provides unique session per Step Functions execution, automatic correlation between
+Step Functions and AgentCore sessions, and simplified debugging and tracing.
+
+Permissions:
+For Lambda runtime, the Step Functions execution role will be granted lambda:InvokeFunction.
+For AgentCore runtime, the Step Functions execution role will be granted bedrock-agentcore:InvokeAgentRuntime.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.createStepFunctionsTask.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The construct scope for creating the task.
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.createStepFunctionsTask.parameter.id"></a>
+
+- *Type:* string
+
+The construct ID for the task.
+
+---
+
+###### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.createStepFunctionsTask.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps">AgentTaskProps</a>
+
+Task configuration properties.
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): Grant
+```
+
+Grant permission to invoke this agent.
+
+Adds the appropriate IAM permissions to the grantee to allow invocation
+of this agent. The specific permissions granted depend on the runtime type:
+- Lambda: lambda:InvokeFunction
+- AgentCore: bedrock-agentcore:InvokeAgentRuntime
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal to grant invocation permissions to.
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -915,10 +1395,11 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM execution role for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The encryption key used for agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.runtime">runtime</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a></code> | The runtime implementation for this agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | The Lambda function for this agent (if using Lambda runtime). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | The Bedrock model configuration for this agent. |
 
 ---
 
@@ -934,23 +1415,17 @@ The tree node.
 
 ---
 
-##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
+##### ~~`agentRole`~~<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole"></a>
+
+- *Deprecated:* Use runtime.executionRole instead. This property will be removed in a future version.
 
 ```typescript
-public readonly agentFunction: PythonFunction;
+public readonly agentRole: IRole;
 ```
 
-- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+- *Type:* aws-cdk-lib.aws_iam.IRole
 
----
-
-##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole"></a>
-
-```typescript
-public readonly agentRole: Role;
-```
-
-- *Type:* aws-cdk-lib.aws_iam.Role
+The IAM execution role for the agent.
 
 ---
 
@@ -962,6 +1437,45 @@ public readonly encryptionKey: Key;
 
 - *Type:* aws-cdk-lib.aws_kms.Key
 
+The encryption key used for agent environment variables.
+
+This key encrypts sensitive data in environment variables for both
+Lambda and AgentCore runtimes.
+
+---
+
+##### `runtime`<sup>Required</sup> <a name="runtime" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.runtime"></a>
+
+```typescript
+public readonly runtime: IAgentRuntime;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a>
+
+The runtime implementation for this agent.
+
+Provides access to the underlying runtime (Lambda or AgentCore) for
+runtime-specific operations. Use this property to:
+- Grant invocation permissions
+- Add environment variables
+- Add IAM policy statements
+- Access runtime-specific properties
+
+---
+
+##### ~~`agentFunction`~~<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
+
+- *Deprecated:* Use runtime property for Lambda-specific access. This property will be removed in a future version.
+Returns undefined if the agent is using AgentCore runtime.
+
+```typescript
+public readonly agentFunction: PythonFunction;
+```
+
+- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+
+The Lambda function for this agent (if using Lambda runtime).
+
 ---
 
 ##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel"></a>
@@ -971,6 +1485,8 @@ public readonly bedrockModel: BedrockModelProps;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+The Bedrock model configuration for this agent.
 
 ---
 
@@ -1826,6 +2342,288 @@ The custom domain name (if configured).
 ---
 
 
+### LambdaAgentRuntime <a name="LambdaAgentRuntime" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a>
+
+Lambda-based agent runtime implementation.
+
+This class wraps an AWS Lambda PythonFunction to provide a consistent
+runtime interface for agents. It implements the IAgentRuntime interface,
+allowing agents to work with Lambda functions through the same API used
+for other runtime types like AgentCore.
+
+The Lambda runtime is suitable for:
+- Short-lived, stateless operations (max 15 minutes)
+- Event-driven invocation patterns
+- Cost-effective execution for intermittent workloads
+- Quick iteration and development
+* const lambdaRuntime = new LambdaAgentRuntime(this, 'AgentRuntime', {
+  functionName: 'my-agent',
+  entry: path.join(__dirname, 'agent-code'),
+  index: 'handler',
+  environment: {
+    MODEL_ID: 'anthropic.claude-v2',
+  },
+  config: {
+    timeout: Duration.minutes(5),
+    memorySize: 2048,
+    architecture: Architecture.ARM_64,
+  },
+});
+
+// Grant invocation permissions
+lambdaRuntime.grantInvoke(someRole);
+
+// Add environment variables
+lambdaRuntime.addEnvironment('DEBUG', 'true');
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer"></a>
+
+```typescript
+import { LambdaAgentRuntime } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LambdaAgentRuntime(scope: Construct, id: string, props: LambdaAgentRuntimeProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps">LambdaAgentRuntimeProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps">LambdaAgentRuntimeProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addEnvironment">addEnvironment</a></code> | Add an environment variable to the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addToRolePolicy">addToRolePolicy</a></code> | Add an IAM policy statement to the Lambda execution role. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.grantInvoke">grantInvoke</a></code> | Grant permission to invoke this Lambda function. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `addEnvironment` <a name="addEnvironment" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addEnvironment"></a>
+
+```typescript
+public addEnvironment(key: string, value: string): void
+```
+
+Add an environment variable to the Lambda function.
+
+Environment variables are made available to the function code at runtime
+through the standard process.env mechanism.
+
+###### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addEnvironment.parameter.key"></a>
+
+- *Type:* string
+
+The environment variable name.
+
+---
+
+###### `value`<sup>Required</sup> <a name="value" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addEnvironment.parameter.value"></a>
+
+- *Type:* string
+
+The environment variable value * lambdaRuntime.addEnvironment('MODEL_ID', 'anthropic.claude-v2'); lambdaRuntime.addEnvironment('TEMPERATURE', '0.7'); ```.
+
+---
+
+##### `addToRolePolicy` <a name="addToRolePolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addToRolePolicy"></a>
+
+```typescript
+public addToRolePolicy(statement: PolicyStatement): void
+```
+
+Add an IAM policy statement to the Lambda execution role.
+
+Grants the Lambda function additional permissions to access AWS resources.
+
+###### `statement`<sup>Required</sup> <a name="statement" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.addToRolePolicy.parameter.statement"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement
+
+The IAM policy statement to add * // Grant access to an S3 bucket lambdaRuntime.addToRolePolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['arn:aws:s3:::my-bucket/*'], })); ```.
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): Grant
+```
+
+Grant permission to invoke this Lambda function.
+
+Adds lambda:InvokeFunction permission to the grantee for this function.
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal to grant invocation permissions to.
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.isConstruct"></a>
+
+```typescript
+import { LambdaAgentRuntime } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LambdaAgentRuntime.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | The underlying PythonFunction construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.executionRole">executionRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM execution role for the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.invocationArn">invocationArn</a></code> | <code>string</code> | The ARN of the Lambda function for invocation. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.runtimeType">runtimeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a></code> | The runtime type identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The CloudWatch log group for the Lambda function. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: PythonFunction;
+```
+
+- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+
+The underlying PythonFunction construct.
+
+Exposed for Lambda-specific operations that are not part of the
+IAgentRuntime interface.
+
+---
+
+##### `executionRole`<sup>Required</sup> <a name="executionRole" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.executionRole"></a>
+
+```typescript
+public readonly executionRole: IRole;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole
+
+The IAM execution role for the Lambda function.
+
+---
+
+##### `invocationArn`<sup>Required</sup> <a name="invocationArn" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.invocationArn"></a>
+
+```typescript
+public readonly invocationArn: string;
+```
+
+- *Type:* string
+
+The ARN of the Lambda function for invocation.
+
+---
+
+##### `runtimeType`<sup>Required</sup> <a name="runtimeType" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.runtimeType"></a>
+
+```typescript
+public readonly runtimeType: AgentRuntimeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a>
+
+The runtime type identifier.
+
+---
+
+##### `logGroup`<sup>Optional</sup> <a name="logGroup" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+The CloudWatch log group for the Lambda function.
+
+---
+
+
 ### Network <a name="Network" id="@cdklabs/cdk-appmod-catalog-blueprints.Network"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.Initializer"></a>
@@ -2154,6 +2952,421 @@ public readonly webAclId: string;
 - *Type:* string
 
 Optional web ACL ID for the distribution.
+
+---
+
+### AgentCoreAgentRuntimeProps <a name="AgentCoreAgentRuntimeProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps"></a>
+
+Properties for creating an AgentCore-based agent runtime.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.Initializer"></a>
+
+```typescript
+import { AgentCoreAgentRuntimeProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentCoreAgentRuntimeProps: AgentCoreAgentRuntimeProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the AgentCore agent runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.foundationModel">foundationModel</a></code> | <code>string</code> | Foundation model to use for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.instruction">instruction</a></code> | <code>string</code> | System instruction/prompt for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig">AgentCoreRuntimeConfig</a></code> | AgentCore-specific runtime configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.environment">environment</a></code> | <code>{[ key: string ]: string}</code> | Environment variables for the AgentCore runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig">AgentCoreNetworkConfig</a></code> | Network configuration for VPC access. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the log group. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | IAM role for the AgentCore runtime. |
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the AgentCore agent runtime.
+
+---
+
+##### `foundationModel`<sup>Required</sup> <a name="foundationModel" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.foundationModel"></a>
+
+```typescript
+public readonly foundationModel: string;
+```
+
+- *Type:* string
+
+Foundation model to use for the agent.
+
+---
+
+##### `instruction`<sup>Required</sup> <a name="instruction" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.instruction"></a>
+
+```typescript
+public readonly instruction: string;
+```
+
+- *Type:* string
+
+System instruction/prompt for the agent.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.config"></a>
+
+```typescript
+public readonly config: AgentCoreRuntimeConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig">AgentCoreRuntimeConfig</a>
+
+AgentCore-specific runtime configuration.
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.environment"></a>
+
+```typescript
+public readonly environment: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+- *Default:* {}
+
+Environment variables for the AgentCore runtime.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.network"></a>
+
+```typescript
+public readonly network: AgentCoreNetworkConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig">AgentCoreNetworkConfig</a>
+
+Network configuration for VPC access.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for the log group.
+
+---
+
+##### `role`<sup>Optional</sup> <a name="role" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntimeProps.property.role"></a>
+
+```typescript
+public readonly role: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+IAM role for the AgentCore runtime.
+
+If not provided, a new role will be created with agentcore.amazonaws.com
+as the service principal.
+
+---
+
+### AgentCoreNetworkConfig <a name="AgentCoreNetworkConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig"></a>
+
+Network configuration for AgentCore runtime.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.Initializer"></a>
+
+```typescript
+import { AgentCoreNetworkConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentCoreNetworkConfig: AgentCoreNetworkConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | VPC to run the AgentCore runtime in. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | Security groups for the AgentCore runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.vpcSubnets">vpcSubnets</a></code> | <code>aws-cdk-lib.aws_ec2.SubnetSelection</code> | VPC subnets to use for the AgentCore runtime. |
+
+---
+
+##### `vpc`<sup>Required</sup> <a name="vpc" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.vpc"></a>
+
+```typescript
+public readonly vpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
+
+VPC to run the AgentCore runtime in.
+
+---
+
+##### `securityGroups`<sup>Optional</sup> <a name="securityGroups" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.securityGroups"></a>
+
+```typescript
+public readonly securityGroups: ISecurityGroup[];
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup[]
+
+Security groups for the AgentCore runtime.
+
+---
+
+##### `vpcSubnets`<sup>Optional</sup> <a name="vpcSubnets" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreNetworkConfig.property.vpcSubnets"></a>
+
+```typescript
+public readonly vpcSubnets: SubnetSelection;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.SubnetSelection
+
+VPC subnets to use for the AgentCore runtime.
+
+---
+
+### AgentCoreRuntimeConfig <a name="AgentCoreRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig"></a>
+
+AgentCore-specific runtime configuration.
+
+Extends BaseRuntimeConfig with AgentCore-specific settings for deployment
+method and code location. AgentCore Runtime supports container-based deployment,
+providing flexibility for complex agent implementations.
+
+Deployment Methods:
+
+1. CONTAINER (Recommended):
+   - Deploy agent as Docker container in Amazon ECR
+   - Full control over runtime environment
+   - Support for any programming language
+   - Custom system dependencies
+   - ARM64 architecture required
+
+2. DIRECT_CODE (Future):
+   - Deploy Python code as ZIP archive in S3
+   - No Docker required
+   - Faster iteration
+   - Limited to Python runtime
+   - Note: May not be fully supported in current version
+
+Container Requirements:
+- ARM64 architecture (required)
+- Expose /invocations POST endpoint for agent interactions
+- Expose /ping GET endpoint for health checks
+- Listen on port 8080 (default)
+- Include ADOT dependencies for observability
+
+Observability Setup:
+For enhanced observability with custom metrics and traces:
+1. Add aws-opentelemetry-distro>=0.10.0 to dependencies
+2. Execute agent with: opentelemetry-instrument python agent_code.py
+3. Enable CloudWatch Transaction Search (one-time account setup)
+
+Reference: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.Initializer"></a>
+
+```typescript
+import { AgentCoreRuntimeConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentCoreRuntimeConfig: AgentCoreRuntimeConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.memorySize">memorySize</a></code> | <code>number</code> | Memory allocation for the agent in MB. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.codeBucket">codeBucket</a></code> | <code>string</code> | For DIRECT_CODE deployment: S3 bucket containing ZIP archive. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.codeKey">codeKey</a></code> | <code>string</code> | For DIRECT_CODE deployment: S3 key for ZIP archive. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.deploymentMethod">deploymentMethod</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod">AgentCoreDeploymentMethod</a></code> | Deployment method for agent code. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.imageUri">imageUri</a></code> | <code>string</code> | For CONTAINER deployment: ECR image URI. |
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+- *Default:* 1024
+
+Memory allocation for the agent in MB.
+
+Specifies the amount of memory available to the agent during execution.
+More memory can improve performance for memory-intensive operations like:
+- Large document processing
+- Complex model inference
+- In-memory data caching
+
+Memory allocation also affects CPU allocation in some runtime types:
+- **Lambda**: CPU scales proportionally with memory (1,769 MB = 1 vCPU)
+- **AgentCore**: CPU allocation may be independent of memory
+
+Valid range depends on runtime type:
+- **Lambda**: 128 MB to 10,240 MB (in 1 MB increments)
+- **AgentCore**: Check AWS documentation for current limits
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(10)
+
+Maximum execution time for the agent.
+
+Specifies how long the agent can run before being terminated. The actual
+maximum depends on the runtime type:
+- **Lambda**: Up to 15 minutes (900 seconds)
+- **AgentCore**: Up to 8 hours (28,800 seconds)
+
+Choose a timeout that accommodates your agent's typical execution time
+plus a buffer for variability. Setting too short a timeout may cause
+premature termination; setting too long may delay error detection.
+
+---
+
+##### `codeBucket`<sup>Optional</sup> <a name="codeBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.codeBucket"></a>
+
+```typescript
+public readonly codeBucket: string;
+```
+
+- *Type:* string
+
+For DIRECT_CODE deployment: S3 bucket containing ZIP archive.
+
+The name of the S3 bucket containing the ZIP archive with the agent code
+and dependencies. The AgentCore execution role will be granted read access
+to this bucket.
+
+ZIP Archive Requirements:
+- Must contain Python code with entrypoint file
+- Must include requirements.txt with dependencies
+- Must set POSIX file permissions before creating archive
+- Entrypoint must use
+
+---
+
+##### `codeKey`<sup>Optional</sup> <a name="codeKey" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.codeKey"></a>
+
+```typescript
+public readonly codeKey: string;
+```
+
+- *Type:* string
+
+For DIRECT_CODE deployment: S3 key for ZIP archive.
+
+The S3 object key (path) to the ZIP archive containing the agent code.
+The AgentCore execution role will be granted read access to this specific
+object.
+
+Example: agents/my-agent/v1.2.3/agent.zip
+
+Best Practices:
+- Include version number in key for traceability
+- Use consistent naming convention across agents
+- Consider using separate prefixes for different environments
+
+Required when: deploymentMethod is DIRECT_CODE
+
+Note: DIRECT_CODE deployment may not be fully supported in the current
+CDK version. Check AWS documentation for the latest deployment options.
+
+---
+
+##### `deploymentMethod`<sup>Optional</sup> <a name="deploymentMethod" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.deploymentMethod"></a>
+
+```typescript
+public readonly deploymentMethod: AgentCoreDeploymentMethod;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod">AgentCoreDeploymentMethod</a>
+- *Default:* AgentCoreDeploymentMethod.DIRECT_CODE
+
+Deployment method for agent code.
+
+Determines how the agent code is packaged and deployed to AgentCore Runtime:
+
+**CONTAINER** (Recommended):
+- Package agent as Docker container image
+- Store image in Amazon ECR
+- Specify image URI in `imageUri` property
+- Provides full control over runtime environment
+- Supports any programming language
+- Allows custom system dependencies
+- Requires Docker expertise
+
+**DIRECT_CODE** (Future Support):
+- Package Python agent as ZIP archive
+- Store archive in Amazon S3
+- Specify bucket and key in `codeBucket` and `codeKey` properties
+- Simpler deployment workflow
+- No Docker required
+- Limited to Python runtime
+- Note: May not be fully supported in current CDK version
+
+**Choosing a Deployment Method:**
+- Use CONTAINER for production workloads requiring custom dependencies
+- Use CONTAINER for non-Python agents
+- Use DIRECT_CODE (when available) for simple Python agents
+- Use DIRECT_CODE (when available) for rapid prototyping
+
+---
+
+##### `imageUri`<sup>Optional</sup> <a name="imageUri" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig.property.imageUri"></a>
+
+```typescript
+public readonly imageUri: string;
+```
+
+- *Type:* string
+
+For CONTAINER deployment: ECR image URI.
+
+The fully qualified URI of the Docker image in Amazon ECR containing
+the agent code and dependencies.
+
+Format: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}
+
+Example: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:v1.2.3
+
+Requirements:
+- Image must be built for ARM64 architecture
+- Image must expose /invocations POST endpoint
+- Image must expose /ping GET endpoint for health checks
+- Image should listen on port 8080 (default)
+- AgentCore execution role must have permissions to pull from ECR
+
+Building ARM64 Images:
+Use docker buildx build with --platform linux/arm64 flag, then tag and push to ECR.
+
+Required when: deploymentMethod is CONTAINER
 
 ---
 
@@ -2533,6 +3746,207 @@ This parameter takes precedence over the `processingBedrockModel` parameter.
 
 ---
 
+### AgentRuntimeConfig <a name="AgentRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig"></a>
+
+Configuration for agent runtime environment.
+
+This interface specifies which runtime type to use (Lambda or AgentCore) and
+provides runtime-specific configuration options. It serves as the primary
+configuration point for selecting and configuring the agent's execution environment.
+
+Runtime Selection Guide:
+
+Use Lambda Runtime when:
+- Execution time is under 15 minutes
+- Agent operations are stateless
+- Cost optimization for intermittent workloads is important
+- Quick iteration and development is needed
+- Event-driven invocation patterns are sufficient
+
+Use AgentCore Runtime when:
+- Execution time exceeds 15 minutes (up to 8 hours)
+- Agent requires stateful session management
+- Complex multi-turn conversations are needed
+- Enhanced agent orchestration capabilities are required
+- Long-running batch processing is needed
+
+Observability Differences:
+
+Lambda Runtime:
+- Uses AWS Lambda Powertools for structured logging
+- CloudWatch Logs: /aws/lambda/function-name
+- X-Ray tracing for distributed tracing
+- CloudWatch Metrics for invocation metrics
+- Environment variables: POWERTOOLS_SERVICE_NAME, POWERTOOLS_METRICS_NAMESPACE
+
+AgentCore Runtime:
+- Uses AWS Distro for OpenTelemetry (ADOT) for observability
+- CloudWatch Logs: /aws/bedrock-agentcore/runtimes/runtime-name
+- CloudWatch Transaction Search for trace visualization
+- CloudWatch GenAI Observability dashboard
+- Built-in runtime metrics (invocations, latency, errors, resource usage)
+- Requires CloudWatch Transaction Search setup (one-time account configuration)
+- Environment variables: OTEL_*, AGENT_OBSERVABILITY_ENABLED
+
+ADOT Integration Requirements (AgentCore):
+To enable custom metrics and traces in AgentCore agents:
+1. Add dependency: aws-opentelemetry-distro>=0.10.0
+2. Execute agent with: opentelemetry-instrument python agent_code.py
+3. Enable CloudWatch Transaction Search in your AWS account
+4. Configure OTEL environment variables (handled automatically by CDK)
+
+Reference: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
+
+Migration Between Runtimes:
+
+Switching between Lambda and AgentCore requires:
+1. Update runtime configuration in CDK code
+2. Adapt agent entrypoint (Lambda handler vs AgentCore
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig.Initializer"></a>
+
+```typescript
+import { AgentRuntimeConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentRuntimeConfig: AgentRuntimeConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig.property.type">type</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a></code> | The type of runtime to use for agent execution. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig">LambdaRuntimeConfig</a> \| <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig">AgentCoreRuntimeConfig</a></code> | Runtime-specific configuration options. |
+
+---
+
+##### `type`<sup>Required</sup> <a name="type" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig.property.type"></a>
+
+```typescript
+public readonly type: AgentRuntimeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a>
+- *Default:* AgentRuntimeType.LAMBDA
+
+The type of runtime to use for agent execution.
+
+Specifies whether the agent should run on AWS Lambda or AWS AgentCore Runtime.
+This choice affects:
+- Maximum execution time (Lambda: 15 min, AgentCore: 8 hours)
+- Invocation model (Lambda: event-driven, AgentCore: HTTP-based)
+- State management (Lambda: stateless, AgentCore: stateful sessions)
+- Observability (Lambda: Powertools, AgentCore: ADOT)
+- Cost structure (Lambda: per-invocation, AgentCore: per-runtime-hour)
+- IAM permissions (Lambda: lambda:InvokeFunction, AgentCore: bedrock-agentcore:InvokeAgentRuntime)
+
+**Backward Compatibility:**
+If not specified, defaults to Lambda runtime to maintain backward compatibility
+with existing code. All existing agents continue to work without modification.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig.property.config"></a>
+
+```typescript
+public readonly config: LambdaRuntimeConfig | AgentCoreRuntimeConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig">LambdaRuntimeConfig</a> | <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeConfig">AgentCoreRuntimeConfig</a>
+- *Default:* Sensible defaults based on runtime type
+
+Runtime-specific configuration options.
+
+Provides configuration settings specific to the selected runtime type:
+
+**For Lambda (LambdaRuntimeConfig):**
+- timeout: Maximum execution time (up to 15 minutes)
+- memorySize: Memory allocation (128 MB to 10,240 MB)
+- architecture: CPU architecture (X86_64 or ARM_64)
+- ephemeralStorageSize: /tmp storage size (512 MB to 10,240 MB)
+
+**For AgentCore (AgentCoreRuntimeConfig):**
+- timeout: Maximum execution time (up to 8 hours)
+- memorySize: Memory allocation (check AWS docs for limits)
+- deploymentMethod: CONTAINER or DIRECT_CODE
+- imageUri: ECR image URI (for CONTAINER deployment)
+- codeBucket/codeKey: S3 location (for DIRECT_CODE deployment)
+
+**Type Safety:**
+TypeScript will enforce that the config matches the runtime type, but
+runtime validation is also performed to catch configuration errors early.
+
+**Default Behavior:**
+If not specified, each runtime uses sensible defaults:
+- Lambda: 10 min timeout, 1024 MB memory, X86_64 architecture
+- AgentCore: 10 min timeout, 1024 MB memory, CONTAINER deployment
+
+---
+
+### AgentTaskProps <a name="AgentTaskProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps"></a>
+
+Properties for creating a Step Functions task to invoke an agent.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.Initializer"></a>
+
+```typescript
+import { AgentTaskProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentTaskProps: AgentTaskProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.payload">payload</a></code> | <code>aws-cdk-lib.aws_stepfunctions.TaskInput</code> | The payload to pass to the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.resultPath">resultPath</a></code> | <code>string</code> | JSONPath expression to store the task result. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.resultSelector">resultSelector</a></code> | <code>{[ key: string ]: any}</code> | JSONPath expression to select a portion of the state to be the output. |
+
+---
+
+##### `payload`<sup>Optional</sup> <a name="payload" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.payload"></a>
+
+```typescript
+public readonly payload: TaskInput;
+```
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.TaskInput
+- *Default:* TaskInput.fromJsonPathAt('$') - passes entire Step Functions input
+
+The payload to pass to the agent.
+
+For Lambda runtime: Passed directly as the Lambda function payload
+For AgentCore runtime: Passed as the payload field in the HTTP request body
+
+---
+
+##### `resultPath`<sup>Optional</sup> <a name="resultPath" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.resultPath"></a>
+
+```typescript
+public readonly resultPath: string;
+```
+
+- *Type:* string
+- *Default:* '$.processingResult'
+
+JSONPath expression to store the task result.
+
+---
+
+##### `resultSelector`<sup>Optional</sup> <a name="resultSelector" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentTaskProps.property.resultSelector"></a>
+
+```typescript
+public readonly resultSelector: {[ key: string ]: any};
+```
+
+- *Type:* {[ key: string ]: any}
+- *Default:* undefined - entire result is used
+
+JSONPath expression to select a portion of the state to be the output.
+
+---
+
 ### AgentToolsLocationDefinition <a name="AgentToolsLocationDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition"></a>
 
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentToolsLocationDefinition.Initializer"></a>
@@ -2617,6 +4031,7 @@ const baseAgentProps: BaseAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.runtime">runtime</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig">AgentRuntimeConfig</a></code> | Runtime configuration for the agent. |
 
 ---
 
@@ -2732,6 +4147,22 @@ public readonly removalPolicy: RemovalPolicy;
 - *Default:* RemovalPolicy.DESTROY
 
 Removal policy for resources created by this construct.
+
+---
+
+##### `runtime`<sup>Optional</sup> <a name="runtime" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.runtime"></a>
+
+```typescript
+public readonly runtime: AgentRuntimeConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig">AgentRuntimeConfig</a>
+- *Default:* Lambda runtime with default configuration
+
+Runtime configuration for the agent.
+
+Specifies the execution environment (Lambda or AgentCore) and
+runtime-specific settings. If not provided, defaults to Lambda runtime.
 
 ---
 
@@ -2910,7 +4341,83 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
+### BaseRuntimeConfig <a name="BaseRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig"></a>
+
+Common runtime configuration parameters shared across all runtime types.
+
+This interface defines the base configuration options that apply to all
+agent runtime types (Lambda and AgentCore). These settings control the
+fundamental resource allocation and execution constraints for the agent.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig.Initializer"></a>
+
+```typescript
+import { BaseRuntimeConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const baseRuntimeConfig: BaseRuntimeConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig.property.memorySize">memorySize</a></code> | <code>number</code> | Memory allocation for the agent in MB. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the agent. |
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+- *Default:* 1024
+
+Memory allocation for the agent in MB.
+
+Specifies the amount of memory available to the agent during execution.
+More memory can improve performance for memory-intensive operations like:
+- Large document processing
+- Complex model inference
+- In-memory data caching
+
+Memory allocation also affects CPU allocation in some runtime types:
+- **Lambda**: CPU scales proportionally with memory (1,769 MB = 1 vCPU)
+- **AgentCore**: CPU allocation may be independent of memory
+
+Valid range depends on runtime type:
+- **Lambda**: 128 MB to 10,240 MB (in 1 MB increments)
+- **AgentCore**: Check AWS documentation for current limits
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseRuntimeConfig.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(10)
+
+Maximum execution time for the agent.
+
+Specifies how long the agent can run before being terminated. The actual
+maximum depends on the runtime type:
+- **Lambda**: Up to 15 minutes (900 seconds)
+- **AgentCore**: Up to 8 hours (28,800 seconds)
+
+Choose a timeout that accommodates your agent's typical execution time
+plus a buffer for variability. Setting too short a timeout may cause
+premature termination; setting too long may delay error detection.
+
+---
+
 ### BatchAgentProps <a name="BatchAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps"></a>
+
+Properties for BatchAgent construct.
 
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.Initializer"></a>
 
@@ -2933,8 +4440,9 @@ const batchAgentProps: BatchAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.runtime">runtime</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig">AgentRuntimeConfig</a></code> | Runtime configuration for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | The prompt to be used for batch processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | Whether the agent should expect JSON output. |
 
 ---
 
@@ -3053,6 +4561,22 @@ Removal policy for resources created by this construct.
 
 ---
 
+##### `runtime`<sup>Optional</sup> <a name="runtime" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.runtime"></a>
+
+```typescript
+public readonly runtime: AgentRuntimeConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig">AgentRuntimeConfig</a>
+- *Default:* Lambda runtime with default configuration
+
+Runtime configuration for the agent.
+
+Specifies the execution environment (Lambda or AgentCore) and
+runtime-specific settings. If not provided, defaults to Lambda runtime.
+
+---
+
 ##### `prompt`<sup>Required</sup> <a name="prompt" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt"></a>
 
 ```typescript
@@ -3060,6 +4584,8 @@ public readonly prompt: string;
 ```
 
 - *Type:* string
+
+The prompt to be used for batch processing.
 
 ---
 
@@ -3070,6 +4596,9 @@ public readonly expectJson: boolean;
 ```
 
 - *Type:* boolean
+- *Default:* false
+
+Whether the agent should expect JSON output.
 
 ---
 
@@ -3394,7 +4923,7 @@ public readonly fmModelId: FoundationModelIdentifier;
 ```
 
 - *Type:* aws-cdk-lib.aws_bedrock.FoundationModelIdentifier
-- *Default:* FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0
+- *Default:* DEFAULT_BEDROCK_MODEL (Claude Sonnet 4.5)
 
 Foundation model to use.
 
@@ -3412,6 +4941,134 @@ public readonly useCrossRegionInference: boolean;
 Enable cross-region inference for Bedrock models to improve availability and performance.
 
 When enabled, uses inference profiles instead of direct model invocation.
+
+---
+
+### CommonRuntimeProps <a name="CommonRuntimeProps" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps"></a>
+
+Common properties shared across all runtime types.
+
+These properties are required by all runtime implementations and are
+extracted from the runtime-specific props to avoid duplication.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.Initializer"></a>
+
+```typescript
+import { CommonRuntimeProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const commonRuntimeProps: CommonRuntimeProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent (used for function name or runtime name). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.entry">entry</a></code> | <code>string</code> | Path to the directory containing the agent code. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.description">description</a></code> | <code>string</code> | Description of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.environment">environment</a></code> | <code>{[ key: string ]: string}</code> | Environment variables for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.foundationModel">foundationModel</a></code> | <code>string</code> | Foundation model for AgentCore runtime Only used when creating AgentCore runtimes. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.index">index</a></code> | <code>string</code> | Name of the entry file (without extension). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.instruction">instruction</a></code> | <code>string</code> | System instruction for AgentCore runtime Only used when creating AgentCore runtimes. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.layers">layers</a></code> | <code>any[]</code> | Lambda layers for Lambda runtime Only used when creating Lambda runtimes. |
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the agent (used for function name or runtime name).
+
+---
+
+##### `entry`<sup>Required</sup> <a name="entry" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.entry"></a>
+
+```typescript
+public readonly entry: string;
+```
+
+- *Type:* string
+
+Path to the directory containing the agent code.
+
+---
+
+##### `description`<sup>Optional</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Description of the agent.
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.environment"></a>
+
+```typescript
+public readonly environment: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+- *Default:* {}
+
+Environment variables for the agent.
+
+---
+
+##### `foundationModel`<sup>Optional</sup> <a name="foundationModel" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.foundationModel"></a>
+
+```typescript
+public readonly foundationModel: string;
+```
+
+- *Type:* string
+
+Foundation model for AgentCore runtime Only used when creating AgentCore runtimes.
+
+---
+
+##### `index`<sup>Optional</sup> <a name="index" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.index"></a>
+
+```typescript
+public readonly index: string;
+```
+
+- *Type:* string
+- *Default:* 'index'
+
+Name of the entry file (without extension).
+
+---
+
+##### `instruction`<sup>Optional</sup> <a name="instruction" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.instruction"></a>
+
+```typescript
+public readonly instruction: string;
+```
+
+- *Type:* string
+
+System instruction for AgentCore runtime Only used when creating AgentCore runtimes.
+
+---
+
+##### `layers`<sup>Optional</sup> <a name="layers" id="@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps.property.layers"></a>
+
+```typescript
+public readonly layers: any[];
+```
+
+- *Type:* any[]
+
+Lambda layers for Lambda runtime Only used when creating Lambda runtimes.
 
 ---
 
@@ -3936,6 +5593,175 @@ Optional flag to skip the build process (useful for pre-built artifacts).
 
 ---
 
+### LambdaAgentRuntimeProps <a name="LambdaAgentRuntimeProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps"></a>
+
+Properties for creating a Lambda-based agent runtime.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.Initializer"></a>
+
+```typescript
+import { LambdaAgentRuntimeProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const lambdaAgentRuntimeProps: LambdaAgentRuntimeProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.entry">entry</a></code> | <code>string</code> | Path to the directory containing the Lambda function code. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.functionName">functionName</a></code> | <code>string</code> | Name of the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig">LambdaRuntimeConfig</a></code> | Lambda-specific runtime configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.environment">environment</a></code> | <code>{[ key: string ]: string}</code> | Environment variables for the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.environmentEncryption">environmentEncryption</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | KMS key for encrypting environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.index">index</a></code> | <code>string</code> | Name of the Python file containing the handler (without .py extension). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.layers">layers</a></code> | <code>aws-cdk-lib.aws_lambda.ILayerVersion[]</code> | Lambda layers to attach to the function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | IAM role for the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.runtime">runtime</a></code> | <code>aws-cdk-lib.aws_lambda.Runtime</code> | Python runtime version. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | VPC to run the Lambda function in. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.vpcSubnets">vpcSubnets</a></code> | <code>aws-cdk-lib.aws_ec2.SubnetSelection</code> | VPC subnets to use for the Lambda function. |
+
+---
+
+##### `entry`<sup>Required</sup> <a name="entry" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.entry"></a>
+
+```typescript
+public readonly entry: string;
+```
+
+- *Type:* string
+
+Path to the directory containing the Lambda function code.
+
+---
+
+##### `functionName`<sup>Required</sup> <a name="functionName" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.functionName"></a>
+
+```typescript
+public readonly functionName: string;
+```
+
+- *Type:* string
+
+Name of the Lambda function.
+
+---
+
+##### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.config"></a>
+
+```typescript
+public readonly config: LambdaRuntimeConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig">LambdaRuntimeConfig</a>
+
+Lambda-specific runtime configuration.
+
+---
+
+##### `environment`<sup>Optional</sup> <a name="environment" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.environment"></a>
+
+```typescript
+public readonly environment: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+- *Default:* {}
+
+Environment variables for the Lambda function.
+
+---
+
+##### `environmentEncryption`<sup>Optional</sup> <a name="environmentEncryption" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.environmentEncryption"></a>
+
+```typescript
+public readonly environmentEncryption: IKey;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.IKey
+
+KMS key for encrypting environment variables.
+
+---
+
+##### `index`<sup>Optional</sup> <a name="index" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.index"></a>
+
+```typescript
+public readonly index: string;
+```
+
+- *Type:* string
+- *Default:* 'index'
+
+Name of the Python file containing the handler (without .py extension).
+
+---
+
+##### `layers`<sup>Optional</sup> <a name="layers" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.layers"></a>
+
+```typescript
+public readonly layers: ILayerVersion[];
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.ILayerVersion[]
+- *Default:* []
+
+Lambda layers to attach to the function.
+
+---
+
+##### `role`<sup>Optional</sup> <a name="role" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.role"></a>
+
+```typescript
+public readonly role: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+IAM role for the Lambda function.
+
+If not provided, a new role will be created with lambda.amazonaws.com
+as the service principal.
+
+---
+
+##### `runtime`<sup>Optional</sup> <a name="runtime" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.runtime"></a>
+
+```typescript
+public readonly runtime: Runtime;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Runtime
+- *Default:* Runtime.PYTHON_3_12
+
+Python runtime version.
+
+---
+
+##### `vpc`<sup>Optional</sup> <a name="vpc" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.vpc"></a>
+
+```typescript
+public readonly vpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
+
+VPC to run the Lambda function in.
+
+---
+
+##### `vpcSubnets`<sup>Optional</sup> <a name="vpcSubnets" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntimeProps.property.vpcSubnets"></a>
+
+```typescript
+public readonly vpcSubnets: SubnetSelection;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.SubnetSelection
+
+VPC subnets to use for the Lambda function.
+
+---
+
 ### LambdaIamUtilsStackInfo <a name="LambdaIamUtilsStackInfo" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaIamUtilsStackInfo"></a>
 
 Stack information.
@@ -4121,6 +5947,151 @@ public readonly uniqueFunctionName: string;
 - *Type:* string
 
 The unique function name that was generated.
+
+---
+
+### LambdaRuntimeConfig <a name="LambdaRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig"></a>
+
+Lambda-specific runtime configuration.
+
+Extends BaseRuntimeConfig with Lambda-specific settings for CPU architecture
+and ephemeral storage. These options allow fine-tuning of Lambda function
+performance and cost characteristics.
+
+Architecture Considerations:
+- X86_64: Broader compatibility, more mature ecosystem
+- ARM_64: Better price-performance ratio (up to 34% better), lower carbon footprint
+
+Ephemeral Storage:
+- Available at /tmp in Lambda function
+- Persists for the lifetime of the execution environment
+- Useful for caching, temporary file processing, or large downloads
+- Additional cost applies above 512 MB
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.Initializer"></a>
+
+```typescript
+import { LambdaRuntimeConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const lambdaRuntimeConfig: LambdaRuntimeConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.memorySize">memorySize</a></code> | <code>number</code> | Memory allocation for the agent in MB. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | CPU architecture for Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.ephemeralStorageSize">ephemeralStorageSize</a></code> | <code>aws-cdk-lib.Size</code> | Ephemeral storage size for Lambda function. |
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+- *Default:* 1024
+
+Memory allocation for the agent in MB.
+
+Specifies the amount of memory available to the agent during execution.
+More memory can improve performance for memory-intensive operations like:
+- Large document processing
+- Complex model inference
+- In-memory data caching
+
+Memory allocation also affects CPU allocation in some runtime types:
+- **Lambda**: CPU scales proportionally with memory (1,769 MB = 1 vCPU)
+- **AgentCore**: CPU allocation may be independent of memory
+
+Valid range depends on runtime type:
+- **Lambda**: 128 MB to 10,240 MB (in 1 MB increments)
+- **AgentCore**: Check AWS documentation for current limits
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(10)
+
+Maximum execution time for the agent.
+
+Specifies how long the agent can run before being terminated. The actual
+maximum depends on the runtime type:
+- **Lambda**: Up to 15 minutes (900 seconds)
+- **AgentCore**: Up to 8 hours (28,800 seconds)
+
+Choose a timeout that accommodates your agent's typical execution time
+plus a buffer for variability. Setting too short a timeout may cause
+premature termination; setting too long may delay error detection.
+
+---
+
+##### `architecture`<sup>Optional</sup> <a name="architecture" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.architecture"></a>
+
+```typescript
+public readonly architecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.X86_64
+
+CPU architecture for Lambda function.
+
+Determines the processor architecture used to execute the Lambda function:
+- **X86_64**: Intel/AMD x86-64 architecture (default)
+  - Broader compatibility with existing libraries
+  - More mature ecosystem
+  - Standard pricing
+- **ARM_64**: AWS Graviton2 ARM-based architecture
+  - Up to 34% better price-performance
+  - Lower carbon footprint
+  - May require ARM-compatible dependencies
+
+**Migration Considerations:**
+When switching to ARM_64, ensure all dependencies (Python packages,
+Lambda layers, native extensions) are ARM-compatible. Most popular
+Python packages support ARM64, but verify before migrating.
+
+---
+
+##### `ephemeralStorageSize`<sup>Optional</sup> <a name="ephemeralStorageSize" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaRuntimeConfig.property.ephemeralStorageSize"></a>
+
+```typescript
+public readonly ephemeralStorageSize: Size;
+```
+
+- *Type:* aws-cdk-lib.Size
+- *Default:* Size.mebibytes(512)
+
+Ephemeral storage size for Lambda function.
+
+Configures the size of the /tmp directory available to the Lambda function.
+This storage is:
+- Ephemeral: Cleared between cold starts
+- Persistent: Available across warm invocations in the same execution environment
+- Fast: Local SSD storage
+
+**Use Cases:**
+- Downloading and processing large files
+- Caching data between invocations (warm starts)
+- Temporary storage for intermediate processing results
+- Extracting and working with ZIP archives
+
+**Sizing Guidelines:**
+- Default 512 MB is sufficient for most use cases
+- Increase for document processing, media manipulation, or large datasets
+- Maximum 10,240 MB (10 GB)
+- Additional cost applies above 512 MB
 
 ---
 
@@ -4458,6 +6429,94 @@ This serves as the trigger point for processing
 ---
 
 ## Classes <a name="Classes" id="Classes"></a>
+
+### AgentRuntimeFactory <a name="AgentRuntimeFactory" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory"></a>
+
+Factory for creating agent runtime implementations.
+
+This factory provides a centralized way to create runtime instances based on
+the runtime type specified in the configuration. It handles the complexity of
+instantiating the correct runtime implementation (Lambda or AgentCore) with
+the appropriate properties.
+
+The factory pattern enables:
+- Type-safe runtime creation with compile-time validation
+- Centralized error handling for invalid configurations
+- Easy extension to support additional runtime types in the future
+- Consistent runtime creation across the framework
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.Initializer"></a>
+
+```typescript
+import { AgentRuntimeFactory } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new AgentRuntimeFactory()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create">create</a></code> | Create a runtime implementation based on the runtime configuration. |
+
+---
+
+##### `create` <a name="create" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create"></a>
+
+```typescript
+import { AgentRuntimeFactory } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+AgentRuntimeFactory.create(scope: Construct, id: string, runtimeConfig: AgentRuntimeConfig, commonProps: CommonRuntimeProps)
+```
+
+Create a runtime implementation based on the runtime configuration.
+
+This method inspects the runtime type in the configuration and instantiates
+the appropriate runtime implementation (Lambda or AgentCore). It validates
+that the runtime type is supported and throws an error for unsupported types.
+
+The method handles the mapping of common properties to runtime-specific
+property interfaces, ensuring type safety while minimizing code duplication.
+
+###### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The CDK construct scope.
+
+---
+
+###### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create.parameter.id"></a>
+
+- *Type:* string
+
+The construct ID.
+
+---
+
+###### `runtimeConfig`<sup>Required</sup> <a name="runtimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create.parameter.runtimeConfig"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeConfig">AgentRuntimeConfig</a>
+
+The runtime configuration specifying type and settings.
+
+---
+
+###### `commonProps`<sup>Required</sup> <a name="commonProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeFactory.create.parameter.commonProps"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.CommonRuntimeProps">CommonRuntimeProps</a>
+
+Common properties shared across runtime types.
+
+---
+
+
 
 ### BedrockModelUtils <a name="BedrockModelUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils"></a>
 
@@ -5662,6 +7721,200 @@ The parameters passed to the document processing L3 Construct.
 ---
 
 
+### IAgentRuntime <a name="IAgentRuntime" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreAgentRuntime">AgentCoreAgentRuntime</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaAgentRuntime">LambdaAgentRuntime</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime">IAgentRuntime</a>
+
+Abstract interface for runtime-specific implementations.
+
+This interface provides a unified abstraction over different agent runtime types
+(Lambda and AgentCore), enabling the framework to work with either runtime
+through a consistent API.
+
+Implementations of this interface handle runtime-specific details such as:
+- IAM role configuration with appropriate service principals
+- Invocation mechanisms and ARN formats
+- Environment variable management
+- Permission grants for invoking the agent
+- CloudWatch log group configuration
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addEnvironment">addEnvironment</a></code> | Configure environment variables for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addToRolePolicy">addToRolePolicy</a></code> | Add IAM policy statements to the execution role. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.grantInvoke">grantInvoke</a></code> | Grant permission to invoke this agent. |
+
+---
+
+##### `addEnvironment` <a name="addEnvironment" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addEnvironment"></a>
+
+```typescript
+public addEnvironment(key: string, value: string): void
+```
+
+Configure environment variables for the agent.
+
+Environment variables are made available to the agent code at runtime.
+The mechanism for setting environment variables differs by runtime type,
+but this interface provides a consistent API.
+
+Common use cases:
+- Model configuration (MODEL_ID, TEMPERATURE)
+- S3 bucket names and keys for tools and prompts
+- Feature flags and behavior toggles
+- Observability configuration (POWERTOOLS_*, OTEL_*)
+
+###### `key`<sup>Required</sup> <a name="key" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addEnvironment.parameter.key"></a>
+
+- *Type:* string
+
+The environment variable name.
+
+---
+
+###### `value`<sup>Required</sup> <a name="value" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addEnvironment.parameter.value"></a>
+
+- *Type:* string
+
+The environment variable value.
+
+---
+
+##### `addToRolePolicy` <a name="addToRolePolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addToRolePolicy"></a>
+
+```typescript
+public addToRolePolicy(statement: PolicyStatement): void
+```
+
+Add IAM policy statements to the execution role.
+
+Grants the agent's execution role additional permissions to access AWS
+resources. This is commonly used to:
+- Grant access to S3 buckets containing tools or data
+- Grant permissions to invoke other AWS services
+- Grant access to DynamoDB tables, SQS queues, etc.
+
+The policy statement is added to the execution role's inline policy,
+regardless of runtime type.
+
+###### `statement`<sup>Required</sup> <a name="statement" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.addToRolePolicy.parameter.statement"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement
+
+The IAM policy statement to add.
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): Grant
+```
+
+Grant permission to invoke this agent.
+
+Adds the appropriate IAM permissions to the grantee to allow invocation
+of this agent. The specific permissions granted depend on the runtime type:
+- Lambda: lambda:InvokeFunction
+- AgentCore: bedrock-agentcore:InvokeAgentRuntime
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal to grant invocation permissions to.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.executionRole">executionRole</a></code> | <code>aws-cdk-lib.aws_iam.IRole</code> | The IAM execution role for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.invocationArn">invocationArn</a></code> | <code>string</code> | The ARN or identifier for invoking the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.runtimeType">runtimeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a></code> | The type of runtime (Lambda or AgentCore). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.ILogGroup</code> | The CloudWatch log group for this agent. |
+
+---
+
+##### `executionRole`<sup>Required</sup> <a name="executionRole" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.executionRole"></a>
+
+```typescript
+public readonly executionRole: IRole;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.IRole
+
+The IAM execution role for the agent.
+
+This role is assumed by the runtime service (Lambda or AgentCore) when
+executing the agent code. It should have permissions to:
+- Invoke Bedrock models
+- Access tool assets in S3
+- Write to CloudWatch Logs
+- Access any other AWS resources required by the agent
+
+The service principal of this role differs by runtime type:
+- Lambda: lambda.amazonaws.com
+- AgentCore: agentcore.amazonaws.com
+
+---
+
+##### `invocationArn`<sup>Required</sup> <a name="invocationArn" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.invocationArn"></a>
+
+```typescript
+public readonly invocationArn: string;
+```
+
+- *Type:* string
+
+The ARN or identifier for invoking the agent.
+
+This is the resource identifier used when granting invocation permissions
+or invoking the agent from other AWS services.
+
+Format differs by runtime type:
+- Lambda: arn:aws:lambda:region:account:function:function-name
+- AgentCore: arn:aws:bedrock-agentcore:region:account:agent-runtime/runtime-id
+
+---
+
+##### `runtimeType`<sup>Required</sup> <a name="runtimeType" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.runtimeType"></a>
+
+```typescript
+public readonly runtimeType: AgentRuntimeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType">AgentRuntimeType</a>
+
+The type of runtime (Lambda or AgentCore).
+
+Used for runtime-specific logic without instanceof checks.
+This enables type-safe branching based on runtime capabilities.
+
+---
+
+##### `logGroup`<sup>Optional</sup> <a name="logGroup" id="@cdklabs/cdk-appmod-catalog-blueprints.IAgentRuntime.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: ILogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.ILogGroup
+
+The CloudWatch log group for this agent.
+
+Contains logs generated by the agent during execution. May be undefined
+if logging is not configured or not yet created.
+
+Log group naming differs by runtime type:
+- Lambda: /aws/lambda/function-name
+- AgentCore: /aws/bedrock-agentcore/runtimes/runtime-name
+
+---
+
 ### IObservable <a name="IObservable" id="@cdklabs/cdk-appmod-catalog-blueprints.IObservable"></a>
 
 - *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing">AgenticDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing">BaseDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing">BedrockDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IObservable">IObservable</a>
@@ -5723,6 +7976,60 @@ public readonly metricServiceName: string;
 ---
 
 ## Enums <a name="Enums" id="Enums"></a>
+
+### AgentCoreDeploymentMethod <a name="AgentCoreDeploymentMethod" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod"></a>
+
+AgentCore deployment method.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod.CONTAINER">CONTAINER</a></code> | Container-based deployment using Docker image in ECR - Suitable for complex agents with custom dependencies - Requires Docker expertise - Full control over runtime environment. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod.DIRECT_CODE">DIRECT_CODE</a></code> | Direct code deployment using ZIP archive in S3 - Suitable for Python agents with standard dependencies - No Docker required - Faster iteration and prototyping. |
+
+---
+
+##### `CONTAINER` <a name="CONTAINER" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod.CONTAINER"></a>
+
+Container-based deployment using Docker image in ECR - Suitable for complex agents with custom dependencies - Requires Docker expertise - Full control over runtime environment.
+
+---
+
+
+##### `DIRECT_CODE` <a name="DIRECT_CODE" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreDeploymentMethod.DIRECT_CODE"></a>
+
+Direct code deployment using ZIP archive in S3 - Suitable for Python agents with standard dependencies - No Docker required - Faster iteration and prototyping.
+
+---
+
+
+### AgentRuntimeType <a name="AgentRuntimeType" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType"></a>
+
+Supported agent runtime types.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType.LAMBDA">LAMBDA</a></code> | AWS Lambda function runtime (default) - Suitable for short-lived, stateless operations - Maximum execution time: 15 minutes - Event-driven invocation model. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType.AGENTCORE">AGENTCORE</a></code> | AWS AgentCore runtime - Suitable for long-running, stateful operations - Extended execution time support - Enhanced agent orchestration capabilities. |
+
+---
+
+##### `LAMBDA` <a name="LAMBDA" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType.LAMBDA"></a>
+
+AWS Lambda function runtime (default) - Suitable for short-lived, stateless operations - Maximum execution time: 15 minutes - Event-driven invocation model.
+
+---
+
+
+##### `AGENTCORE` <a name="AGENTCORE" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentRuntimeType.AGENTCORE"></a>
+
+AWS AgentCore runtime - Suitable for long-running, stateful operations - Extended execution time support - Enhanced agent orchestration capabilities.
+
+---
+
 
 ### BedrockCrossRegionInferencePrefix <a name="BedrockCrossRegionInferencePrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix"></a>
 

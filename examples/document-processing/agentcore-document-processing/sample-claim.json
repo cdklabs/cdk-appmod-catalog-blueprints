@@ -1,0 +1,6 @@
+{
+  "contentType": "data",
+  "content": {
+    "data": "TRAVEL INSURANCE CLAIM FORM\n\nPolicy Number: GTI-2024-789456\nClaimant Name: John Smith\nClaim Date: January 15, 2024\n\nCLAIM DETAILS:\n\nFlight Information:\n- Flight: AA1234 from New York (JFK) to London (LHR)\n- Scheduled Departure: January 10, 2024, 18:00\n- Actual Departure: January 11, 2024, 12:00 (18 hour delay)\n\nExpenses Claimed:\n1. Hotel Accommodation: $180.00\n   - Hotel: Airport Inn, JFK\n   - Date: January 10-11, 2024\n   - Receipt attached: hotel_receipt.pdf\n\n2. Meals: $65.00\n   - Multiple meals during delay period\n   - Receipts attached: meal_receipts.pdf\n\n3. Ground Transportation: $25.00\n   - Taxi to/from hotel\n   - Note: Receipt misplaced\n\nTotal Claimed: $270.00\n\nSupporting Documents:\n- Airline delay notification (airline_delay_notification.pdf)\n- Hotel receipt (hotel_receipt.pdf)\n- Meal receipts (meal_receipts.pdf)\n\nI certify that the information provided is true and accurate.\n\nSignature: John Smith\nDate: January 15, 2024"
+  }
+}

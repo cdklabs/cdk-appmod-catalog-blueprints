@@ -3,20 +3,66 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { AccessLog } from '../foundation/access-log';
 
 describe('AccessLog', () => {
-  let stack: Stack;
+  let defaultStack: Stack;
+  let customNameStack: Stack;
+  let customLifecycleStack: Stack;
+  let versionedStack: Stack;
+  let defaultTemplate: Template;
+  let customNameTemplate: Template;
+  let customLifecycleTemplate: Template;
+  let versionedTemplate: Template;
+  let defaultAccessLog: AccessLog;
+  let customPrefixAccessLog: AccessLog;
 
-  beforeEach(() => {
-    stack = new Stack(undefined, 'TestStack', {
+  beforeAll(() => {
+    // Default configuration stack
+    defaultStack = new Stack(undefined, 'DefaultStack', {
       env: { account: '123456789012', region: 'us-east-1' },
+    });
+    defaultAccessLog = new AccessLog(defaultStack, 'AccessLog');
+    defaultTemplate = Template.fromStack(defaultStack);
+
+    // Custom name stack
+    customNameStack = new Stack(undefined, 'CustomNameStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new AccessLog(customNameStack, 'AccessLog', {
+      bucketName: 'custom-logs',
+    });
+    customNameTemplate = Template.fromStack(customNameStack);
+
+    // Custom lifecycle stack
+    customLifecycleStack = new Stack(undefined, 'CustomLifecycleStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new AccessLog(customLifecycleStack, 'AccessLog', {
+      lifecycleRules: [{
+        id: 'CustomRule',
+        enabled: true,
+        expiration: Duration.days(180),
+      }],
+    });
+    customLifecycleTemplate = Template.fromStack(customLifecycleStack);
+
+    // Versioned stack
+    versionedStack = new Stack(undefined, 'VersionedStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    new AccessLog(versionedStack, 'AccessLog', { versioned: true });
+    versionedTemplate = Template.fromStack(versionedStack);
+
+    // Custom prefix stack (for getLogPath tests)
+    const customPrefixStack = new Stack(undefined, 'CustomPrefixStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    customPrefixAccessLog = new AccessLog(customPrefixStack, 'AccessLog', {
+      bucketPrefix: 'custom-prefix',
     });
   });
 
   test('creates bucket with default configuration', () => {
-    new AccessLog(stack, 'AccessLog');
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::S3::Bucket', 1);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    defaultTemplate.resourceCountIs('AWS::S3::Bucket', 1);
+    defaultTemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'access-logs-123456789012-us-east-1',
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [{
@@ -33,21 +79,13 @@ describe('AccessLog', () => {
   });
 
   test('creates bucket with custom name', () => {
-    new AccessLog(stack, 'AccessLog', {
-      bucketName: 'custom-logs',
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    customNameTemplate.hasResourceProperties('AWS::S3::Bucket', {
       BucketName: 'custom-logs-123456789012-us-east-1',
     });
   });
 
   test('applies default lifecycle rules', () => {
-    new AccessLog(stack, 'AccessLog');
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    defaultTemplate.hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: Match.arrayWith([
           Match.objectLike({
@@ -64,16 +102,7 @@ describe('AccessLog', () => {
   });
 
   test('applies custom lifecycle rules', () => {
-    new AccessLog(stack, 'AccessLog', {
-      lifecycleRules: [{
-        id: 'CustomRule',
-        enabled: true,
-        expiration: Duration.days(180),
-      }],
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    customLifecycleTemplate.hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [Match.objectLike({ ExpirationInDays: 180 })],
       },
@@ -81,19 +110,13 @@ describe('AccessLog', () => {
   });
 
   test('enables versioning when specified', () => {
-    new AccessLog(stack, 'AccessLog', { versioned: true });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    versionedTemplate.hasResourceProperties('AWS::S3::Bucket', {
       VersioningConfiguration: { Status: 'Enabled' },
     });
   });
 
   test('adds bucket policy for S3 and CloudWatch Logs', () => {
-    new AccessLog(stack, 'AccessLog');
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+    defaultTemplate.hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
@@ -110,10 +133,7 @@ describe('AccessLog', () => {
   });
 
   test('adds bucket policy for ELB', () => {
-    new AccessLog(stack, 'AccessLog');
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+    defaultTemplate.hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
@@ -128,10 +148,7 @@ describe('AccessLog', () => {
   });
 
   test('enforces SSL', () => {
-    new AccessLog(stack, 'AccessLog');
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+    defaultTemplate.hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
@@ -144,21 +161,16 @@ describe('AccessLog', () => {
   });
 
   test('getLogPath returns correct path', () => {
-    const accessLog = new AccessLog(stack, 'AccessLog');
-    expect(accessLog.getLogPath('alb')).toBe('access-logs-123456789012-us-east-1/access-logs/alb');
-    expect(accessLog.getLogPath('alb', 'my-alb')).toBe('access-logs-123456789012-us-east-1/access-logs/alb/my-alb');
+    expect(defaultAccessLog.getLogPath('alb')).toBe('access-logs-123456789012-us-east-1/access-logs/alb');
+    expect(defaultAccessLog.getLogPath('alb', 'my-alb')).toBe('access-logs-123456789012-us-east-1/access-logs/alb/my-alb');
   });
 
   test('getLogUri returns correct S3 URI', () => {
-    const accessLog = new AccessLog(stack, 'AccessLog');
-    expect(accessLog.getLogUri('cloudfront')).toBe('s3://access-logs-123456789012-us-east-1/access-logs/cloudfront');
-    expect(accessLog.getLogUri('cloudfront', 'my-dist')).toBe('s3://access-logs-123456789012-us-east-1/access-logs/cloudfront/my-dist');
+    expect(defaultAccessLog.getLogUri('cloudfront')).toBe('s3://access-logs-123456789012-us-east-1/access-logs/cloudfront');
+    expect(defaultAccessLog.getLogUri('cloudfront', 'my-dist')).toBe('s3://access-logs-123456789012-us-east-1/access-logs/cloudfront/my-dist');
   });
 
   test('uses custom bucket prefix', () => {
-    const accessLog = new AccessLog(stack, 'AccessLog', {
-      bucketPrefix: 'custom-prefix',
-    });
-    expect(accessLog.getLogPath('s3')).toBe('access-logs-123456789012-us-east-1/custom-prefix/s3');
+    expect(customPrefixAccessLog.getLogPath('s3')).toBe('access-logs-123456789012-us-east-1/custom-prefix/s3');
   });
 });
