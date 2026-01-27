@@ -7,6 +7,7 @@ import { InstanceClass, InstanceSize, InstanceType, Vpc, SecurityGroup } from 'a
 import { DatabaseCluster, DatabaseClusterEngine, AuroraPostgresEngineVersion, ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { DataLoader, DatabaseEngine, FileType } from '../data-loader';
+import { createTestApp } from '../test-utils';
 
 describe('DataLoader', () => {
   let app: App;
@@ -19,7 +20,7 @@ describe('DataLoader', () => {
 
   // Use beforeAll instead of beforeEach to avoid recreating infrastructure
   beforeAll(() => {
-    app = new App();
+    app = createTestApp();
     stack = new Stack(app, 'TestStack');
 
     // Create VPC

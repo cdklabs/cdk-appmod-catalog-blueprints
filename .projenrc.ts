@@ -57,6 +57,7 @@ const project = new CdklabsConstructLibrary({
     '.DS_Store',
     '**/.DS_Store',
     '**/.venv',
+    '**/venv',
     '**/__pycache__',
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
@@ -185,6 +186,18 @@ project.addTask('build:fast', {
     { spawn: 'compile' },
     { spawn: 'post-compile' },
     { spawn: 'test' },
+    { spawn: 'package:js' }, // Only JS package for speed
+  ],
+});
+
+// Add build task that skips tests for quick local development
+project.addTask('build:no-test', {
+  description: 'Build and package without running tests',
+  steps: [
+    { spawn: 'default' },
+    { spawn: 'pre-compile' },
+    { spawn: 'compile' },
+    { spawn: 'post-compile' },
     { spawn: 'package:js' }, // Only JS package for speed
   ],
 });

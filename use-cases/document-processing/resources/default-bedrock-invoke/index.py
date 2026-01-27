@@ -10,6 +10,67 @@ bedrock = boto3.client('bedrock-runtime')
 metrics = Metrics()
 tracer = Tracer()
 
+
+def parse_chunk_metadata(event):
+    """
+    Parse optional chunk metadata from the event payload.
+    
+    Returns a dictionary with chunk information if present, None otherwise.
+    Supports both direct chunk metadata and nested chunk object format.
+    """
+    # Check for direct chunkMetadata field
+    if 'chunkMetadata' in event:
+        return event['chunkMetadata']
+    
+    # Check for chunk object (from Map State iteration)
+    if 'chunk' in event:
+        chunk = event['chunk']
+        return {
+            'chunkIndex': chunk.get('chunkIndex', event.get('chunkIndex', 0)),
+            'totalChunks': event.get('totalChunks', 1),
+            'startPage': chunk.get('startPage', 0),
+            'endPage': chunk.get('endPage', 0),
+            'pageCount': chunk.get('pageCount', 0),
+            'estimatedTokens': chunk.get('estimatedTokens', 0),
+            'overlapPages': chunk.get('overlapPages', 0),
+        }
+    
+    return None
+
+
+def build_chunk_context_prompt(chunk_metadata):
+    """
+    Build a context prompt for chunk-aware processing.
+    
+    Args:
+        chunk_metadata: Dictionary containing chunk information
+        
+    Returns:
+        String with chunk context to prepend to the main prompt
+    """
+    if not chunk_metadata:
+        return ""
+    
+    chunk_index = chunk_metadata.get('chunkIndex', 0)
+    total_chunks = chunk_metadata.get('totalChunks', 1)
+    start_page = chunk_metadata.get('startPage', 0)
+    end_page = chunk_metadata.get('endPage', 0)
+    overlap_pages = chunk_metadata.get('overlapPages', 0)
+    
+    # Build context string
+    context_parts = [
+        f"You are analyzing chunk {chunk_index + 1} of {total_chunks} from pages {start_page + 1} to {end_page + 1}."
+    ]
+    
+    # Add overlap information if applicable
+    if overlap_pages > 0 and chunk_index > 0:
+        context_parts.append(
+            f"Note: This chunk includes {overlap_pages} overlapping pages from the previous chunk for context."
+        )
+    
+    return "\n".join(context_parts) + "\n\n"
+
+
 @metrics.log_metrics
 @tracer.capture_lambda_handler
 def handler(event, context):
@@ -18,11 +79,26 @@ def handler(event, context):
     tracer.put_annotation(key="documentId", value=event["documentId"])
     metrics.add_dimension(name="invoke_type", value=invoke_type)
     content_type = event["contentType"]
+    
+    # Parse optional chunk metadata
+    chunk_metadata = parse_chunk_metadata(event)
+    if chunk_metadata:
+        tracer.put_annotation(key="chunkIndex", value=str(chunk_metadata.get('chunkIndex', 0)))
+        tracer.put_annotation(key="totalChunks", value=str(chunk_metadata.get('totalChunks', 1)))
+        metrics.add_dimension(name="is_chunked", value="true")
+    else:
+        metrics.add_dimension(name="is_chunked", value="false")
+    
     # Format prompt if classification result exists
     prompt = os.environ['PROMPT']
     if 'classificationResult' in event:
         classification = event['classificationResult']['documentClassification']
         prompt = prompt.replace("[ACTUAL_CLASSIFICATION]", classification)
+    
+    # Add chunk context to prompt if processing a chunk
+    chunk_context = build_chunk_context_prompt(chunk_metadata)
+    if chunk_context:
+        prompt = chunk_context + prompt
     
     # Build content based on file type
     content = [{'type': 'text', 'text': prompt}]
@@ -30,8 +106,13 @@ def handler(event, context):
         content_location = event['content']['location']
         
         if content_location == 's3':
-            bucket = event['content']['bucket']
-            key = event['content']['key']
+            # Use chunk-specific S3 location if available, otherwise use original content
+            if chunk_metadata and 'bucket' in chunk_metadata and 'key' in chunk_metadata:
+                bucket = chunk_metadata['bucket']
+                key = chunk_metadata['key']
+            else:
+                bucket = event['content']['bucket']
+                key = event['content']['key']
             
             # Check file type
             ext = key.lower().split('.')[-1]
@@ -61,11 +142,12 @@ def handler(event, context):
         })
             
     # Invoke Bedrock
+    max_tokens = int(os.getenv('INVOKE_MAX_TOKENS', '1000'))
     response = bedrock.invoke_model(
         modelId=os.environ['MODEL_ID'],
         body=json.dumps({
             'anthropic_version': 'bedrock-2023-05-31',
-            'max_tokens': os.getenv('INVOKE_MAX_TOKENS', 1000),
+            'max_tokens': max_tokens,
             'messages': [{'role': 'user', 'content': content}]
         })
     )

@@ -10,6 +10,7 @@ import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment } from 'aws-cdk-lib/aws-s3-deployment';
+import { createTestApp } from '../../utilities/test-utils';
 import { Frontend, DEFAULT_SPA_ERROR_RESPONSES } from '../frontend-construct';
 
 // Mock execSync to avoid actual build execution during tests
@@ -47,7 +48,7 @@ describe('@webapp Frontend', () => {
   });
 
   beforeEach(() => {
-    app = new App();
+    app = createTestApp();
     stack = new Stack(app, 'TestStack');
   });
 

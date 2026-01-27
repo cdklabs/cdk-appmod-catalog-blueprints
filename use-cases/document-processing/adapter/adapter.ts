@@ -42,14 +42,16 @@ export interface IAdapter {
   /**
      * Create the adapter specific handler for failed processing
      * @param scope Scope to use in relation to the CDK hierarchy
+     * @param idPrefix Optional prefix for construct IDs to ensure uniqueness when called multiple times
      * @return Chain to be added to the state machine to handle failure scenarios
      */
-  createFailedChain(scope: Construct): Chain;
+  createFailedChain(scope: Construct, idPrefix?: string): Chain;
 
   /**
      * Create the adapter specific handler for successful processing
      * @param scope Scope to use in relation to the CDK hierarchy
+     * @param idPrefix Optional prefix for construct IDs to ensure uniqueness when called multiple times
      * @return Chain to be added to the state machine to handle successful scenarios
      */
-  createSuccessChain(scope: Construct): Chain;
+  createSuccessChain(scope: Construct, idPrefix?: string): Chain;
 }

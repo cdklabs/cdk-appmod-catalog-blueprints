@@ -3,11 +3,12 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { App, Stack, Aspects } from 'aws-cdk-lib';
+import { Stack, Aspects } from 'aws-cdk-lib';
 import { Template, Annotations, Match } from 'aws-cdk-lib/assertions';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
+import { createTestApp } from '../../utilities/test-utils';
 import { Frontend } from '../frontend-construct';
 
 // Create temporary build directory for tests
@@ -18,7 +19,7 @@ if (!fs.existsSync(testBuildDir)) {
 fs.writeFileSync(path.join(testBuildDir, 'index.html'), '<!DOCTYPE html><html><head><title>Test</title></head><body><h1>Test App</h1></body></html>');
 
 // Create app and stack
-const app = new App();
+const app = createTestApp();
 const stack = new Stack(app, 'TestStack', {
   env: {
     account: '123456789012',

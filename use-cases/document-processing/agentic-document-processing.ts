@@ -14,22 +14,39 @@ export interface AgenticDocumentProcessingProps extends BedrockDocumentProcessin
 }
 
 export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
+  /** Cached batch agent to avoid duplicate resource creation */
+  private _batchAgent?: BatchAgent;
+  /** Counter for generating unique processing step IDs */
+  private _agenticProcessingStepCounter?: number;
+
   constructor(scope: Construct, id: string, props: AgenticDocumentProcessingProps) {
     super(scope, id, props);
   }
 
   protected processingStep(): DocumentProcessingStepType {
-    const agentProps = this.bedrockDocumentProcessingProps as AgenticDocumentProcessingProps;
-    const processingAgentProps = agentProps.processingAgentParameters;
-    const batchAgent = new BatchAgent(this, 'IDPBatchAgent', processingAgentProps);
+    // Create BatchAgent only once
+    if (!this._batchAgent) {
+      const agentProps = this.bedrockDocumentProcessingProps as AgenticDocumentProcessingProps;
+      const processingAgentProps = agentProps.processingAgentParameters;
+      this._batchAgent = new BatchAgent(this, 'IDPBatchAgent', processingAgentProps);
 
-    const adapterPolicyStatements = this.ingressAdapter.generateAdapterIAMPolicies();
-    for (const statement of adapterPolicyStatements) {
-      batchAgent.agentRole.addToPrincipalPolicy(statement);
+      const adapterPolicyStatements = this.ingressAdapter.generateAdapterIAMPolicies();
+      for (const statement of adapterPolicyStatements) {
+        this._batchAgent.agentRole.addToPrincipalPolicy(statement);
+      }
     }
 
-    return new LambdaInvoke(this, 'ProcessingStep', {
-      lambdaFunction: batchAgent.agentFunction,
+    // Initialize counter if not yet set (handles case where method is called before constructor completes)
+    if (this._agenticProcessingStepCounter === undefined) {
+      this._agenticProcessingStepCounter = 0;
+    }
+
+    // Always create a new LambdaInvoke task to allow proper state chaining
+    const stepId = `ProcessingStep-${this._agenticProcessingStepCounter}`;
+    this._agenticProcessingStepCounter++;
+
+    return new LambdaInvoke(this, stepId, {
+      lambdaFunction: this._batchAgent.agentFunction,
       resultPath: '$.processingResult',
       resultSelector: {
         'result.$': '$.Payload.result',

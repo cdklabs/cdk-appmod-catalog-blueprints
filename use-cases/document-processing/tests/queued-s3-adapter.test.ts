@@ -1,9 +1,10 @@
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { AccessLog } from '../../framework';
+import { createTestApp } from '../../utilities/test-utils';
 import { QueuedS3Adapter } from '../adapter';
 import { BaseDocumentProcessing, DocumentProcessingStepType } from '../base-document-processing';
 
@@ -49,12 +50,21 @@ class TestDocumentProcessing extends BaseDocumentProcessing {
     return undefined;
   }
 
+  protected preprocessingStep(): DocumentProcessingStepType | undefined {
+    return undefined;
+  }
+
+  protected createProcessingWorkflow() {
+    return this.createStandardProcessingWorkflow();
+  }
+
   public createStateMachine() {
     return this.handleStateMachineCreation('test-state-machine');
   }
 }
 
 describe('QueuedS3Adapter', () => {
+  let app: App;
   let defaultStack: Stack;
   let customBucketStack: Stack;
   let customPrefixStack: Stack;
@@ -65,14 +75,17 @@ describe('QueuedS3Adapter', () => {
   let customQueueTemplate: Template;
 
   beforeAll(() => {
-    defaultStack = new Stack();
+    // Use createTestApp() to skip bundling and speed up tests
+    app = createTestApp();
+
+    defaultStack = new Stack(app, 'DefaultStack');
     const defaultAdapter = new QueuedS3Adapter();
     const defaultConstruct = new TestDocumentProcessing(defaultStack, 'DefaultTest', {
       ingressAdapter: defaultAdapter,
     });
     defaultConstruct.createStateMachine();
 
-    customBucketStack = new Stack();
+    customBucketStack = new Stack(app, 'CustomBucketStack');
     const accessLog = new AccessLog(customBucketStack, 'AccessLog');
     const customBucket = new Bucket(customBucketStack, 'CustomBucket', {
       serverAccessLogsBucket: accessLog.bucket,
@@ -85,7 +98,7 @@ describe('QueuedS3Adapter', () => {
     });
     customBucketConstruct.createStateMachine();
 
-    customPrefixStack = new Stack();
+    customPrefixStack = new Stack(app, 'CustomPrefixStack');
     const customPrefixAdapter = new QueuedS3Adapter({
       rawPrefix: 'input/',
       processedPrefix: 'output/',
@@ -96,7 +109,7 @@ describe('QueuedS3Adapter', () => {
     });
     customPrefixConstruct.createStateMachine();
 
-    customQueueStack = new Stack();
+    customQueueStack = new Stack(app, 'CustomQueueStack');
     const customQueueAdapter = new QueuedS3Adapter({
       queueVisibilityTimeout: Duration.minutes(10),
       dlqMaxReceiveCount: 10,
@@ -292,7 +305,8 @@ describe('QueuedS3Adapter', () => {
 
   describe('Removal policy', () => {
     test('applies removal policy to resources', () => {
-      const stack = new Stack();
+      const testApp = createTestApp();
+      const stack = new Stack(testApp, 'RemovalStack');
       const adapter = new QueuedS3Adapter();
       const construct = new TestDocumentProcessing(stack, 'RemovalTest', {
         ingressAdapter: adapter,

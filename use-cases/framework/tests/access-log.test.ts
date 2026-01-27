@@ -1,12 +1,15 @@
-import { Stack, Duration } from 'aws-cdk-lib';
+import { Stack, Duration, App } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import { createTestApp } from '../../utilities/test-utils';
 import { AccessLog } from '../foundation/access-log';
 
 describe('AccessLog', () => {
+  let app: App;
   let stack: Stack;
 
   beforeEach(() => {
-    stack = new Stack(undefined, 'TestStack', {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
   });

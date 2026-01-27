@@ -7,7 +7,7 @@ import { AttributeType, BillingMode, Table, TableEncryption } from 'aws-cdk-lib/
 import { InterfaceVpcEndpointAwsService } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CustomerManagedEncryptionConfiguration, DefinitionBody, JsonPath, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import { CustomerManagedEncryptionConfiguration, DefinitionBody, IChainable, JsonPath, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 import { BedrockInvokeModel, DynamoAttributeValue, DynamoPutItem, DynamoUpdateItem, LambdaInvoke, StepFunctionsStartExecution } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { IAdapter, QueuedS3Adapter } from './adapter';
@@ -177,199 +177,42 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
 
 
   protected handleStateMachineCreation(stateMachineId: string) {
-    const classificationStep = this.classificationStep();
-    const processingStep = this.processingStep();
-    const enrichmentStep = this.enrichmentStep();
-    const postProcessingStep = this.postProcessingStep();
+    // Check if preprocessing is needed (e.g., for chunking large documents)
+    const preprocessingStep = this.preprocessingStep();
+
+    // Initialize metadata entry in DynamoDB
+    // Base class only knows about core document fields
+    const baseItem: Record<string, DynamoAttributeValue> = {
+      DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+      ContentType: DynamoAttributeValue.fromString(JsonPath.stringAt('$.contentType')),
+      Content: DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.content'))),
+      WorkflowStatus: DynamoAttributeValue.fromString('pending'),
+      StateMachineExecId: DynamoAttributeValue.fromString(JsonPath.stringAt('$$.Execution.Id')),
+    };
+
+    // Allow concrete implementations to add preprocessing-specific metadata
+    // This is a hook for subclasses to extend the schema without base class knowing the details
+    const additionalMetadata = this.preprocessingMetadata();
+    Object.assign(baseItem, additionalMetadata);
 
     const initMetadataEntry = new DynamoPutItem(this, 'InitMetadataEntry', {
       table: this.documentProcessingTable,
-      item: {
-        DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-        ContentType: DynamoAttributeValue.fromString(JsonPath.stringAt('$.contentType')),
-        Content: DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.content'))),
-        WorkflowStatus: DynamoAttributeValue.fromString('pending'),
-        StateMachineExecId: DynamoAttributeValue.fromString(JsonPath.stringAt('$$.Execution.Id')),
-      },
+      item: baseItem,
       resultPath: JsonPath.DISCARD,
     });
 
-    // File movement operations
-    const moveToFailed = this.createMoveToFailedChain();
-    const moveToProcessed = this.createMoveToProcessedChain();
-
-    const processingChain = processingStep
-      .addCatch(new DynamoUpdateItem(this, 'ProcessingFailDDBUpdate', {
-        table: this.documentProcessingTable,
-        key: {
-          DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-        },
-        updateExpression: 'SET WorkflowStatus = :newStatus',
-        expressionAttributeValues: {
-          ':newStatus': DynamoAttributeValue.fromString('processing-failure'),
-        },
-        resultPath: JsonPath.DISCARD,
-      }).next(moveToFailed), {
-        resultPath: JsonPath.DISCARD,
-      })
-      .next(
-        new DynamoUpdateItem(this, 'ProcessingSuccessUpdate', {
-          table: this.documentProcessingTable,
-          key: {
-            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-          },
-          updateExpression: 'SET WorkflowStatus = :newStatus, ProcessingResult = :processingResult',
-          expressionAttributeValues: {
-            ':newStatus': DynamoAttributeValue.fromString('processing-complete'),
-            ':processingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.processingResult'))),
-          },
-          resultPath: JsonPath.DISCARD,
-        }),
-      );
-
-    // Build the complete chain including optional steps
-    if (enrichmentStep) {
-      const enrichmentChain = enrichmentStep
-        .addCatch(new DynamoUpdateItem(this, 'EnrichmentFailDDBUpdate', {
-          table: this.documentProcessingTable,
-          key: {
-            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-          },
-          updateExpression: 'SET WorkflowStatus = :newStatus',
-          expressionAttributeValues: {
-            ':newStatus': DynamoAttributeValue.fromString('enrichment-failure'),
-          },
-          resultPath: JsonPath.DISCARD,
-        }).next(moveToFailed), {
-          resultPath: JsonPath.DISCARD,
-        })
-        .next(
-          new DynamoUpdateItem(this, 'EnrichmentSuccessUpdate', {
-            table: this.documentProcessingTable,
-            key: {
-              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-            },
-            updateExpression: 'SET WorkflowStatus = :newStatus, EnrichmentResult = :enrichmentResult',
-            expressionAttributeValues: {
-              ':newStatus': postProcessingStep ? DynamoAttributeValue.fromString('enrichment-complete') : DynamoAttributeValue.fromString('complete'),
-              ':enrichmentResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.enrichedResult'))),
-            },
-            resultPath: JsonPath.DISCARD,
-          }),
-        );
-
-      processingChain.next(enrichmentChain);
-
-      if (postProcessingStep) {
-        const postProcessingChain = postProcessingStep
-          .addCatch(new DynamoUpdateItem(this, 'PostProcessingFailDDBUpdate', {
-            table: this.documentProcessingTable,
-            key: {
-              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-            },
-            updateExpression: 'SET WorkflowStatus = :newStatus',
-            expressionAttributeValues: {
-              ':newStatus': DynamoAttributeValue.fromString('post-processing-failure'),
-            },
-            resultPath: JsonPath.DISCARD,
-          }).next(moveToFailed), {
-            resultPath: JsonPath.DISCARD,
-          })
-          .next(
-            new DynamoUpdateItem(this, 'PostProcessingSuccessUpdate', {
-              table: this.documentProcessingTable,
-              key: {
-                DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-              },
-              updateExpression: 'SET WorkflowStatus = :newStatus, PostProcessingResult = :postProcessingResult',
-              expressionAttributeValues: {
-                ':newStatus': DynamoAttributeValue.fromString('complete'),
-                ':postProcessingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.postProcessedResult'))),
-              },
-              resultPath: JsonPath.DISCARD,
-            }).next(moveToProcessed),
-          );
-        enrichmentChain.next(postProcessingChain);
-      } else {
-        enrichmentChain.next(moveToProcessed);
-      }
-    } else if (postProcessingStep) {
-      const postProcessingChain = postProcessingStep
-        .addCatch(new DynamoUpdateItem(this, 'PostProcessingFailDDBUpdate', {
-          table: this.documentProcessingTable,
-          key: {
-            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-          },
-          updateExpression: 'SET WorkflowStatus = :newStatus',
-          expressionAttributeValues: {
-            ':newStatus': DynamoAttributeValue.fromString('post-processing-failure'),
-          },
-          resultPath: JsonPath.DISCARD,
-        }).next(moveToFailed), {
-          resultPath: JsonPath.DISCARD,
-        })
-        .next(
-          new DynamoUpdateItem(this, 'PostProcessingSuccessUpdate', {
-            table: this.documentProcessingTable,
-            key: {
-              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-            },
-            updateExpression: 'SET WorkflowStatus = :newStatus, PostProcessingResult = :postProcessingResult',
-            expressionAttributeValues: {
-              ':newStatus': DynamoAttributeValue.fromString('complete'),
-              ':postProcessingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.postProcessedResult'))),
-            },
-            resultPath: JsonPath.DISCARD,
-          }).next(moveToProcessed),
-        );
-      processingChain.next(postProcessingChain);
+    // Build workflow: if preprocessing exists, chain it before the main workflow
+    let workflowDefinition: IChainable;
+    if (preprocessingStep) {
+      // Preprocessing → InitMetadata → Custom Processing Workflow
+      workflowDefinition = preprocessingStep
+        .next(initMetadataEntry)
+        .next(this.createProcessingWorkflow());
     } else {
-      // No optional steps - mark as complete after extraction
-      processingChain.next(
-        new DynamoUpdateItem(this, 'WorkflowCompleteUpdate', {
-          table: this.documentProcessingTable,
-          key: {
-            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-          },
-          updateExpression: 'SET WorkflowStatus = :newStatus',
-          expressionAttributeValues: {
-            ':newStatus': DynamoAttributeValue.fromString('complete'),
-          },
-          resultPath: JsonPath.DISCARD,
-        }).next(moveToProcessed),
-      );
+      // InitMetadata → Standard Processing Workflow (backward compatible)
+      workflowDefinition = initMetadataEntry
+        .next(this.createStandardProcessingWorkflow());
     }
-
-    const workflowDefinition = initMetadataEntry.next(
-      classificationStep
-        .addCatch(new DynamoUpdateItem(this, 'ClassificationFailDDBUpdate', {
-          table: this.documentProcessingTable,
-          key: {
-            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-          },
-          updateExpression: 'SET WorkflowStatus = :newStatus',
-          expressionAttributeValues: {
-            ':newStatus': DynamoAttributeValue.fromString('classification-failure'),
-          },
-          resultPath: JsonPath.DISCARD,
-        }).next(moveToFailed), {
-          resultPath: JsonPath.DISCARD,
-        })
-        .next(
-          new DynamoUpdateItem(this, 'ClassificationSuccessUpdate', {
-            table: this.documentProcessingTable,
-            key: {
-              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
-            },
-            updateExpression: 'SET WorkflowStatus = :newStatus, ClassificationResult = :classificationResult',
-            expressionAttributeValues: {
-              ':newStatus': DynamoAttributeValue.fromString('classification-complete'),
-              ':classificationResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.classificationResult'))),
-            },
-            resultPath: JsonPath.DISCARD,
-          }),
-        ),
-    ).next(processingChain);
 
     const role = this.createStateMachineRole();
     this.encryptionKey.grantEncryptDecrypt(role);
@@ -404,8 +247,8 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
     });
   }
 
-  private createMoveToFailedChain() {
-    const failedChain = this.ingressAdapter.createFailedChain(this);
+  private createMoveToFailedChain(idPrefix?: string) {
+    const failedChain = this.ingressAdapter.createFailedChain(this, idPrefix);
 
     if (this.props.eventbridgeBroker) {
       const ebChain = this.props.eventbridgeBroker.sendViaSfnChain(
@@ -423,8 +266,8 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
     return failedChain;
   }
 
-  private createMoveToProcessedChain() {
-    const processedChain = this.ingressAdapter.createSuccessChain(this);
+  private createMoveToProcessedChain(idPrefix?: string) {
+    const processedChain = this.ingressAdapter.createSuccessChain(this, idPrefix);
 
     if (this.props.eventbridgeBroker) {
       processedChain.next(
@@ -445,6 +288,251 @@ export abstract class BaseDocumentProcessing extends Construct implements IObser
 
   public metrics(): IMetric[] {
     return [];
+  }
+
+  /**
+   * Defines the optional preprocessing step of the workflow.
+   *
+   * This step runs BEFORE Init Metadata and can be used for:
+   * - Document chunking for large files
+   * - Document validation
+   * - Format conversion
+   * - Any other preprocessing needed before classification
+   *
+   * Concrete implementations can return undefined to skip preprocessing,
+   * maintaining backward compatibility with existing workflows.
+   *
+   * @returns Step Functions task for preprocessing, or undefined to skip this step
+   */
+  protected abstract preprocessingStep(): DocumentProcessingStepType | undefined;
+
+  /**
+   * Hook for concrete implementations to add preprocessing-specific metadata to DynamoDB.
+   *
+   * This method is called during InitMetadata creation and allows subclasses to extend
+   * the DynamoDB schema with their own fields without the base class knowing the details.
+   *
+   * The base class provides the core document fields (DocumentId, ContentType, etc.),
+   * and subclasses can add their own fields (e.g., chunking metadata) by overriding this method.
+   *
+   * @returns Record of additional DynamoDB attribute values to include in InitMetadata
+   * @default {} (no additional metadata)
+   */
+  protected preprocessingMetadata(): Record<string, DynamoAttributeValue> {
+    // Default: no additional metadata
+    // Subclasses override this to add their own preprocessing-specific fields
+    return {};
+  }
+
+  /**
+   * Creates the processing workflow after preprocessing and initialization.
+   *
+   * Concrete implementations can customize this to handle preprocessing results.
+   * For example, BedrockDocumentProcessing uses this to add conditional branching
+   * for chunked vs non-chunked documents.
+   *
+   * Implementations can call `createStandardProcessingWorkflow()` to reuse the
+   * standard processing flow (Classification → Processing → Enrichment → PostProcessing).
+   *
+   * @returns Step Functions chain for processing the document
+   */
+  protected abstract createProcessingWorkflow(): IChainable;
+
+  /**
+   * Creates the standard processing workflow (no preprocessing customization).
+   *
+   * This is the existing workflow: Classification → Processing → Enrichment → PostProcessing
+   * Concrete classes can call this method to reuse the standard flow when they don't
+   * need custom workflow branching.
+   *
+   * @param idPrefix Optional prefix for construct IDs to ensure uniqueness when called multiple times
+   * @returns Step Functions chain for standard processing
+   */
+  protected createStandardProcessingWorkflow(idPrefix?: string): IChainable {
+    const classificationStep = this.classificationStep();
+    const processingStep = this.processingStep();
+    const enrichmentStep = this.enrichmentStep();
+    const postProcessingStep = this.postProcessingStep();
+
+    // File movement operations
+    const moveToFailed = this.createMoveToFailedChain(idPrefix);
+    const moveToProcessed = this.createMoveToProcessedChain(idPrefix);
+
+    const prefix = idPrefix ? `${idPrefix}-` : '';
+
+    const processingChain = processingStep
+      .addCatch(new DynamoUpdateItem(this, `${prefix}ProcessingFailDDBUpdate`, {
+        table: this.documentProcessingTable,
+        key: {
+          DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+        },
+        updateExpression: 'SET WorkflowStatus = :newStatus',
+        expressionAttributeValues: {
+          ':newStatus': DynamoAttributeValue.fromString('processing-failure'),
+        },
+        resultPath: JsonPath.DISCARD,
+      }).next(moveToFailed), {
+        resultPath: JsonPath.DISCARD,
+      })
+      .next(
+        new DynamoUpdateItem(this, `${prefix}ProcessingSuccessUpdate`, {
+          table: this.documentProcessingTable,
+          key: {
+            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+          },
+          updateExpression: 'SET WorkflowStatus = :newStatus, ProcessingResult = :processingResult',
+          expressionAttributeValues: {
+            ':newStatus': DynamoAttributeValue.fromString('processing-complete'),
+            ':processingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.processingResult'))),
+          },
+          resultPath: JsonPath.DISCARD,
+        }),
+      );
+
+    // Build the complete chain including optional steps
+    if (enrichmentStep) {
+      const enrichmentChain = enrichmentStep
+        .addCatch(new DynamoUpdateItem(this, `${prefix}EnrichmentFailDDBUpdate`, {
+          table: this.documentProcessingTable,
+          key: {
+            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+          },
+          updateExpression: 'SET WorkflowStatus = :newStatus',
+          expressionAttributeValues: {
+            ':newStatus': DynamoAttributeValue.fromString('enrichment-failure'),
+          },
+          resultPath: JsonPath.DISCARD,
+        }).next(moveToFailed), {
+          resultPath: JsonPath.DISCARD,
+        })
+        .next(
+          new DynamoUpdateItem(this, `${prefix}EnrichmentSuccessUpdate`, {
+            table: this.documentProcessingTable,
+            key: {
+              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+            },
+            updateExpression: 'SET WorkflowStatus = :newStatus, EnrichmentResult = :enrichmentResult',
+            expressionAttributeValues: {
+              ':newStatus': postProcessingStep ? DynamoAttributeValue.fromString('enrichment-complete') : DynamoAttributeValue.fromString('complete'),
+              ':enrichmentResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.enrichedResult'))),
+            },
+            resultPath: JsonPath.DISCARD,
+          }),
+        );
+
+      processingChain.next(enrichmentChain);
+
+      if (postProcessingStep) {
+        const postProcessingChain = postProcessingStep
+          .addCatch(new DynamoUpdateItem(this, `${prefix}PostProcessingFailDDBUpdate`, {
+            table: this.documentProcessingTable,
+            key: {
+              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+            },
+            updateExpression: 'SET WorkflowStatus = :newStatus',
+            expressionAttributeValues: {
+              ':newStatus': DynamoAttributeValue.fromString('post-processing-failure'),
+            },
+            resultPath: JsonPath.DISCARD,
+          }).next(moveToFailed), {
+            resultPath: JsonPath.DISCARD,
+          })
+          .next(
+            new DynamoUpdateItem(this, `${prefix}PostProcessingSuccessUpdate`, {
+              table: this.documentProcessingTable,
+              key: {
+                DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+              },
+              updateExpression: 'SET WorkflowStatus = :newStatus, PostProcessingResult = :postProcessingResult',
+              expressionAttributeValues: {
+                ':newStatus': DynamoAttributeValue.fromString('complete'),
+                ':postProcessingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.postProcessedResult'))),
+              },
+              resultPath: JsonPath.DISCARD,
+            }).next(moveToProcessed),
+          );
+        enrichmentChain.next(postProcessingChain);
+      } else {
+        enrichmentChain.next(moveToProcessed);
+      }
+    } else if (postProcessingStep) {
+      const postProcessingChain = postProcessingStep
+        .addCatch(new DynamoUpdateItem(this, `${prefix}PostProcessingFailDDBUpdate2`, {
+          table: this.documentProcessingTable,
+          key: {
+            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+          },
+          updateExpression: 'SET WorkflowStatus = :newStatus',
+          expressionAttributeValues: {
+            ':newStatus': DynamoAttributeValue.fromString('post-processing-failure'),
+          },
+          resultPath: JsonPath.DISCARD,
+        }).next(moveToFailed), {
+          resultPath: JsonPath.DISCARD,
+        })
+        .next(
+          new DynamoUpdateItem(this, `${prefix}PostProcessingSuccessUpdate2`, {
+            table: this.documentProcessingTable,
+            key: {
+              DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+            },
+            updateExpression: 'SET WorkflowStatus = :newStatus, PostProcessingResult = :postProcessingResult',
+            expressionAttributeValues: {
+              ':newStatus': DynamoAttributeValue.fromString('complete'),
+              ':postProcessingResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.postProcessedResult'))),
+            },
+            resultPath: JsonPath.DISCARD,
+          }).next(moveToProcessed),
+        );
+      processingChain.next(postProcessingChain);
+    } else {
+      // No optional steps - mark as complete after extraction
+      processingChain.next(
+        new DynamoUpdateItem(this, `${prefix}WorkflowCompleteUpdate`, {
+          table: this.documentProcessingTable,
+          key: {
+            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+          },
+          updateExpression: 'SET WorkflowStatus = :newStatus',
+          expressionAttributeValues: {
+            ':newStatus': DynamoAttributeValue.fromString('complete'),
+          },
+          resultPath: JsonPath.DISCARD,
+        }).next(moveToProcessed),
+      );
+    }
+
+    const classificationChain = classificationStep
+      .addCatch(new DynamoUpdateItem(this, `${prefix}ClassificationFailDDBUpdate`, {
+        table: this.documentProcessingTable,
+        key: {
+          DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+        },
+        updateExpression: 'SET WorkflowStatus = :newStatus',
+        expressionAttributeValues: {
+          ':newStatus': DynamoAttributeValue.fromString('classification-failure'),
+        },
+        resultPath: JsonPath.DISCARD,
+      }).next(moveToFailed), {
+        resultPath: JsonPath.DISCARD,
+      })
+      .next(
+        new DynamoUpdateItem(this, `${prefix}ClassificationSuccessUpdate`, {
+          table: this.documentProcessingTable,
+          key: {
+            DocumentId: DynamoAttributeValue.fromString(JsonPath.stringAt('$.documentId')),
+          },
+          updateExpression: 'SET WorkflowStatus = :newStatus, ClassificationResult = :classificationResult',
+          expressionAttributeValues: {
+            ':newStatus': DynamoAttributeValue.fromString('classification-complete'),
+            ':classificationResult': DynamoAttributeValue.fromString(JsonPath.jsonToString(JsonPath.objectAt('$.classificationResult'))),
+          },
+          resultPath: JsonPath.DISCARD,
+        }),
+      )
+      .next(processingChain);
+
+    return classificationChain;
   }
 
   /**

@@ -1,13 +1,16 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { InterfaceVpcEndpointAwsService, IpAddresses, Peer, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { createTestApp } from '../../utilities/test-utils';
 import { Network } from '../foundation/network';
 
 describe('Network', () => {
+  let app: ReturnType<typeof createTestApp>;
   let stack: Stack;
 
   beforeEach(() => {
-    stack = new Stack();
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack');
   });
 
   test('creates VPC with default configuration', () => {
@@ -149,7 +152,8 @@ describe('Network', () => {
   });
 
   test('uses existing VPC from lookup', () => {
-    const envStack = new Stack(undefined, 'TestStack', {
+    const envApp = createTestApp();
+    const envStack = new Stack(envApp, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
     const network = Network.useExistingVPCFromLookup(envStack, 'Network', {
@@ -162,7 +166,8 @@ describe('Network', () => {
   });
 
   test('existing VPC works with createServiceEndpoint', () => {
-    const envStack = new Stack(undefined, 'TestStack', {
+    const envApp = createTestApp();
+    const envStack = new Stack(envApp, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
     const network = Network.useExistingVPCFromLookup(envStack, 'Network', {

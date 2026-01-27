@@ -1,0 +1,7 @@
+# Aggregation Lambda Dependencies
+
+# AWS SDK for Python
+boto3>=1.26.0
+
+# AWS Lambda Powertools for metrics (EMF format)
+aws-lambda-powertools>=2.0.0

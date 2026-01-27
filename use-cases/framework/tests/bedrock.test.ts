@@ -1,13 +1,16 @@
-import { Stack } from 'aws-cdk-lib';
+import { Stack, App } from 'aws-cdk-lib';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
+import { createTestApp } from '../../utilities/test-utils';
 import { BedrockCrossRegionInferencePrefix, BedrockModelUtils } from '../bedrock/bedrock';
 
 describe('BedrockModelUtils', () => {
+  let app: App;
   let stack: Stack;
   const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
 
   beforeEach(() => {
-    stack = new Stack(undefined, 'TestStack', {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
   });
