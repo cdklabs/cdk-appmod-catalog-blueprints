@@ -3,6 +3,14 @@ import { Construct } from 'constructs';
 import {
   Stack,
 } from 'aws-cdk-lib';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import {
+  BaseKnowledgeBase,
+  BaseKnowledgeBaseProps,
+  BedrockKnowledgeBase,
+  BedrockKnowledgeBaseProps,
+  BatchAgent,
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
