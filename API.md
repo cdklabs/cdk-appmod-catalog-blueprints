@@ -818,6 +818,214 @@ This is part of the initial service dimension
 ---
 
 
+### BaseKnowledgeBase <a name="BaseKnowledgeBase" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase">IKnowledgeBase</a>
+
+Abstract base class for knowledge base implementations.
+
+This class provides common functionality for all knowledge base implementations,
+including configuration management, validation, and default behaviors. Concrete
+implementations (like BedrockKnowledgeBase) extend this class and implement
+the abstract methods.
+
+The base class handles:
+- Props validation (name and description are required)
+- Default retrieval configuration (numberOfResults defaults to 5)
+- ACL configuration storage
+- Base runtime configuration export
+
+Subclasses must implement:
+- `generateIamPermissions()`: Return IAM permissions specific to the KB type
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer"></a>
+
+```typescript
+import { BaseKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new BaseKnowledgeBase(scope: Construct, id: string, props: BaseKnowledgeBaseProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - The scope in which to define this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.id">id</a></code> | <code>string</code> | - The scoped construct ID. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps">BaseKnowledgeBaseProps</a></code> | - Configuration properties for the knowledge base. |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The scope in which to define this construct.
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+The scoped construct ID.
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps">BaseKnowledgeBaseProps</a>
+
+Configuration properties for the knowledge base.
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the retrieval tool asset for this knowledge base type. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `exportConfiguration` <a name="exportConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.exportConfiguration"></a>
+
+```typescript
+public exportConfiguration(): KnowledgeBaseRuntimeConfig
+```
+
+Export configuration for runtime use by the retrieval tool.
+
+Returns a configuration object containing the base knowledge base
+settings. Subclasses should override this method to add implementation-
+specific configuration, calling super.exportConfiguration() to include
+the base configuration.
+
+##### `generateIamPermissions` <a name="generateIamPermissions" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.generateIamPermissions"></a>
+
+```typescript
+public generateIamPermissions(): PolicyStatement[]
+```
+
+Generate IAM policy statements required for accessing this knowledge base.
+
+This abstract method must be implemented by subclasses to return the
+specific IAM permissions needed for their knowledge base type.
+
+##### `retrievalToolAsset` <a name="retrievalToolAsset" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolAsset"></a>
+
+```typescript
+public retrievalToolAsset(): Asset
+```
+
+Provide the retrieval tool asset for this knowledge base type.
+
+By default, returns undefined to use the framework's default retrieval
+tool. Subclasses can override this method to provide a custom retrieval
+tool implementation.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
+
+```typescript
+import { BaseKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BaseKnowledgeBase.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.description">description</a></code> | <code>string</code> | Human-readable description of what this knowledge base contains. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.name">name</a></code> | <code>string</code> | Human-readable name for this knowledge base. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Human-readable description of what this knowledge base contains.
+
+This description is included in the agent's system prompt to help
+the agent decide when to query this knowledge base.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name for this knowledge base.
+
+This name is used for logging, display purposes, and to help the agent
+identify which knowledge base to query.
+
+---
+
+
 ### BatchAgent <a name="BatchAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.Initializer"></a>
@@ -1221,6 +1429,250 @@ public readonly stateMachine: StateMachine;
 - *Type:* aws-cdk-lib.aws_stepfunctions.StateMachine
 
 The Step Functions state machine that orchestrates the document processing workflow.
+
+---
+
+
+### BedrockKnowledgeBase <a name="BedrockKnowledgeBase" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase"></a>
+
+Amazon Bedrock Knowledge Base implementation.
+
+This class provides integration with Amazon Bedrock Knowledge Bases,
+which use vector stores (S3 Vectors by default) for semantic search.
+It is the default knowledge base implementation when none is specified.
+
+The implementation handles:
+- ARN construction from knowledge base ID (if ARN not provided)
+- IAM permission generation for Bedrock Retrieve and RetrieveAndGenerate APIs
+- Optional guardrail configuration for content filtering
+- Runtime configuration export for the retrieval tool
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer"></a>
+
+```typescript
+import { BedrockKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new BedrockKnowledgeBase(scope: Construct, id: string, props: BedrockKnowledgeBaseProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | - The scope in which to define this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.id">id</a></code> | <code>string</code> | - The scoped construct ID. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps">BedrockKnowledgeBaseProps</a></code> | - Configuration properties for the Bedrock Knowledge Base. |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+The scope in which to define this construct.
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+The scoped construct ID.
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps">BedrockKnowledgeBaseProps</a>
+
+Configuration properties for the Bedrock Knowledge Base.
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this Bedrock Knowledge Base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the Bedrock-specific retrieval tool asset. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `exportConfiguration` <a name="exportConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.exportConfiguration"></a>
+
+```typescript
+public exportConfiguration(): KnowledgeBaseRuntimeConfig
+```
+
+Export configuration for runtime use by the retrieval tool.
+
+Returns a configuration object containing all Bedrock-specific
+settings needed to query the knowledge base at runtime, including:
+- Base configuration (name, description, retrieval, acl)
+- Knowledge base type ('bedrock')
+- Knowledge base ID and ARN
+- Vector store configuration
+- Guardrail configuration (if present)
+
+##### `generateIamPermissions` <a name="generateIamPermissions" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.generateIamPermissions"></a>
+
+```typescript
+public generateIamPermissions(): PolicyStatement[]
+```
+
+Generate IAM policy statements required for accessing this Bedrock Knowledge Base.
+
+Returns permissions for:
+- bedrock:Retrieve - Query the knowledge base
+- bedrock:RetrieveAndGenerate - Query and generate responses
+- bedrock:ApplyGuardrail - Apply guardrail (if configured)
+- s3:GetObject - Access S3 vectors (if using S3 Vectors with custom bucket)
+- s3:GetObject - Access data source bucket (if create config provided)
+
+All permissions are scoped to the specific knowledge base ARN
+following the principle of least privilege.
+
+##### `retrievalToolAsset` <a name="retrievalToolAsset" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolAsset"></a>
+
+```typescript
+public retrievalToolAsset(): Asset
+```
+
+Provide the Bedrock-specific retrieval tool asset.
+
+Returns an Asset containing the Python retrieval tool that uses
+the Amazon Bedrock Agent Runtime API to query knowledge bases.
+This tool is automatically added to agents that use Bedrock
+knowledge bases.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
+
+```typescript
+import { BedrockKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+BedrockKnowledgeBase.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.description">description</a></code> | <code>string</code> | Human-readable description of what this knowledge base contains. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.name">name</a></code> | <code>string</code> | Human-readable name for this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.knowledgeBaseArn">knowledgeBaseArn</a></code> | <code>string</code> | The ARN of the Bedrock Knowledge Base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.knowledgeBaseId">knowledgeBaseId</a></code> | <code>string</code> | The unique identifier for the Bedrock Knowledge Base. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Human-readable description of what this knowledge base contains.
+
+This description is included in the agent's system prompt to help
+the agent decide when to query this knowledge base.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name for this knowledge base.
+
+This name is used for logging, display purposes, and to help the agent
+identify which knowledge base to query.
+
+---
+
+##### `knowledgeBaseArn`<sup>Required</sup> <a name="knowledgeBaseArn" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.knowledgeBaseArn"></a>
+
+```typescript
+public readonly knowledgeBaseArn: string;
+```
+
+- *Type:* string
+
+The ARN of the Bedrock Knowledge Base.
+
+If not provided in props, this is constructed from the knowledgeBaseId
+using the current region and account.
+
+---
+
+##### `knowledgeBaseId`<sup>Required</sup> <a name="knowledgeBaseId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.property.knowledgeBaseId"></a>
+
+```typescript
+public readonly knowledgeBaseId: string;
+```
+
+- *Type:* string
+
+The unique identifier for the Bedrock Knowledge Base.
+
+This is the ID assigned by Bedrock when the knowledge base was created.
 
 ---
 
@@ -2086,6 +2538,63 @@ Whether to enable versioning on the access logs bucket.
 
 ---
 
+### AclConfiguration <a name="AclConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration"></a>
+
+Configuration for Access Control List (ACL) based filtering.
+
+When enabled, retrieval queries will be filtered based on user identity
+context, ensuring users only retrieve documents they have permission to access.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration.Initializer"></a>
+
+```typescript
+import { AclConfiguration } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const aclConfiguration: AclConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration.property.enabled">enabled</a></code> | <code>boolean</code> | Enable ACL-based filtering for retrieval queries. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration.property.metadataField">metadataField</a></code> | <code>string</code> | Metadata field containing access permissions. |
+
+---
+
+##### `enabled`<sup>Required</sup> <a name="enabled" id="@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration.property.enabled"></a>
+
+```typescript
+public readonly enabled: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable ACL-based filtering for retrieval queries.
+
+When true, the retrieval tool will require user context and apply
+metadata filters based on user permissions.
+
+---
+
+##### `metadataField`<sup>Optional</sup> <a name="metadataField" id="@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration.property.metadataField"></a>
+
+```typescript
+public readonly metadataField: string;
+```
+
+- *Type:* string
+- *Default:* 'group'
+
+Metadata field containing access permissions.
+
+This field in the document metadata should contain the group or
+permission identifier that controls access. The retrieval tool
+will filter results where this field matches the user's permissions.
+
+---
+
 ### AdditionalDistributionProps <a name="AdditionalDistributionProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AdditionalDistributionProps"></a>
 
 Additional CloudFront distribution properties.
@@ -2175,7 +2684,9 @@ const agentDefinitionProps: AgentDefinitionProps = { ... }
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Configuration for the Bedrock Model to be used. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.systemPrompt">systemPrompt</a></code> | <code>aws-cdk-lib.aws_s3_assets.Asset</code> | The system prompt of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForKnowledgeBases">additionalPolicyStatementsForKnowledgeBases</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | Additional IAM policy statements for knowledge base access. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForTools">additionalPolicyStatementsForTools</a></code> | <code>aws-cdk-lib.aws_iam.PolicyStatement[]</code> | If tools need additional IAM permissions, these statements would be attached to the Agent's IAM role. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.knowledgeBases">knowledgeBases</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase">IKnowledgeBase</a>[]</code> | Knowledge bases available to the agent for Retrieval-Augmented Generation (RAG). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.LayerVersion[]</code> | Any dependencies needed by the provided tools. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.tools">tools</a></code> | <code>aws-cdk-lib.aws_s3_assets.Asset[]</code> | List of tools defined in python files. |
 
@@ -2205,6 +2716,24 @@ The system prompt of the agent.
 
 ---
 
+##### `additionalPolicyStatementsForKnowledgeBases`<sup>Optional</sup> <a name="additionalPolicyStatementsForKnowledgeBases" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForKnowledgeBases"></a>
+
+```typescript
+public readonly additionalPolicyStatementsForKnowledgeBases: PolicyStatement[];
+```
+
+- *Type:* aws-cdk-lib.aws_iam.PolicyStatement[]
+- *Default:* Only auto-generated permissions from knowledge bases
+
+Additional IAM policy statements for knowledge base access.
+
+Use this when knowledge bases require permissions beyond what is
+automatically generated by the IKnowledgeBase implementations.
+These statements will be added to the agent's IAM role in addition
+to the auto-generated permissions.
+
+---
+
 ##### `additionalPolicyStatementsForTools`<sup>Optional</sup> <a name="additionalPolicyStatementsForTools" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.additionalPolicyStatementsForTools"></a>
 
 ```typescript
@@ -2214,6 +2743,26 @@ public readonly additionalPolicyStatementsForTools: PolicyStatement[];
 - *Type:* aws-cdk-lib.aws_iam.PolicyStatement[]
 
 If tools need additional IAM permissions, these statements would be attached to the Agent's IAM role.
+
+---
+
+##### `knowledgeBases`<sup>Optional</sup> <a name="knowledgeBases" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps.property.knowledgeBases"></a>
+
+```typescript
+public readonly knowledgeBases: IKnowledgeBase[];
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase">IKnowledgeBase</a>[]
+- *Default:* No knowledge bases configured
+
+Knowledge bases available to the agent for Retrieval-Augmented Generation (RAG).
+
+When configured, the agent will have access to a built-in retrieval tool
+that can query these knowledge bases. The agent's system prompt will be
+automatically augmented with information about available knowledge bases.
+
+Each knowledge base must implement the IKnowledgeBase interface, which
+handles IAM permission generation and runtime configuration.
 
 ---
 
@@ -3170,6 +3719,110 @@ Maximum execution time for the Step Functions workflow.
 
 ---
 
+### BaseKnowledgeBaseProps <a name="BaseKnowledgeBaseProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps"></a>
+
+Base configuration for all knowledge base implementations.
+
+This interface defines the common properties shared by all knowledge
+base types. Specific implementations (like BedrockKnowledgeBase) extend
+this with additional properties.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.Initializer"></a>
+
+```typescript
+import { BaseKnowledgeBaseProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const baseKnowledgeBaseProps: BaseKnowledgeBaseProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.description">description</a></code> | <code>string</code> | Description of what this knowledge base contains and when to use it. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.name">name</a></code> | <code>string</code> | Human-readable name/identifier for this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.acl">acl</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a></code> | Access control configuration for identity-aware retrieval. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.retrieval">retrieval</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a></code> | Retrieval configuration options. |
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Description of what this knowledge base contains and when to use it.
+
+This description is shown to the agent in its system prompt to help
+it decide when to query this knowledge base. Be specific about the
+type of information contained and appropriate use cases.
+
+---
+
+*Example*
+
+```typescript
+'Contains product documentation, user guides, and FAQs. Use when answering questions about product features or troubleshooting.'
+```
+
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name/identifier for this knowledge base.
+
+Used for logging, display purposes, and to help the agent identify
+which knowledge base to query. Should be unique within the set of
+knowledge bases configured for an agent.
+
+---
+
+*Example*
+
+```typescript
+'product-documentation'
+```
+
+
+##### `acl`<sup>Optional</sup> <a name="acl" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.acl"></a>
+
+```typescript
+public readonly acl: AclConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a>
+- *Default:* ACL disabled
+
+Access control configuration for identity-aware retrieval.
+
+When enabled, retrieval queries will be filtered based on user
+identity context to ensure users only access permitted documents.
+
+---
+
+##### `retrieval`<sup>Optional</sup> <a name="retrieval" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBaseProps.property.retrieval"></a>
+
+```typescript
+public readonly retrieval: RetrievalConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a>
+- *Default:* { numberOfResults: 5 }
+
+Retrieval configuration options.
+
+Controls the number of results returned and optional metadata filtering.
+
+---
+
 ### BatchAgentProps <a name="BatchAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps"></a>
 
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.Initializer"></a>
@@ -3195,6 +3848,7 @@ const batchAgentProps: BatchAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.invokeType">invokeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType">InvokeType</a></code> | Agent invocation type. |
 
 ---
 
@@ -3330,6 +3984,21 @@ public readonly expectJson: boolean;
 ```
 
 - *Type:* boolean
+
+---
+
+##### `invokeType`<sup>Optional</sup> <a name="invokeType" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.invokeType"></a>
+
+```typescript
+public readonly invokeType: InvokeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType">InvokeType</a>
+- *Default:* InvokeType.BATCH
+
+Agent invocation type.
+
+Defines how the agent is invoked and what processing mode to use.
 
 ---
 
@@ -3702,6 +4371,201 @@ public readonly stepTimeouts: Duration;
 - *Default:* Duration.minutes(5)
 
 Timeout for individual Step Functions tasks (classification, extraction, etc.).
+
+---
+
+### BedrockKnowledgeBaseProps <a name="BedrockKnowledgeBaseProps" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps"></a>
+
+Configuration for Amazon Bedrock Knowledge Base.
+
+This interface extends the base configuration with Bedrock-specific
+properties for connecting to an existing Bedrock Knowledge Base.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.Initializer"></a>
+
+```typescript
+import { BedrockKnowledgeBaseProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const bedrockKnowledgeBaseProps: BedrockKnowledgeBaseProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.description">description</a></code> | <code>string</code> | Description of what this knowledge base contains and when to use it. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.name">name</a></code> | <code>string</code> | Human-readable name/identifier for this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.acl">acl</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a></code> | Access control configuration for identity-aware retrieval. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.retrieval">retrieval</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a></code> | Retrieval configuration options. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.knowledgeBaseId">knowledgeBaseId</a></code> | <code>string</code> | Unique identifier for the Bedrock Knowledge Base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.create">create</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration">CreateKnowledgeBaseConfiguration</a></code> | Configuration for creating a new knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.guardrail">guardrail</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration">GuardrailConfiguration</a></code> | Guardrail configuration for content filtering. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.knowledgeBaseArn">knowledgeBaseArn</a></code> | <code>string</code> | ARN of the Bedrock Knowledge Base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.vectorStore">vectorStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration">VectorStoreConfiguration</a></code> | Vector store configuration. |
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Description of what this knowledge base contains and when to use it.
+
+This description is shown to the agent in its system prompt to help
+it decide when to query this knowledge base. Be specific about the
+type of information contained and appropriate use cases.
+
+---
+
+*Example*
+
+```typescript
+'Contains product documentation, user guides, and FAQs. Use when answering questions about product features or troubleshooting.'
+```
+
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name/identifier for this knowledge base.
+
+Used for logging, display purposes, and to help the agent identify
+which knowledge base to query. Should be unique within the set of
+knowledge bases configured for an agent.
+
+---
+
+*Example*
+
+```typescript
+'product-documentation'
+```
+
+
+##### `acl`<sup>Optional</sup> <a name="acl" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.acl"></a>
+
+```typescript
+public readonly acl: AclConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a>
+- *Default:* ACL disabled
+
+Access control configuration for identity-aware retrieval.
+
+When enabled, retrieval queries will be filtered based on user
+identity context to ensure users only access permitted documents.
+
+---
+
+##### `retrieval`<sup>Optional</sup> <a name="retrieval" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.retrieval"></a>
+
+```typescript
+public readonly retrieval: RetrievalConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a>
+- *Default:* { numberOfResults: 5 }
+
+Retrieval configuration options.
+
+Controls the number of results returned and optional metadata filtering.
+
+---
+
+##### `knowledgeBaseId`<sup>Required</sup> <a name="knowledgeBaseId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.knowledgeBaseId"></a>
+
+```typescript
+public readonly knowledgeBaseId: string;
+```
+
+- *Type:* string
+
+Unique identifier for the Bedrock Knowledge Base.
+
+This is the ID assigned by Bedrock when the knowledge base was created.
+You can find this in the Bedrock console or via the AWS CLI.
+
+Required when referencing an existing knowledge base.
+Not required when using the `create` property to create a new KB.
+
+---
+
+##### `create`<sup>Optional</sup> <a name="create" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.create"></a>
+
+```typescript
+public readonly create: CreateKnowledgeBaseConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration">CreateKnowledgeBaseConfiguration</a>
+- *Default:* Reference existing KB only (no creation)
+
+Configuration for creating a new knowledge base.
+
+When provided, a new Bedrock Knowledge Base will be created with
+the specified data source and embedding configuration.
+
+Note: This is an advanced feature that creates AWS resources.
+For most use cases, referencing an existing knowledge base by ID
+is recommended.
+
+---
+
+##### `guardrail`<sup>Optional</sup> <a name="guardrail" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.guardrail"></a>
+
+```typescript
+public readonly guardrail: GuardrailConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration">GuardrailConfiguration</a>
+- *Default:* No guardrail applied
+
+Guardrail configuration for content filtering.
+
+When configured, the guardrail will be applied during retrieval
+operations to filter inappropriate or sensitive content.
+
+---
+
+##### `knowledgeBaseArn`<sup>Optional</sup> <a name="knowledgeBaseArn" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.knowledgeBaseArn"></a>
+
+```typescript
+public readonly knowledgeBaseArn: string;
+```
+
+- *Type:* string
+- *Default:* Constructed from knowledgeBaseId
+
+ARN of the Bedrock Knowledge Base.
+
+If not provided, the ARN will be constructed from the knowledgeBaseId
+using the current region and account.
+
+---
+
+##### `vectorStore`<sup>Optional</sup> <a name="vectorStore" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBaseProps.property.vectorStore"></a>
+
+```typescript
+public readonly vectorStore: VectorStoreConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration">VectorStoreConfiguration</a>
+- *Default:* S3 Vectors (type: 's3-vectors')
+
+Vector store configuration.
+
+Defines the type of vector store used by this knowledge base.
+This is informational and used for generating appropriate IAM
+permissions when needed.
 
 ---
 
@@ -4824,6 +5688,128 @@ Empty if all deletions succeeded.
 
 ---
 
+### CreateKnowledgeBaseConfiguration <a name="CreateKnowledgeBaseConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration"></a>
+
+Configuration for creating a new Bedrock Knowledge Base.
+
+When provided to BedrockKnowledgeBase, a new knowledge base will be
+created with the specified data source and embedding configuration.
+
+Note: This is an advanced feature. For most use cases, referencing
+an existing knowledge base by ID is recommended.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.Initializer"></a>
+
+```typescript
+import { CreateKnowledgeBaseConfiguration } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const createKnowledgeBaseConfiguration: CreateKnowledgeBaseConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.dataSourceBucketName">dataSourceBucketName</a></code> | <code>string</code> | S3 bucket name containing source documents. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.chunkingStrategy">chunkingStrategy</a></code> | <code>string</code> | Chunking strategy for document processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.dataSourcePrefix">dataSourcePrefix</a></code> | <code>string</code> | S3 prefix for source documents within the bucket. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.embeddingModelId">embeddingModelId</a></code> | <code>string</code> | Embedding model to use for vectorization. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.maxTokens">maxTokens</a></code> | <code>number</code> | Maximum chunk size in tokens (for fixed-size chunking). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.overlapTokens">overlapTokens</a></code> | <code>number</code> | Overlap between chunks in tokens (for fixed-size chunking). |
+
+---
+
+##### `dataSourceBucketName`<sup>Required</sup> <a name="dataSourceBucketName" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.dataSourceBucketName"></a>
+
+```typescript
+public readonly dataSourceBucketName: string;
+```
+
+- *Type:* string
+
+S3 bucket name containing source documents.
+
+The bucket must exist and contain the documents to be indexed.
+
+---
+
+##### `chunkingStrategy`<sup>Optional</sup> <a name="chunkingStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.chunkingStrategy"></a>
+
+```typescript
+public readonly chunkingStrategy: string;
+```
+
+- *Type:* string
+- *Default:* 'fixed-size'
+
+Chunking strategy for document processing.
+
+'fixed-size': Split documents into fixed-size chunks
+- 'semantic': Use semantic boundaries for chunking
+- 'none': No chunking (use entire documents)
+
+---
+
+##### `dataSourcePrefix`<sup>Optional</sup> <a name="dataSourcePrefix" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.dataSourcePrefix"></a>
+
+```typescript
+public readonly dataSourcePrefix: string;
+```
+
+- *Type:* string
+- *Default:* Root of bucket (all documents)
+
+S3 prefix for source documents within the bucket.
+
+Only documents under this prefix will be indexed.
+
+---
+
+##### `embeddingModelId`<sup>Optional</sup> <a name="embeddingModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.embeddingModelId"></a>
+
+```typescript
+public readonly embeddingModelId: string;
+```
+
+- *Type:* string
+- *Default:* 'amazon.titan-embed-text-v2:0'
+
+Embedding model to use for vectorization.
+
+Must be a valid Bedrock embedding model ID.
+
+---
+
+##### `maxTokens`<sup>Optional</sup> <a name="maxTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.maxTokens"></a>
+
+```typescript
+public readonly maxTokens: number;
+```
+
+- *Type:* number
+- *Default:* 300
+
+Maximum chunk size in tokens (for fixed-size chunking).
+
+Only used when chunkingStrategy is 'fixed-size'.
+
+---
+
+##### `overlapTokens`<sup>Optional</sup> <a name="overlapTokens" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration.property.overlapTokens"></a>
+
+```typescript
+public readonly overlapTokens: number;
+```
+
+- *Type:* number
+- *Default:* 20
+
+Overlap between chunks in tokens (for fixed-size chunking).
+
+Only used when chunkingStrategy is 'fixed-size'.
+
+---
+
 ### CustomDomainConfig <a name="CustomDomainConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.CustomDomainConfig"></a>
 
 Custom domain configuration for the frontend.
@@ -5556,6 +6542,59 @@ Optional flag to skip the build process (useful for pre-built artifacts).
 
 ---
 
+### GuardrailConfiguration <a name="GuardrailConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration"></a>
+
+Configuration for Bedrock Guardrails.
+
+Guardrails filter content during retrieval operations to prevent
+inappropriate or sensitive content from being returned.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration.Initializer"></a>
+
+```typescript
+import { GuardrailConfiguration } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const guardrailConfiguration: GuardrailConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration.property.guardrailId">guardrailId</a></code> | <code>string</code> | ID of the Bedrock Guardrail to apply. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration.property.guardrailVersion">guardrailVersion</a></code> | <code>string</code> | Version of the guardrail to use. |
+
+---
+
+##### `guardrailId`<sup>Required</sup> <a name="guardrailId" id="@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration.property.guardrailId"></a>
+
+```typescript
+public readonly guardrailId: string;
+```
+
+- *Type:* string
+
+ID of the Bedrock Guardrail to apply.
+
+The guardrail must exist in the same region as the knowledge base.
+
+---
+
+##### `guardrailVersion`<sup>Optional</sup> <a name="guardrailVersion" id="@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration.property.guardrailVersion"></a>
+
+```typescript
+public readonly guardrailVersion: string;
+```
+
+- *Type:* string
+- *Default:* 'DRAFT'
+
+Version of the guardrail to use.
+
+Use 'DRAFT' for testing or a specific version number for production.
+
+---
+
 ### HybridConfig <a name="HybridConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.HybridConfig"></a>
 
 Configuration for hybrid chunking strategy (RECOMMENDED).
@@ -5656,6 +6695,156 @@ public readonly tokenThreshold: number;
 Threshold for triggering chunking based on token count.
 
 Documents with tokens > threshold will be chunked.
+
+---
+
+### KnowledgeBaseRuntimeConfig <a name="KnowledgeBaseRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig"></a>
+
+Runtime configuration exported for the retrieval tool.
+
+This interface defines the structure of the configuration object
+that is serialized and passed to the retrieval tool via environment
+variables. It contains all information needed to query the knowledge
+base at runtime.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.Initializer"></a>
+
+```typescript
+import { KnowledgeBaseRuntimeConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const knowledgeBaseRuntimeConfig: KnowledgeBaseRuntimeConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.description">description</a></code> | <code>string</code> | Description of what this knowledge base contains. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.name">name</a></code> | <code>string</code> | Human-readable name for this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.retrieval">retrieval</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a></code> | Retrieval configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.acl">acl</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a></code> | ACL configuration for identity-aware retrieval. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.guardrail">guardrail</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration">GuardrailConfiguration</a></code> | Guardrail configuration (for Bedrock implementations). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.knowledgeBaseArn">knowledgeBaseArn</a></code> | <code>string</code> | Bedrock Knowledge Base ARN (for Bedrock implementations). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.knowledgeBaseId">knowledgeBaseId</a></code> | <code>string</code> | Bedrock Knowledge Base ID (for Bedrock implementations). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.type">type</a></code> | <code>string</code> | Type of knowledge base implementation. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.vectorStore">vectorStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration">VectorStoreConfiguration</a></code> | Vector store configuration (for Bedrock implementations). |
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Description of what this knowledge base contains.
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name for this knowledge base.
+
+---
+
+##### `retrieval`<sup>Required</sup> <a name="retrieval" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.retrieval"></a>
+
+```typescript
+public readonly retrieval: RetrievalConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration">RetrievalConfiguration</a>
+
+Retrieval configuration.
+
+---
+
+##### `acl`<sup>Optional</sup> <a name="acl" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.acl"></a>
+
+```typescript
+public readonly acl: AclConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AclConfiguration">AclConfiguration</a>
+
+ACL configuration for identity-aware retrieval.
+
+---
+
+##### `guardrail`<sup>Optional</sup> <a name="guardrail" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.guardrail"></a>
+
+```typescript
+public readonly guardrail: GuardrailConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.GuardrailConfiguration">GuardrailConfiguration</a>
+
+Guardrail configuration (for Bedrock implementations).
+
+---
+
+##### `knowledgeBaseArn`<sup>Optional</sup> <a name="knowledgeBaseArn" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.knowledgeBaseArn"></a>
+
+```typescript
+public readonly knowledgeBaseArn: string;
+```
+
+- *Type:* string
+
+Bedrock Knowledge Base ARN (for Bedrock implementations).
+
+---
+
+##### `knowledgeBaseId`<sup>Optional</sup> <a name="knowledgeBaseId" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.knowledgeBaseId"></a>
+
+```typescript
+public readonly knowledgeBaseId: string;
+```
+
+- *Type:* string
+
+Bedrock Knowledge Base ID (for Bedrock implementations).
+
+---
+
+##### `type`<sup>Optional</sup> <a name="type" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.type"></a>
+
+```typescript
+public readonly type: string;
+```
+
+- *Type:* string
+
+Type of knowledge base implementation.
+
+Used by the retrieval tool to determine how to query the KB.
+
+---
+
+*Example*
+
+```typescript
+'bedrock'
+```
+
+
+##### `vectorStore`<sup>Optional</sup> <a name="vectorStore" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig.property.vectorStore"></a>
+
+```typescript
+public readonly vectorStore: VectorStoreConfiguration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration">VectorStoreConfiguration</a>
+
+Vector store configuration (for Bedrock implementations).
 
 ---
 
@@ -6255,6 +7444,63 @@ This serves as the trigger point for processing
 
 ---
 
+### RetrievalConfiguration <a name="RetrievalConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration"></a>
+
+Configuration for retrieval operations.
+
+Controls how many results are returned and optional metadata filtering
+applied to all queries against the knowledge base.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration.Initializer"></a>
+
+```typescript
+import { RetrievalConfiguration } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const retrievalConfiguration: RetrievalConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration.property.numberOfResults">numberOfResults</a></code> | <code>number</code> | Number of results to return per query. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration.property.retrievalFilter">retrievalFilter</a></code> | <code>{[ key: string ]: any}</code> | Metadata filter to apply to all queries. |
+
+---
+
+##### `numberOfResults`<sup>Optional</sup> <a name="numberOfResults" id="@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration.property.numberOfResults"></a>
+
+```typescript
+public readonly numberOfResults: number;
+```
+
+- *Type:* number
+- *Default:* 5
+
+Number of results to return per query.
+
+Higher values provide more context but increase token usage.
+Lower values are faster but may miss relevant information.
+
+---
+
+##### `retrievalFilter`<sup>Optional</sup> <a name="retrievalFilter" id="@cdklabs/cdk-appmod-catalog-blueprints.RetrievalConfiguration.property.retrievalFilter"></a>
+
+```typescript
+public readonly retrievalFilter: {[ key: string ]: any};
+```
+
+- *Type:* {[ key: string ]: any}
+- *Default:* No filter applied
+
+Metadata filter to apply to all queries.
+
+This filter is applied in addition to any ACL filters. Use this
+for static filtering based on document metadata (e.g., document type,
+category, or date range).
+
+---
+
 ### TokenAnalysis <a name="TokenAnalysis" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis"></a>
 
 Token analysis results from PDF analysis.
@@ -6396,6 +7642,80 @@ public readonly tokenThreshold: number;
 Threshold for triggering chunking based on token count.
 
 Documents with tokens > threshold will be chunked.
+
+---
+
+### VectorStoreConfiguration <a name="VectorStoreConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration"></a>
+
+Configuration for vector store used by the knowledge base.
+
+Defines the type of vector store and any type-specific configuration.
+S3 Vectors is the default and recommended option for most use cases.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.Initializer"></a>
+
+```typescript
+import { VectorStoreConfiguration } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const vectorStoreConfiguration: VectorStoreConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.bucketName">bucketName</a></code> | <code>string</code> | S3 bucket name for S3 Vectors storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.prefix">prefix</a></code> | <code>string</code> | S3 prefix for vectors within the bucket. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.type">type</a></code> | <code>string</code> | Type of vector store. |
+
+---
+
+##### `bucketName`<sup>Optional</sup> <a name="bucketName" id="@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.bucketName"></a>
+
+```typescript
+public readonly bucketName: string;
+```
+
+- *Type:* string
+- *Default:* Uses Bedrock's default bucket
+
+S3 bucket name for S3 Vectors storage.
+
+Only used when type is 's3-vectors'. If not provided, the default
+bucket created by Bedrock will be used.
+
+---
+
+##### `prefix`<sup>Optional</sup> <a name="prefix" id="@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.prefix"></a>
+
+```typescript
+public readonly prefix: string;
+```
+
+- *Type:* string
+- *Default:* 'vectors/'
+
+S3 prefix for vectors within the bucket.
+
+Only used when type is 's3-vectors'.
+
+---
+
+##### `type`<sup>Optional</sup> <a name="type" id="@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration.property.type"></a>
+
+```typescript
+public readonly type: string;
+```
+
+- *Type:* string
+- *Default:* 's3-vectors'
+
+Type of vector store.
+
+'s3-vectors': Amazon S3 vector storage (default, recommended)
+- 'opensearch-serverless': Amazon OpenSearch Serverless
+- 'pinecone': Pinecone vector database
+- 'rds': Amazon RDS with pgvector
 
 ---
 
@@ -7650,6 +8970,124 @@ The parameters passed to the document processing L3 Construct.
 ---
 
 
+### IKnowledgeBase <a name="IKnowledgeBase" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase">BaseKnowledgeBase</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase">BedrockKnowledgeBase</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase">IKnowledgeBase</a>
+
+Interface for knowledge base implementations.
+
+This interface defines the contract that all knowledge base implementations must satisfy,
+allowing different KB backends (Bedrock KB, OpenSearch, custom) to be used interchangeably
+with the agent framework.
+
+Implementations of this interface are responsible for:
+- Providing metadata about the knowledge base (name, description)
+- Generating the IAM permissions required for the agent to access the KB
+- Exporting runtime configuration for the retrieval tool
+- Optionally providing a custom retrieval tool implementation
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this knowledge base. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the retrieval tool asset for this knowledge base type. |
+
+---
+
+##### `exportConfiguration` <a name="exportConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.exportConfiguration"></a>
+
+```typescript
+public exportConfiguration(): KnowledgeBaseRuntimeConfig
+```
+
+Export configuration for runtime use by the retrieval tool.
+
+This method returns a configuration object that will be serialized
+and passed to the retrieval tool via environment variables. The
+configuration includes all information needed to query the KB at runtime.
+
+##### `generateIamPermissions` <a name="generateIamPermissions" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.generateIamPermissions"></a>
+
+```typescript
+public generateIamPermissions(): PolicyStatement[]
+```
+
+Generate IAM policy statements required for accessing this knowledge base.
+
+This method returns the IAM permissions that the agent's Lambda function
+role needs to query this knowledge base. The permissions should follow
+the principle of least privilege, scoped to the specific resources.
+
+##### `retrievalToolAsset` <a name="retrievalToolAsset" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.retrievalToolAsset"></a>
+
+```typescript
+public retrievalToolAsset(): Asset
+```
+
+Provide the retrieval tool asset for this knowledge base type.
+
+This optional method allows knowledge base implementations to provide
+a custom retrieval tool. If not implemented or returns undefined,
+the framework's default retrieval tool will be used.
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.property.description">description</a></code> | <code>string</code> | Human-readable description of what this knowledge base contains. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.property.name">name</a></code> | <code>string</code> | Human-readable name for this knowledge base. |
+
+---
+
+##### `description`<sup>Required</sup> <a name="description" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.property.description"></a>
+
+```typescript
+public readonly description: string;
+```
+
+- *Type:* string
+
+Human-readable description of what this knowledge base contains.
+
+This description is included in the agent's system prompt to help
+the agent decide when to query this knowledge base. It should clearly
+indicate what type of information the KB contains and when it should
+be used.
+
+---
+
+*Example*
+
+```typescript
+'Contains product documentation, user guides, and FAQs. Use when answering questions about product features or troubleshooting.'
+```
+
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
+
+Human-readable name for this knowledge base.
+
+This name is used for logging, display purposes, and to help the agent
+identify which knowledge base to query. It should be unique within
+the set of knowledge bases configured for an agent.
+
+---
+
+*Example*
+
+```typescript
+'product-documentation'
+```
+
+
 ### IObservable <a name="IObservable" id="@cdklabs/cdk-appmod-catalog-blueprints.IObservable"></a>
 
 - *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing">AgenticDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing">BaseDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing">BedrockDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IObservable">IObservable</a>
@@ -7795,6 +9233,80 @@ MySQL dump file generated by mysqldump.
 ##### `PGDUMP` <a name="PGDUMP" id="@cdklabs/cdk-appmod-catalog-blueprints.FileType.PGDUMP"></a>
 
 PostgreSQL dump file generated by pg_dump.
+
+---
+
+
+### InvokeType <a name="InvokeType" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType"></a>
+
+Agent invocation type enumeration.
+
+Defines the processing mode for the agent.
+Must match the Python InvokeType enum in batch.py.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.BATCH">BATCH</a></code> | Batch processing mode - processes one document at a time. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.INTERACTIVE">INTERACTIVE</a></code> | Interactive conversation mode (future). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.ATTACH_DIRECTLY">ATTACH_DIRECTLY</a></code> | Direct invocation mode. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.CLASSIFICATION">CLASSIFICATION</a></code> | Document classification step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.PROCESSING">PROCESSING</a></code> | Document processing step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.AGGREGATION">AGGREGATION</a></code> | Document aggregation step. |
+
+---
+
+##### `BATCH` <a name="BATCH" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.BATCH"></a>
+
+Batch processing mode - processes one document at a time.
+
+Default mode for most agent operations.
+
+---
+
+
+##### `INTERACTIVE` <a name="INTERACTIVE" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.INTERACTIVE"></a>
+
+Interactive conversation mode (future).
+
+For real-time chat and conversational interfaces.
+
+---
+
+
+##### `ATTACH_DIRECTLY` <a name="ATTACH_DIRECTLY" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.ATTACH_DIRECTLY"></a>
+
+Direct invocation mode.
+
+Used for RAG applications, API endpoints, and direct agent calls.
+
+---
+
+
+##### `CLASSIFICATION` <a name="CLASSIFICATION" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.CLASSIFICATION"></a>
+
+Document classification step.
+
+Used in document processing workflows for classification phase.
+
+---
+
+
+##### `PROCESSING` <a name="PROCESSING" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.PROCESSING"></a>
+
+Document processing step.
+
+Used in document processing workflows for extraction/processing phase.
+
+---
+
+
+##### `AGGREGATION` <a name="AGGREGATION" id="@cdklabs/cdk-appmod-catalog-blueprints.InvokeType.AGGREGATION"></a>
+
+Document aggregation step.
+
+Used in document processing workflows for aggregating chunked results.
 
 ---
 
