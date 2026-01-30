@@ -15,6 +15,7 @@ def download_supporting_documents(bucket_name: str, policy_number: str) -> list[
         array: full local path of supporting documents
     """
     print(f"Found the following policy number: {policy_number}")
+    print(f"Documents located in: {bucket_name}")
     s3_supporting_doc_prefix = f"supporting_documents/{policy_number}/"
     
     # List objects in the S3 prefix
@@ -25,6 +26,7 @@ def download_supporting_documents(bucket_name: str, policy_number: str) -> list[
     if 'Contents' in response:
         for obj in response['Contents']:
             s3_key = obj['Key']
+            print(f"Found supporting document: {s3_key}")
             filename = s3_key.split('/')[-1]  # Extract filename from S3 key
             
             if filename:  # Skip empty filenames (directories)

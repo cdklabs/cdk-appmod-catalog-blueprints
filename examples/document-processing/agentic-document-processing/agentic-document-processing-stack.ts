@@ -4,6 +4,7 @@ import { DataIdentifier } from "aws-cdk-lib/aws-logs";
 import { AgenticDocumentProcessing, QueuedS3Adapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
 import { Asset } from "aws-cdk-lib/aws-s3-assets";
 import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export class AgenticDocumentProcessingStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -15,6 +16,20 @@ export class AgenticDocumentProcessingStack extends Stack {
         const bucket = new Bucket(this, 'DocumentStorage', {
             encryption: BucketEncryption.KMS
         })
+
+        const toolDependenciesLayer = new lambda.LayerVersion(this, 'ToolDependenciesLayer', {
+            code: lambda.Code.fromAsset('resources', {
+                bundling: {
+                image: lambda.Runtime.PYTHON_3_13.bundlingImage,
+                command: [
+                    'bash', '-c',
+                    'pip install -r requirements.txt -t /asset-output/python && cp requirements.txt /asset-output/'
+                ],
+                },
+            }),
+            compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+            description: 'pypdf and boto3 dependencies for PDF extraction',
+        });
 
         new AgenticDocumentProcessing(this, 'AgenticDocumentProcessing', {
             ingressAdapter: new QueuedS3Adapter({
@@ -32,8 +47,10 @@ export class AgenticDocumentProcessingStack extends Stack {
                     systemPrompt: new Asset(this, 'SystemPromptAsset', {path: __dirname + "/resources/system_prompt.txt"}),
                     tools: [
                         new Asset(this, 'DownloadPolicyToolAsset', {path: __dirname+"/resources/tools/download_policy.py"}),
-                        new Asset(this, 'DownloadSupportingDocumentsToolAsset', {path: __dirname+"/resources/tools/download_supporting_documents.py"})
-                    ]
+                        new Asset(this, 'DownloadSupportingDocumentsToolAsset', {path: __dirname+"/resources/tools/download_supporting_documents.py"}),
+                        new Asset(this, 'PdfExtractorToolAsset', {path: __dirname+'/resources/tools/pdf_extractor.py'})
+                    ],
+                    lambdaLayers: [toolDependenciesLayer]
                 },
                 prompt: `
                     Analyze the attached insurance claim document and check if this is a valid claim or not. The policy number of the insurance is in the claim form.
