@@ -383,7 +383,7 @@ When `enableObservability` is true, the retrieval tool provides:
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | numberOfResults | number | 5 | Results per query |
-| retrievalFilter | Record<string, unknown> | None | Static metadata filter |
+| retrievalFilter | `Record<string, unknown>` | None | Static metadata filter |
 
 ### AclConfiguration
 
