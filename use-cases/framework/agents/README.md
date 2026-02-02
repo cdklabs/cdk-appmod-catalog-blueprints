@@ -223,6 +223,118 @@ With `expectJson: true`, responses are automatically parsed:
 }
 ```
 
+## Knowledge Base Integration
+
+Agents can be enhanced with knowledge base capabilities for Retrieval-Augmented Generation (RAG). This enables agents to query configured knowledge bases during task execution, retrieving relevant context to improve response quality.
+
+### Basic Knowledge Base Configuration
+
+```typescript
+import { BedrockKnowledgeBase, BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+// Create knowledge base reference
+const productDocs = new BedrockKnowledgeBase(this, 'ProductDocs', {
+  name: 'product-documentation',
+  description: 'Product documentation and FAQs. Use for product feature questions.',
+  knowledgeBaseId: 'ABCD1234',
+});
+
+// Create agent with knowledge base
+const agent = new BatchAgent(this, 'SupportAgent', {
+  agentName: 'CustomerSupportAgent',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt: new Asset(this, 'SystemPrompt', {
+      path: './prompts/support_agent.txt'
+    }),
+    knowledgeBases: [productDocs],
+  },
+  prompt: 'Answer the customer question using available knowledge bases.',
+  enableObservability: true,
+});
+```
+
+### Multiple Knowledge Bases
+
+Configure multiple knowledge bases for different information sources:
+
+```typescript
+const productDocs = new BedrockKnowledgeBase(this, 'ProductDocs', {
+  name: 'product-docs',
+  description: 'Product documentation and user guides',
+  knowledgeBaseId: 'KB_PRODUCT',
+});
+
+const policyDocs = new BedrockKnowledgeBase(this, 'PolicyDocs', {
+  name: 'policy-docs',
+  description: 'Company policies and compliance documents',
+  knowledgeBaseId: 'KB_POLICY',
+});
+
+const agent = new BatchAgent(this, 'Agent', {
+  agentDefinition: {
+    knowledgeBases: [productDocs, policyDocs],
+    // ... other props
+  },
+});
+```
+
+### Retrieval Tool Usage
+
+When knowledge bases are configured, a `retrieve_from_knowledge_base` tool is automatically available to the agent:
+
+```python
+# The agent can call this tool automatically
+retrieve_from_knowledge_base(
+    query="How do I reset my password?",
+    knowledge_base_id="product-docs"  # Optional: query specific KB
+)
+```
+
+The tool returns structured results:
+
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "content": "To reset your password, navigate to Settings > Security...",
+      "source": { "type": "s3", "uri": "s3://docs/password-guide.pdf" },
+      "score": 0.95,
+      "knowledgeBaseName": "product-docs"
+    }
+  ],
+  "metadata": {
+    "totalResults": 5,
+    "queryLatencyMs": 234,
+    "knowledgeBasesQueried": ["KB_PRODUCT"]
+  }
+}
+```
+
+### Advanced Configuration
+
+```typescript
+const kb = new BedrockKnowledgeBase(this, 'AdvancedKB', {
+  name: 'secure-docs',
+  description: 'Sensitive documentation with access control',
+  knowledgeBaseId: 'KB_SECURE',
+  retrieval: {
+    numberOfResults: 10,  // Return more results (default: 5)
+  },
+  acl: {
+    enabled: true,        // Enable identity-aware filtering
+    metadataField: 'team' // Filter by team metadata
+  },
+  guardrail: {
+    guardrailId: 'my-guardrail',
+    guardrailVersion: '1'
+  },
+});
+```
+
+For detailed documentation on knowledge base configuration, ACL, guardrails, and custom implementations, see the [Knowledge Base README](./knowledge-base/README.md).
+
 ## Security & Best Practices
 
 IAM Permissions
