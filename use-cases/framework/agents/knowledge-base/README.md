@@ -373,7 +373,7 @@ When `enableObservability` is true, the retrieval tool provides:
 | description | string | Yes | - | Description for agent |
 | knowledgeBaseId | string | Yes | - | Bedrock KB ID |
 | knowledgeBaseArn | string | No | Constructed | KB ARN |
-| retrieval | RetrievalConfiguration | No | { numberOfResults: 5 } | Retrieval settings |
+| retrieval | RetrievalConfiguration | No | `{ numberOfResults: 5 }` | Retrieval settings |
 | acl | AclConfiguration | No | Disabled | ACL settings |
 | guardrail | GuardrailConfiguration | No | None | Guardrail settings |
 | vectorStore | VectorStoreConfiguration | No | S3 Vectors | Vector store type |
