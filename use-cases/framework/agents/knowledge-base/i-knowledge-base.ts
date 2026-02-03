@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { KnowledgeBaseRuntimeConfig } from './knowledge-base-props';
 
@@ -74,4 +75,19 @@ export interface IKnowledgeBase {
    * @returns S3 Asset containing the retrieval tool code, or undefined to use the default
    */
   retrievalToolAsset?(): Asset | undefined;
+
+  /**
+   * Provide Lambda layers required by the retrieval tool.
+   *
+   * This optional method allows knowledge base implementations to provide
+   * Lambda layers containing dependencies needed by their retrieval tool.
+   * For example, a knowledge base might need specific boto3 versions,
+   * custom libraries, or SDK extensions.
+   *
+   * The layers will be added to the agent's Lambda function, making the
+   * dependencies available to the retrieval tool at runtime.
+   *
+   * @returns Array of Lambda LayerVersion objects, or undefined if no layers needed
+   */
+  retrievalToolLayers?(): LayerVersion[] | undefined;
 }

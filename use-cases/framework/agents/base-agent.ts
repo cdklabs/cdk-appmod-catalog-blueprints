@@ -149,6 +149,14 @@ export abstract class BaseAgent extends Construct {
    * The asset is added to the agent's tools and granted read access.
    */
   protected readonly knowledgeBaseToolAsset?: Asset;
+  /**
+   * Lambda layers required by knowledge base retrieval tools.
+   *
+   * This array contains Lambda layers from all configured knowledge bases.
+   * Subclasses should add these layers to the agent Lambda function to
+   * ensure retrieval tools have access to required dependencies.
+   */
+  protected readonly knowledgeBaseLayers: LayerVersion[];
 
   constructor(scope: Construct, id: string, props: BaseAgentProps) {
     super(scope, id);
@@ -215,6 +223,9 @@ export abstract class BaseAgent extends Construct {
     // Store knowledge base configurations for subclass access
     this.knowledgeBaseConfigs = knowledgeBases.map(kb => kb.exportConfiguration());
 
+    // Initialize knowledge base layers array
+    this.knowledgeBaseLayers = [];
+
     // Get retrieval tool assets from knowledge bases
     // Each KB type provides its own retrieval tool implementation
     if (knowledgeBases.length > 0) {
@@ -232,6 +243,14 @@ export abstract class BaseAgent extends Construct {
             if (!toolAssetMap.has(key)) {
               toolAssetMap.set(key, toolAsset);
             }
+          }
+        }
+
+        // Collect Lambda layers from knowledge bases
+        if (kb.retrievalToolLayers) {
+          const layers = kb.retrievalToolLayers();
+          if (layers && layers.length > 0) {
+            this.knowledgeBaseLayers.push(...layers);
           }
         }
       }

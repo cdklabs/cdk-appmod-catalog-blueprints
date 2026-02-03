@@ -119,7 +119,10 @@ export class BatchAgent extends BaseAgent {
       role: this.agentRole,
       index: 'batch.py',
       runtime: DefaultRuntimes.PYTHON,
-      layers: props.agentDefinition.lambdaLayers,
+      layers: [
+        ...(props.agentDefinition.lambdaLayers || []),
+        ...this.knowledgeBaseLayers,
+      ],
       timeout: Duration.minutes(10),
       memorySize: 1024,
       environment: env,

@@ -886,6 +886,7 @@ Configuration properties for the knowledge base.
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this knowledge base. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the retrieval tool asset for this knowledge base type. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolLayers">retrievalToolLayers</a></code> | Provide Lambda layers required by the retrieval tool. |
 
 ---
 
@@ -932,6 +933,18 @@ Provide the retrieval tool asset for this knowledge base type.
 By default, returns undefined to use the framework's default retrieval
 tool. Subclasses can override this method to provide a custom retrieval
 tool implementation.
+
+##### `retrievalToolLayers` <a name="retrievalToolLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolLayers"></a>
+
+```typescript
+public retrievalToolLayers(): LayerVersion[]
+```
+
+Provide Lambda layers required by the retrieval tool.
+
+By default, returns undefined indicating no additional layers are needed.
+Subclasses can override this method to provide Lambda layers containing
+dependencies required by their retrieval tool.
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -1495,6 +1508,7 @@ Configuration properties for the Bedrock Knowledge Base.
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this Bedrock Knowledge Base. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the Bedrock-specific retrieval tool asset. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolLayers">retrievalToolLayers</a></code> | Provide Lambda layers required by the retrieval tool. |
 
 ---
 
@@ -1552,6 +1566,18 @@ Returns an Asset containing the Python retrieval tool that uses
 the Amazon Bedrock Agent Runtime API to query knowledge bases.
 This tool is automatically added to agents that use Bedrock
 knowledge bases.
+
+##### `retrievalToolLayers` <a name="retrievalToolLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolLayers"></a>
+
+```typescript
+public retrievalToolLayers(): LayerVersion[]
+```
+
+Provide Lambda layers required by the retrieval tool.
+
+By default, returns undefined indicating no additional layers are needed.
+Subclasses can override this method to provide Lambda layers containing
+dependencies required by their retrieval tool.
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -8993,6 +9019,7 @@ Implementations of this interface are responsible for:
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this knowledge base. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the retrieval tool asset for this knowledge base type. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.retrievalToolLayers">retrievalToolLayers</a></code> | Provide Lambda layers required by the retrieval tool. |
 
 ---
 
@@ -9031,6 +9058,22 @@ Provide the retrieval tool asset for this knowledge base type.
 This optional method allows knowledge base implementations to provide
 a custom retrieval tool. If not implemented or returns undefined,
 the framework's default retrieval tool will be used.
+
+##### `retrievalToolLayers` <a name="retrievalToolLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase.retrievalToolLayers"></a>
+
+```typescript
+public retrievalToolLayers(): LayerVersion[]
+```
+
+Provide Lambda layers required by the retrieval tool.
+
+This optional method allows knowledge base implementations to provide
+Lambda layers containing dependencies needed by their retrieval tool.
+For example, a knowledge base might need specific boto3 versions,
+custom libraries, or SDK extensions.
+
+The layers will be added to the agent's Lambda function, making the
+dependencies available to the retrieval tool at runtime.
 
 #### Properties <a name="Properties" id="Properties"></a>
 
