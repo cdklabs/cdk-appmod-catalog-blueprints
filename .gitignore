@@ -76,6 +76,7 @@ junit.xml
 !/.eslintrc.json
 .jsii
 tsconfig.json
+!examples/**/tsconfig.json
 !/API.md
 .jsii.tabl.json
 !/rosetta/default.ts-fixture
