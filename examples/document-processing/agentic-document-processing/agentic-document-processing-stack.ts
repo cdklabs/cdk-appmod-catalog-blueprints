@@ -1,12 +1,15 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { Stack, StackProps, CfnOutput } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { DataIdentifier } from "aws-cdk-lib/aws-logs";
 import { AgenticDocumentProcessing, QueuedS3Adapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
 import { Asset } from "aws-cdk-lib/aws-s3-assets";
-import { Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import { Bucket, BucketEncryption, HttpMethods } from "aws-cdk-lib/aws-s3";
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export class AgenticDocumentProcessingStack extends Stack {
+    public readonly bucketName: string;
+    public readonly tableName: string;
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props)
         // const network = new Network(this, 'AgenticIDPNetwork', {
@@ -14,8 +17,24 @@ export class AgenticDocumentProcessingStack extends Stack {
         // })
 
         const bucket = new Bucket(this, 'DocumentStorage', {
-            encryption: BucketEncryption.KMS
+            encryption: BucketEncryption.KMS,
+            cors: [
+                {
+                    allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.POST, HttpMethods.HEAD],
+                    allowedOrigins: ['*'],
+                    allowedHeaders: ['*'],
+                    exposedHeaders: ['ETag'],
+                    maxAge: 3000
+                }
+            ]
         })
+
+        // Export the KMS key ARN for cross-stack reference
+        new CfnOutput(this, 'DocumentBucketKeyArn', {
+            value: bucket.encryptionKey!.keyArn,
+            exportName: 'AgenticDocProcessing-BucketKeyArn',
+            description: 'KMS key ARN for document bucket encryption'
+        });
 
         const toolDependenciesLayer = new lambda.LayerVersion(this, 'ToolDependenciesLayer', {
             code: lambda.Code.fromAsset('resources', {
@@ -31,7 +50,7 @@ export class AgenticDocumentProcessingStack extends Stack {
             description: 'pypdf and boto3 dependencies for PDF extraction',
         });
 
-        new AgenticDocumentProcessing(this, 'AgenticDocumentProcessing', {
+        const agenticProcessing = new AgenticDocumentProcessing(this, 'AgenticDocumentProcessing', {
             ingressAdapter: new QueuedS3Adapter({
                 bucket
             }),
@@ -87,5 +106,28 @@ export class AgenticDocumentProcessingStack extends Stack {
                 ]
             }
         })
+
+        // Export bucket and table names for cross-stack reference
+        this.bucketName = bucket.bucketName;
+        this.tableName = agenticProcessing.documentProcessingTable.tableName;
+
+        new CfnOutput(this, 'DocumentBucketName', {
+            value: bucket.bucketName,
+            exportName: 'AgenticDocProcessing-BucketName',
+            description: 'S3 bucket for document storage'
+        });
+
+        new CfnOutput(this, 'DocumentTableName', {
+            value: agenticProcessing.documentProcessingTable.tableName,
+            exportName: 'AgenticDocProcessing-TableName',
+            description: 'DynamoDB table for document metadata'
+        });
+
+        // Export the table's KMS key ARN
+        new CfnOutput(this, 'DocumentTableKeyArn', {
+            value: agenticProcessing.encryptionKey.keyArn,
+            exportName: 'AgenticDocProcessing-TableKeyArn',
+            description: 'KMS key ARN for DynamoDB table encryption'
+        });
     }
 }
