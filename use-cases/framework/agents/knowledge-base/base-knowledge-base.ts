@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import { IKnowledgeBase } from './i-knowledge-base';
@@ -141,6 +142,19 @@ export abstract class BaseKnowledgeBase extends Construct implements IKnowledgeB
    * @returns undefined to use the default retrieval tool
    */
   public retrievalToolAsset(): Asset | undefined {
+    return undefined;
+  }
+
+  /**
+   * Provide Lambda layers required by the retrieval tool.
+   *
+   * By default, returns undefined indicating no additional layers are needed.
+   * Subclasses can override this method to provide Lambda layers containing
+   * dependencies required by their retrieval tool.
+   *
+   * @returns undefined indicating no additional layers needed
+   */
+  public retrievalToolLayers(): LayerVersion[] | undefined {
     return undefined;
   }
 }
