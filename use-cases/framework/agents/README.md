@@ -353,6 +353,218 @@ Observability
 - X-Ray tracing for performance monitoring
 - CloudWatch metrics for operational insights
 - Configurable log group data protection
+- AWS Bedrock AgentCore observability for agent-specific insights
+
+### AgentCore Observability
+
+AWS Bedrock AgentCore provides agent-specific observability that complements Lambda Powertools by capturing agent-level metrics and traces. When you enable observability on your agent, both systems work together to provide complete visibility into your AI agent's behavior and performance.
+
+#### What is AgentCore Observability?
+
+AgentCore observability automatically collects and publishes metrics about your agent's behavior and decision-making process:
+
+- **Agent Invocations**: Number of times the agent is invoked and success/failure rates
+- **Reasoning Steps**: How the agent processes requests and makes decisions
+- **Tool Usage**: Which tools the agent calls, how often, and their success rates
+- **Token Consumption**: Number of tokens used per invocation for cost tracking
+- **Agent Latency**: Time taken for agent operations and tool executions
+- **Error Rates**: Failed invocations categorized by error type
+
+These metrics provide deep insights into agent behavior that go beyond standard Lambda function metrics, helping you understand how your AI agent reasons, which tools it prefers, and where optimization opportunities exist.
+
+#### How to Enable
+
+AgentCore observability is enabled with the same flag as Lambda Powertools - no additional configuration required:
+
+```typescript
+const agent = new BatchAgent(this, 'MyAgent', {
+  agentName: 'my-agent',
+  enableObservability: true,  // Enables both Lambda Powertools AND AgentCore
+  metricServiceName: 'my-service',
+  metricNamespace: 'MyApp',
+  agentDefinition: {
+    bedrockModel: {
+      useCrossRegionInference: true
+    },
+    systemPrompt: new Asset(this, 'SystemPrompt', {
+      path: './prompts/system_prompt.txt'
+    }),
+    tools: [
+      new Asset(this, 'AnalysisTool', {
+        path: './tools/analysis.py'
+      })
+    ]
+  },
+  prompt: 'Analyze the provided data and generate insights.',
+  expectJson: true
+});
+```
+
+When `enableObservability: true`:
+- **Lambda Powertools** provides function-level observability (logs, traces, metrics)
+- **AgentCore** provides agent-level observability (invocations, reasoning, tools, tokens)
+- Both systems use the same service name and namespace for correlation
+- All configuration happens automatically - no manual setup required
+
+#### What Gets Configured Automatically
+
+**Environment Variables** (set automatically by the framework):
+- `AGENT_OBSERVABILITY_ENABLED='true'`: Enables AgentCore observability
+- `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry (includes service name and log group)
+- `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers for trace correlation
+- `AWS_LAMBDA_EXEC_WRAPPER='/opt/otel-instrument'`: Enables ADOT wrapper for automatic instrumentation
+
+**IAM Permissions** (granted automatically to the agent role):
+- **CloudWatch Logs**: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents` for trace data
+- **X-Ray**: `xray:PutTraceSegments`, `xray:PutTelemetryRecords` for distributed tracing
+
+**Lambda Layers** (added automatically):
+- **ADOT (AWS Distro for OpenTelemetry) Lambda Layer**: Provides OpenTelemetry instrumentation for Python
+
+All of this configuration is handled by the framework when you set `enableObservability: true` - you don't need to configure anything manually.
+
+#### Querying Metrics in CloudWatch
+
+AgentCore metrics are published to CloudWatch under your configured namespace. You can query them using CloudWatch Logs Insights:
+
+**Agent Invocation Count**:
+```
+fields @timestamp, @message
+| filter @message like /agent_invocation/
+| stats count() by bin(5m)
+```
+
+**Token Usage Analysis**:
+```
+fields @timestamp, @message
+| filter @message like /token_usage/
+| parse @message /tokens_used: (?<tokens>\d+)/
+| stats sum(tokens) as total_tokens by bin(1h)
+```
+
+**Tool Usage Frequency**:
+```
+fields @timestamp, @message
+| filter @message like /tool_call/
+| parse @message /tool_name: "(?<tool>[^"]+)"/
+| stats count() by tool
+```
+
+**Agent Latency Percentiles**:
+```
+fields @timestamp, @message
+| filter @message like /agent_latency/
+| parse @message /latency_ms: (?<latency>\d+)/
+| stats avg(latency), pct(latency, 50), pct(latency, 95), pct(latency, 99) by bin(5m)
+```
+
+**Error Rate by Type**:
+```
+fields @timestamp, @message
+| filter @message like /agent_error/
+| parse @message /error_type: "(?<error_type>[^"]+)"/
+| stats count() by error_type
+```
+
+#### Complementary Observability Systems
+
+Both Lambda Powertools and AgentCore observability work together to provide complete visibility:
+
+| Aspect | Lambda Powertools | AgentCore Observability |
+|--------|-------------------|-------------------------|
+| **Scope** | Lambda function execution | Agent reasoning and behavior |
+| **Logs** | Function logs, structured logging | Agent traces, reasoning steps, tool calls |
+| **Metrics** | Function metrics (duration, memory, errors), custom metrics | Agent invocations, token usage, tool usage, reasoning latency |
+| **Traces** | Function execution traces, cold starts | Agent decision-making traces, tool execution flows |
+| **Use Case** | Debug function issues, optimize performance | Understand agent behavior, optimize prompts, track costs |
+| **Granularity** | Request/response level | Agent reasoning step level |
+
+Both systems publish to CloudWatch and use the same service name/namespace, making it easy to correlate function-level and agent-level insights in a single dashboard.
+
+#### Example: Monitoring Agent Performance
+
+```typescript
+// Enable observability for production monitoring
+const fraudDetectionAgent = new BatchAgent(this, 'FraudDetectionAgent', {
+  agentName: 'fraud-detection',
+  enableObservability: true,
+  metricServiceName: 'fraud-detection',
+  metricNamespace: 'FraudDetection',
+  agentDefinition: {
+    bedrockModel: {
+      useCrossRegionInference: true
+    },
+    systemPrompt: new Asset(this, 'SystemPrompt', {
+      path: './prompts/fraud_detection.txt'
+    }),
+    tools: [
+      new Asset(this, 'RiskAnalysisTool', {
+        path: './tools/risk_analysis.py'
+      }),
+      new Asset(this, 'DatabaseLookupTool', {
+        path: './tools/database_lookup.py'
+      })
+    ]
+  },
+  prompt: 'Analyze the document for fraud indicators.',
+  expectJson: true
+});
+
+// After deployment, query CloudWatch:
+// 1. View Lambda function logs (Lambda Powertools) - function-level insights
+// 2. View agent reasoning traces (AgentCore) - agent-level insights
+// 3. Correlate by service name: "fraud-detection"
+// 4. Track token usage for cost optimization
+// 5. Monitor tool usage patterns to optimize agent behavior
+```
+
+#### Best Practices
+
+1. **Always enable in production**: Observability is crucial for understanding agent behavior, debugging issues, and optimizing costs
+2. **Use consistent naming**: Use the same service name and namespace across all agents in an application for easier correlation
+3. **Monitor token usage**: Track token consumption to optimize costs and identify inefficient prompts
+4. **Analyze tool usage**: Understand which tools are most frequently called to optimize tool implementations and agent prompts
+5. **Set up alarms**: Create CloudWatch alarms for high error rates, excessive latency, or unusual token consumption
+6. **Review reasoning traces**: Regularly review agent reasoning steps to identify opportunities for prompt optimization
+7. **Correlate metrics**: Use the same service name to correlate Lambda Powertools and AgentCore metrics in CloudWatch dashboards
+8. **Track trends over time**: Monitor agent behavior trends to identify degradation or improvement in performance
+
+#### Troubleshooting
+
+**Metrics not appearing in CloudWatch?**
+- Verify `enableObservability: true` is set on your agent
+- Check that IAM permissions are granted (CloudWatch Logs, X-Ray) - these are added automatically by the framework
+- Verify ADOT Lambda Layer is attached to the Lambda function
+- Check Lambda function logs for OTEL initialization errors
+- Ensure the agent has been invoked at least once (metrics appear after first invocation)
+
+**High token consumption?**
+- Review agent reasoning traces in CloudWatch to identify verbose reasoning steps
+- Optimize system prompt to reduce unnecessary reasoning
+- Consider caching frequently used tool results to avoid redundant LLM calls
+- Check if the agent is making unnecessary tool calls
+- Review the `expectJson` setting - JSON extraction may require additional tokens
+
+**Agent latency issues?**
+- Check tool execution time in traces - slow tools impact overall latency
+- Review reasoning step count - excessive reasoning increases latency
+- Consider optimizing tool implementations for faster execution
+- Check if cross-region inference is enabled for better availability
+- Monitor cold start times and consider provisioned concurrency for latency-sensitive applications
+
+**Missing trace data?**
+- Verify X-Ray tracing is enabled (automatic with `enableObservability: true`)
+- Check that the ADOT Lambda Layer is properly attached
+- Ensure the Lambda function has X-Ray permissions (granted automatically)
+- Review CloudWatch Logs for OTEL exporter errors
+
+**Tool usage not tracked?**
+- Verify tools are properly decorated with `@tool` decorator in Python
+- Check that tool calls are completing successfully (errors may not be tracked)
+- Review agent logs to confirm tools are being invoked
+- Ensure tool implementations return structured responses
+
+For more information on AWS Bedrock AgentCore observability, see the [AWS documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html).
 
 Network Security
 - Optional VPC deployment for network isolation

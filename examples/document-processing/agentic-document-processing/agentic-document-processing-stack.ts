@@ -1,7 +1,7 @@
 import { Stack, StackProps, CfnOutput } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { DataIdentifier } from "aws-cdk-lib/aws-logs";
-import { AgenticDocumentProcessing, QueuedS3Adapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { AgenticDocumentProcessing, QueuedS3Adapter, CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints';
 import { Asset } from "aws-cdk-lib/aws-s3-assets";
 import { Bucket, BucketEncryption, HttpMethods } from "aws-cdk-lib/aws-s3";
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -12,6 +12,13 @@ export class AgenticDocumentProcessingStack extends Stack {
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props)
+        
+        // Enable CloudWatch Transaction Search for X-Ray traces
+        // This provides cost-effective collection of all X-Ray spans through CloudWatch Logs
+        new CloudWatchTransactionSearch(this, 'TransactionSearch', {
+            samplingPercentage: 1  // 1% of spans indexed for trace summaries
+        });
+        
         // const network = new Network(this, 'AgenticIDPNetwork', {
         //     private: true
         // })
@@ -42,12 +49,12 @@ export class AgenticDocumentProcessingStack extends Stack {
                 image: lambda.Runtime.PYTHON_3_13.bundlingImage,
                 command: [
                     'bash', '-c',
-                    'pip install -r requirements.txt -t /asset-output/python && cp requirements.txt /asset-output/'
+                    'pip install -r requirements.txt -t /asset-output/python --no-cache-dir --upgrade && cp requirements.txt /asset-output/'
                 ],
                 },
             }),
             compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
-            description: 'pypdf and boto3 dependencies for PDF extraction',
+            description: 'pypdf dependencies for PDF extraction',
         });
 
         const agenticProcessing = new AgenticDocumentProcessing(this, 'AgenticDocumentProcessing', {

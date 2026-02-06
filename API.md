@@ -432,6 +432,31 @@ The Step Functions state machine that orchestrates the document processing workf
 
 ### BaseAgent <a name="BaseAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent"></a>
 
+Base class for all agent types in the framework.
+
+Provides common infrastructure for AI agents including:
+- IAM role and permissions management
+- Encryption key for environment variables
+- Tool integration and S3 asset management
+- Knowledge base integration for RAG (Retrieval-Augmented Generation)
+- Observability configuration (Lambda Powertools + AgentCore)
+
+Subclasses must implement the agent-specific Lambda function creation.
+
+**Observability**: When `enableObservability: true`, BaseAgent configures both
+Lambda Powertools (function-level) and AWS Bedrock AgentCore (agent-level)
+observability. Both systems work together to provide complete visibility:
+- Lambda Powertools captures function execution, logs, and custom metrics
+- AgentCore captures agent reasoning, tool usage, and token consumption
+- Both publish to CloudWatch with correlated service names for unified monitoring
+
+The observability integration includes:
+- Automatic IAM permission grants for CloudWatch Logs and X-Ray
+- Environment variable configuration for OpenTelemetry
+- ADOT Lambda Layer attachment (handled by concrete implementations)
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
+
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.Initializer"></a>
 
 ```typescript
@@ -1699,6 +1724,145 @@ public readonly knowledgeBaseId: string;
 The unique identifier for the Bedrock Knowledge Base.
 
 This is the ID assigned by Bedrock when the knowledge base was created.
+
+---
+
+
+### CloudWatchTransactionSearch <a name="CloudWatchTransactionSearch" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch"></a>
+
+Enables CloudWatch Transaction Search for X-Ray traces.
+
+This construct configures account-level settings to enable cost-effective
+collection of all X-Ray spans through CloudWatch Logs. It performs three steps:
+
+1. Creates a CloudWatch Logs resource-based policy allowing X-Ray to send traces
+2. Configures X-Ray to send trace segments to CloudWatch Logs
+3. Sets the sampling percentage for span indexing (default 1%)
+
+The construct checks if Transaction Search is already enabled and only applies
+configuration if needed. It's idempotent and safe to deploy multiple times.
+
+## Benefits
+- Cost-effective: Uses CloudWatch Logs pricing instead of X-Ray pricing
+- Full visibility: All spans are collected and searchable
+- Automatic indexing: 1% of spans indexed by default for trace summaries
+
+## Usage
+```typescript
+new CloudWatchTransactionSearch(this, 'TransactionSearch', {
+  samplingPercentage: 1  // Optional: 1% is default
+});
+```
+
+> [https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Enable-TransactionSearch.html](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Enable-TransactionSearch.html)
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer"></a>
+
+```typescript
+import { CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new CloudWatchTransactionSearch(scope: Construct, id: string, props?: CloudWatchTransactionSearchProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps">CloudWatchTransactionSearchProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps">CloudWatchTransactionSearchProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
+
+```typescript
+import { CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+CloudWatchTransactionSearch.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
 
 ---
 
@@ -3448,7 +3612,8 @@ const baseAgentProps: BaseAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentArchitecture">agentArchitecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | The architecture used by the Lambda function where the agent is hosted. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability for the agent. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
@@ -3518,6 +3683,19 @@ Name of the agent.
 
 ---
 
+##### `agentArchitecture`<sup>Optional</sup> <a name="agentArchitecture" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.agentArchitecture"></a>
+
+```typescript
+public readonly agentArchitecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.ARM_64
+
+The architecture used by the Lambda function where the agent is hosted.
+
+---
+
 ##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.enableObservability"></a>
 
 ```typescript
@@ -3527,7 +3705,31 @@ public readonly enableObservability: boolean;
 - *Type:* boolean
 - *Default:* false
 
-Enable observability.
+Enable observability for the agent.
+
+When enabled, configures both Lambda Powertools and AWS Bedrock AgentCore observability:
+- **Lambda Powertools**: Provides function-level observability including structured logging,
+  distributed tracing with X-Ray, and custom metrics
+- **AgentCore Observability**: Provides agent-specific observability including agent invocations,
+  reasoning steps, tool usage, token consumption, and agent latency
+
+Both systems publish to Amazon CloudWatch and use the same service name and namespace
+for correlation. This provides complete visibility at both function and agent levels.
+
+**Environment Variables Set** (AgentCore):
+- `AGENT_OBSERVABILITY_ENABLED`: Enables AgentCore observability
+- `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry
+- `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers
+- `AWS_LAMBDA_EXEC_WRAPPER`: ADOT wrapper for automatic instrumentation
+
+**IAM Permissions Granted** (AgentCore):
+- CloudWatch Logs: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+- X-Ray: `xray:PutTraceSegments`, `xray:PutTelemetryRecords`
+
+**Additional Requirements**:
+- BatchAgent automatically adds ADOT (AWS Distro for OpenTelemetry) Lambda Layer
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
 
 ---
 
@@ -3868,7 +4070,8 @@ const batchAgentProps: BatchAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentArchitecture">agentArchitecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | The architecture used by the Lambda function where the agent is hosted. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability for the agent. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
@@ -3941,6 +4144,19 @@ Name of the agent.
 
 ---
 
+##### `agentArchitecture`<sup>Optional</sup> <a name="agentArchitecture" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.agentArchitecture"></a>
+
+```typescript
+public readonly agentArchitecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.ARM_64
+
+The architecture used by the Lambda function where the agent is hosted.
+
+---
+
 ##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.enableObservability"></a>
 
 ```typescript
@@ -3950,7 +4166,31 @@ public readonly enableObservability: boolean;
 - *Type:* boolean
 - *Default:* false
 
-Enable observability.
+Enable observability for the agent.
+
+When enabled, configures both Lambda Powertools and AWS Bedrock AgentCore observability:
+- **Lambda Powertools**: Provides function-level observability including structured logging,
+  distributed tracing with X-Ray, and custom metrics
+- **AgentCore Observability**: Provides agent-specific observability including agent invocations,
+  reasoning steps, tool usage, token consumption, and agent latency
+
+Both systems publish to Amazon CloudWatch and use the same service name and namespace
+for correlation. This provides complete visibility at both function and agent levels.
+
+**Environment Variables Set** (AgentCore):
+- `AGENT_OBSERVABILITY_ENABLED`: Enables AgentCore observability
+- `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry
+- `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers
+- `AWS_LAMBDA_EXEC_WRAPPER`: ADOT wrapper for automatic instrumentation
+
+**IAM Permissions Granted** (AgentCore):
+- CloudWatch Logs: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+- X-Ray: `xray:PutTraceSegments`, `xray:PutTelemetryRecords`
+
+**Additional Requirements**:
+- BatchAgent automatically adds ADOT (AWS Distro for OpenTelemetry) Lambda Layer
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
 
 ---
 
@@ -5711,6 +5951,53 @@ public readonly errors: string[];
 Array of error messages for failed deletions.
 
 Empty if all deletions succeeded.
+
+---
+
+### CloudWatchTransactionSearchProps <a name="CloudWatchTransactionSearchProps" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps"></a>
+
+Configuration properties for CloudWatch Transaction Search.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps.Initializer"></a>
+
+```typescript
+import { CloudWatchTransactionSearchProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const cloudWatchTransactionSearchProps: CloudWatchTransactionSearchProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps.property.policyName">policyName</a></code> | <code>string</code> | Name of the CloudWatch Logs resource policy. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps.property.samplingPercentage">samplingPercentage</a></code> | <code>number</code> | Sampling percentage for span indexing. |
+
+---
+
+##### `policyName`<sup>Optional</sup> <a name="policyName" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps.property.policyName"></a>
+
+```typescript
+public readonly policyName: string;
+```
+
+- *Type:* string
+- *Default:* 'TransactionSearchXRayAccess'
+
+Name of the CloudWatch Logs resource policy.
+
+---
+
+##### `samplingPercentage`<sup>Optional</sup> <a name="samplingPercentage" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearchProps.property.samplingPercentage"></a>
+
+```typescript
+public readonly samplingPercentage: number;
+```
+
+- *Type:* number
+- *Default:* 1 (1% of spans indexed)
+
+Sampling percentage for span indexing.
 
 ---
 

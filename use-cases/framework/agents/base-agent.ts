@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
-import { PropertyInjectors, RemovalPolicy } from 'aws-cdk-lib';
+import { PropertyInjectors, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import { LambdaIamUtils, LambdaObservabilityPropertyInjector, LogGroupDataProtectionProps, LogGroupDataProtectionUtils, ObservableProps } from '../../utilities';
@@ -97,10 +97,33 @@ export interface BaseAgentProps extends ObservableProps {
   readonly agentDefinition: AgentDefinitionProps;
 
   /**
-     * Enable observability
-     *
-     * @default false
-     */
+   * Enable observability for the agent
+   *
+   * When enabled, configures both Lambda Powertools and AWS Bedrock AgentCore observability:
+   * - **Lambda Powertools**: Provides function-level observability including structured logging,
+   *   distributed tracing with X-Ray, and custom metrics
+   * - **AgentCore Observability**: Provides agent-specific observability including agent invocations,
+   *   reasoning steps, tool usage, token consumption, and agent latency
+   *
+   * Both systems publish to Amazon CloudWatch and use the same service name and namespace
+   * for correlation. This provides complete visibility at both function and agent levels.
+   *
+   * **Environment Variables Set** (AgentCore):
+   * - `AGENT_OBSERVABILITY_ENABLED`: Enables AgentCore observability
+   * - `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry
+   * - `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers
+   * - `AWS_LAMBDA_EXEC_WRAPPER`: ADOT wrapper for automatic instrumentation
+   *
+   * **IAM Permissions Granted** (AgentCore):
+   * - CloudWatch Logs: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+   * - X-Ray: `xray:PutTraceSegments`, `xray:PutTelemetryRecords`
+   *
+   * **Additional Requirements**:
+   * - BatchAgent automatically adds ADOT (AWS Distro for OpenTelemetry) Lambda Layer
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
+   * @default false
+   */
   readonly enableObservability?: boolean;
 
   /**
@@ -124,8 +147,42 @@ export interface BaseAgentProps extends ObservableProps {
      * @default RemovalPolicy.DESTROY
      */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The architecture used by the Lambda function where the
+   * agent is hosted
+   *
+   * @default Architecture.ARM_64
+   */
+  readonly agentArchitecture?: Architecture;
 }
 
+/**
+ * Base class for all agent types in the framework
+ *
+ * Provides common infrastructure for AI agents including:
+ * - IAM role and permissions management
+ * - Encryption key for environment variables
+ * - Tool integration and S3 asset management
+ * - Knowledge base integration for RAG (Retrieval-Augmented Generation)
+ * - Observability configuration (Lambda Powertools + AgentCore)
+ *
+ * Subclasses must implement the agent-specific Lambda function creation.
+ *
+ * **Observability**: When `enableObservability: true`, BaseAgent configures both
+ * Lambda Powertools (function-level) and AWS Bedrock AgentCore (agent-level)
+ * observability. Both systems work together to provide complete visibility:
+ * - Lambda Powertools captures function execution, logs, and custom metrics
+ * - AgentCore captures agent reasoning, tool usage, and token consumption
+ * - Both publish to CloudWatch with correlated service names for unified monitoring
+ *
+ * The observability integration includes:
+ * - Automatic IAM permission grants for CloudWatch Logs and X-Ray
+ * - Environment variable configuration for OpenTelemetry
+ * - ADOT Lambda Layer attachment (handled by concrete implementations)
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
+ */
 export abstract class BaseAgent extends Construct {
   public abstract readonly agentFunction: PythonFunction;
   public readonly bedrockModel?: BedrockModelProps;
@@ -282,6 +339,84 @@ export abstract class BaseAgent extends Construct {
       PropertyInjectors.of(this).add(
         new LambdaObservabilityPropertyInjector(this.logGroupDataProtection),
       );
+
+      // Add IAM permissions for AgentCore observability
+      this.agentRole.addToPrincipalPolicy(new PolicyStatement({
+        actions: [
+          'logs:CreateLogGroup',
+          'logs:CreateLogStream',
+          'logs:PutLogEvents',
+          'xray:PutTraceSegments',
+          'xray:PutTelemetryRecords',
+        ],
+        resources: ['*'], // CloudWatch Logs and X-Ray require wildcard resources
+      }));
     }
+  }
+
+  /**
+   * Creates the AWS Distro for OpenTelemetry (ADOT) Lambda Layer.
+   * 
+   * The ADOT layer provides automatic instrumentation for observability.
+   * Layer versions vary by region - some regions have newer versions with
+   * better Python 3.13 support. If you encounter compatibility issues,
+   * the layer ARNs can be found at:
+   * https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns
+   * 
+   * @returns The ADOT Lambda Layer for the current region
+   * @throws Error if the region is not supported
+   */
+  protected createADOTLayer(): ILayerVersion {
+    const { region } = Stack.of(this);
+    
+    // AWS Distro for OpenTelemetry (ADOT) Lambda Layer ARNs by region
+    // Source: https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns
+    const adotLayerArnMap: Record<string, string> = {
+      'af-south-1': 'arn:aws:lambda:af-south-1:904233096616:layer:AWSOpenTelemetryDistroPython:17',
+      'ap-east-1': 'arn:aws:lambda:ap-east-1:888577020596:layer:AWSOpenTelemetryDistroPython:17',
+      'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:615299751070:layer:AWSOpenTelemetryDistroPython:19',
+      'ap-south-1': 'arn:aws:lambda:ap-south-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'ap-south-2': 'arn:aws:lambda:ap-south-2:796973505492:layer:AWSOpenTelemetryDistroPython:17',
+      'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:615299751070:layer:AWSOpenTelemetryDistroPython:19',
+      'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:039612877180:layer:AWSOpenTelemetryDistroPython:17',
+      'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:713881805771:layer:AWSOpenTelemetryDistroPython:17',
+      'ap-southeast-5': 'arn:aws:lambda:ap-southeast-5:152034782359:layer:AWSOpenTelemetryDistroPython:8',
+      'ap-southeast-7': 'arn:aws:lambda:ap-southeast-7:980416031188:layer:AWSOpenTelemetryDistroPython:8',
+      'ca-central-1': 'arn:aws:lambda:ca-central-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'ca-west-1': 'arn:aws:lambda:ca-west-1:595944127152:layer:AWSOpenTelemetryDistroPython:8',
+      'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:440179912924:layer:AWSOpenTelemetryDistroPython:8',
+      'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:440180067931:layer:AWSOpenTelemetryDistroPython:8',
+      'eu-central-1': 'arn:aws:lambda:eu-central-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'eu-central-2': 'arn:aws:lambda:eu-central-2:156041407956:layer:AWSOpenTelemetryDistroPython:17',
+      'eu-north-1': 'arn:aws:lambda:eu-north-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'eu-south-1': 'arn:aws:lambda:eu-south-1:257394471194:layer:AWSOpenTelemetryDistroPython:17',
+      'eu-south-2': 'arn:aws:lambda:eu-south-2:490004653786:layer:AWSOpenTelemetryDistroPython:17',
+      'eu-west-1': 'arn:aws:lambda:eu-west-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'eu-west-2': 'arn:aws:lambda:eu-west-2:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'eu-west-3': 'arn:aws:lambda:eu-west-3:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'il-central-1': 'arn:aws:lambda:il-central-1:746669239226:layer:AWSOpenTelemetryDistroPython:17',
+      'me-central-1': 'arn:aws:lambda:me-central-1:739275441131:layer:AWSOpenTelemetryDistroPython:17',
+      'me-south-1': 'arn:aws:lambda:me-south-1:980921751758:layer:AWSOpenTelemetryDistroPython:17',
+      'mx-central-1': 'arn:aws:lambda:mx-central-1:610118373846:layer:AWSOpenTelemetryDistroPython:8',
+      'sa-east-1': 'arn:aws:lambda:sa-east-1:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'us-east-1': 'arn:aws:lambda:us-east-1:615299751070:layer:AWSOpenTelemetryDistroPython:23',
+      'us-east-2': 'arn:aws:lambda:us-east-2:615299751070:layer:AWSOpenTelemetryDistroPython:20',
+      'us-west-1': 'arn:aws:lambda:us-west-1:615299751070:layer:AWSOpenTelemetryDistroPython:27',
+      'us-west-2': 'arn:aws:lambda:us-west-2:615299751070:layer:AWSOpenTelemetryDistroPython:27',
+    };
+
+    const adotLayerArn = adotLayerArnMap[region];
+    
+    if (!adotLayerArn) {
+      throw new Error(
+        `ADOT Lambda Layer not available in region ${region}. ` +
+        `Supported regions: ${Object.keys(adotLayerArnMap).join(', ')}`
+      );
+    }
+
+    return LayerVersion.fromLayerVersionArn(this, 'AdotLayer', adotLayerArn);
   }
 }

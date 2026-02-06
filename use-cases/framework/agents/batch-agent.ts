@@ -4,7 +4,7 @@
 import * as path from 'path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Duration, Stack } from 'aws-cdk-lib';
-import { Architecture } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
 import { InvokeType } from './invoke-type';
@@ -13,6 +13,7 @@ import { BedrockModelUtils } from '../bedrock';
 import { DefaultRuntimes } from '../custom-resource';
 import { DefaultAgentConfig } from './default-agent-config';
 import { KnowledgeBaseRuntimeConfig } from './knowledge-base';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 
 export interface BatchAgentProps extends BaseAgentProps {
   readonly prompt: string;
@@ -103,6 +104,20 @@ export class BatchAgent extends BaseAgent {
       env.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = kbSystemPromptAddition;
     }
 
+    // Add AgentCore observability environment variables when enabled
+    if (props.enableObservability) {
+      env.AGENT_OBSERVABILITY_ENABLED = 'true';
+      env.OTEL_RESOURCE_ATTRIBUTES = `service.name=${metricServiceName},aws.log.group.names=/aws/bedrock-agentcore/runtimes/${props.agentName}`;
+      env.OTEL_EXPORTER_OTLP_LOGS_HEADERS = `x-aws-log-group=/aws/bedrock-agentcore/runtimes/${props.agentName},x-aws-log-stream=runtime-logs,x-aws-metric-namespace=bedrock-agentcore`;
+      env.AWS_LAMBDA_EXEC_WRAPPER = '/opt/otel-instrument';
+      env.OTEL_PYTHON_DISTRO = "aws_distro"
+      env.OTEL_PYTHON_CONFIGURATOR = "aws_configurator"
+      env.OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf"
+      env.OTEL_TRACES_EXPORTER = "otlp"
+
+      this.agentRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaApplicationSignalsExecutionRolePolicy'))
+    }
+
     const { account, region } = Stack.of(this);
     const agentLambdaLogPermissionsResult = LambdaIamUtils.createLogsPermissions({
       account,
@@ -112,17 +127,27 @@ export class BatchAgent extends BaseAgent {
       enableObservability: props.enableObservability,
     });
 
+    // Define Lambda architecture (currently hardcoded, but centralized for future configurability)
+    const lambdaArchitecture = props.agentArchitecture || Architecture.ARM_64;
+
+    // Build layers array with ADOT layer when observability is enabled
+    const layers: ILayerVersion[] = [
+      ...(props.agentDefinition.lambdaLayers || []),
+      ...this.knowledgeBaseLayers,
+    ];
+
+    if (props.enableObservability) {
+      layers.push(this.createADOTLayer());
+    }
+
     this.agentFunction = new PythonFunction(this, 'BatchAgentFunction', {
       functionName: agentLambdaLogPermissionsResult.uniqueFunctionName,
-      architecture: Architecture.X86_64,
+      architecture: lambdaArchitecture,
       entry: path.join(__dirname, 'resources/default-strands-agent'),
       role: this.agentRole,
       index: 'batch.py',
       runtime: DefaultRuntimes.PYTHON,
-      layers: [
-        ...(props.agentDefinition.lambdaLayers || []),
-        ...this.knowledgeBaseLayers,
-      ],
+      layers,
       timeout: Duration.minutes(10),
       memorySize: 1024,
       environment: env,

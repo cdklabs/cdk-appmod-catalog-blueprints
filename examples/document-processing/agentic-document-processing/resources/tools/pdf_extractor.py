@@ -72,7 +72,7 @@ def extract_pdf_text(file_path: str) -> Dict[str, Any]:
         return {
             'success': True,
             'text': text.strip(),
-            'pageCount': page_count
+            'pageCount': str(page_count)  # Convert to string to avoid type errors
         }
     except Exception as e:
         error_msg = str(e)
