@@ -4,6 +4,7 @@
 import * as path from 'path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Duration, Stack } from 'aws-cdk-lib';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Architecture, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
@@ -13,7 +14,6 @@ import { BedrockModelUtils } from '../bedrock';
 import { DefaultRuntimes } from '../custom-resource';
 import { DefaultAgentConfig } from './default-agent-config';
 import { KnowledgeBaseRuntimeConfig } from './knowledge-base';
-import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 
 export interface BatchAgentProps extends BaseAgentProps {
   readonly prompt: string;
@@ -110,12 +110,12 @@ export class BatchAgent extends BaseAgent {
       env.OTEL_RESOURCE_ATTRIBUTES = `service.name=${metricServiceName},aws.log.group.names=/aws/bedrock-agentcore/runtimes/${props.agentName}`;
       env.OTEL_EXPORTER_OTLP_LOGS_HEADERS = `x-aws-log-group=/aws/bedrock-agentcore/runtimes/${props.agentName},x-aws-log-stream=runtime-logs,x-aws-metric-namespace=bedrock-agentcore`;
       env.AWS_LAMBDA_EXEC_WRAPPER = '/opt/otel-instrument';
-      env.OTEL_PYTHON_DISTRO = "aws_distro"
-      env.OTEL_PYTHON_CONFIGURATOR = "aws_configurator"
-      env.OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf"
-      env.OTEL_TRACES_EXPORTER = "otlp"
+      env.OTEL_PYTHON_DISTRO = 'aws_distro';
+      env.OTEL_PYTHON_CONFIGURATOR = 'aws_configurator';
+      env.OTEL_EXPORTER_OTLP_PROTOCOL = 'http/protobuf';
+      env.OTEL_TRACES_EXPORTER = 'otlp';
 
-      this.agentRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaApplicationSignalsExecutionRolePolicy'))
+      this.agentRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaApplicationSignalsExecutionRolePolicy'));
     }
 
     const { account, region } = Stack.of(this);

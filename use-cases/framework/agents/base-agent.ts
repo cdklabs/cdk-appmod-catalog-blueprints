@@ -356,19 +356,19 @@ export abstract class BaseAgent extends Construct {
 
   /**
    * Creates the AWS Distro for OpenTelemetry (ADOT) Lambda Layer.
-   * 
+   *
    * The ADOT layer provides automatic instrumentation for observability.
    * Layer versions vary by region - some regions have newer versions with
    * better Python 3.13 support. If you encounter compatibility issues,
    * the layer ARNs can be found at:
    * https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns
-   * 
+   *
    * @returns The ADOT Lambda Layer for the current region
    * @throws Error if the region is not supported
    */
   protected createADOTLayer(): ILayerVersion {
     const { region } = Stack.of(this);
-    
+
     // AWS Distro for OpenTelemetry (ADOT) Lambda Layer ARNs by region
     // Source: https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns
     const adotLayerArnMap: Record<string, string> = {
@@ -409,11 +409,11 @@ export abstract class BaseAgent extends Construct {
     };
 
     const adotLayerArn = adotLayerArnMap[region];
-    
+
     if (!adotLayerArn) {
       throw new Error(
         `ADOT Lambda Layer not available in region ${region}. ` +
-        `Supported regions: ${Object.keys(adotLayerArnMap).join(', ')}`
+        `Supported regions: ${Object.keys(adotLayerArnMap).join(', ')}`,
       );
     }
 

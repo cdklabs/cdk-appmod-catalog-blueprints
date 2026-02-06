@@ -75,7 +75,7 @@ export class CloudWatchTransactionSearch extends Construct {
 
     // Grant permissions to configure Transaction Search
     // Based on: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Enable-TransactionSearch.html
-    
+
     // X-Ray permissions
     onEventHandler.addToRolePolicy(new PolicyStatement({
       sid: 'TransactionSearchXRayPermissions',
@@ -99,8 +99,8 @@ export class CloudWatchTransactionSearch extends Construct {
         'logs:PutRetentionPolicy',
       ],
       resources: [
-        `arn:aws:logs:*:*:log-group:/aws/application-signals/data:*`,
-        `arn:aws:logs:*:*:log-group:aws/spans:*`,
+        'arn:aws:logs:*:*:log-group:/aws/application-signals/data:*',
+        'arn:aws:logs:*:*:log-group:aws/spans:*',
       ],
     }));
 
