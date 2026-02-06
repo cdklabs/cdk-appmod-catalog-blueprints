@@ -10,6 +10,7 @@ import {
   BedrockKnowledgeBase,
   BedrockKnowledgeBaseProps,
   BatchAgent,
+  CloudWatchTransactionSearch,
 } from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 class Fixture extends Stack {
