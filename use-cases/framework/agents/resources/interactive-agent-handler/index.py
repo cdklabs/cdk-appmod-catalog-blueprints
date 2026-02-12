@@ -298,7 +298,7 @@ async def chat(request: ChatRequest):
         except Exception as e:
             logger.error(f'Error processing chat: {e}', exc_info=True)
             metrics.add_metric(name='ChatErrors', unit=MetricUnit.Count, value=1)
-            yield format_sse(json.dumps({'error': str(e)}), event='error')
+            yield format_sse(json.dumps({'error': 'An internal error occurred. Check logs for details.'}), event='error')
 
     return StreamingResponse(
         generate_sse(),
