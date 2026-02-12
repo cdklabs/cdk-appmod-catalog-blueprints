@@ -15,6 +15,7 @@ import {
   CognitoAuthenticator,
   NoAuthenticator,
 } from '../agents/interactive-agent';
+import { BedrockKnowledgeBase } from '../agents/knowledge-base';
 
 describe('InteractiveAgent', () => {
   let app: App;
@@ -910,5 +911,68 @@ describe('NoAuthenticator', () => {
     const auth = new NoAuthenticator();
     const env = auth.environmentVariables();
     expect(env).toEqual({ AUTH_TYPE: 'None' });
+  });
+});
+
+describe('InteractiveAgent Knowledge Base Integration', () => {
+  let app: App;
+  let stack: Stack;
+  let systemPrompt: Asset;
+  const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
+
+  beforeEach(() => {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    systemPrompt = new Asset(stack, 'SystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+  });
+
+  test('sets KNOWLEDGE_BASES_CONFIG when KBs configured', () => {
+    const kb = new BedrockKnowledgeBase(stack, 'TestKB', {
+      name: 'test-kb',
+      description: 'Test knowledge base',
+      knowledgeBaseId: 'KB123456',
+    });
+
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+        knowledgeBases: [kb],
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Environment: {
+        Variables: Match.objectLike({
+          KNOWLEDGE_BASES_CONFIG: Match.anyValue(),
+          KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION: Match.anyValue(),
+        }),
+      },
+    });
+  });
+
+  test('does not set KB env vars when no KBs configured', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const functions = template.findResources('AWS::Lambda::Function');
+    const fn = Object.values(functions).find((f: any) =>
+      f.Properties?.FunctionName?.includes('TestAgent'),
+    ) as any;
+
+    expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASES_CONFIG).toBeUndefined();
+    expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION).toBeUndefined();
   });
 });
