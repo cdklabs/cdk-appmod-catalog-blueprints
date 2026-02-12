@@ -123,7 +123,7 @@ Optional resource name for further organization.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
 
 ```typescript
 import { AccessLog } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -132,20 +132,6 @@ AccessLog.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct.parameter.x"></a>
 
@@ -284,7 +270,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { AgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -293,20 +279,6 @@ AgenticDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -515,7 +487,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
 
 ```typescript
 import { BaseAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -524,20 +496,6 @@ BaseAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct.parameter.x"></a>
 
@@ -552,7 +510,7 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
@@ -574,10 +532,10 @@ The tree node.
 ##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
 
 ```typescript
-public readonly agentFunction: PythonFunction;
+public readonly agentFunction: IFunction;
 ```
 
-- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
@@ -710,7 +668,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BaseDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -719,20 +677,6 @@ BaseDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -979,7 +923,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BaseKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -988,20 +932,6 @@ BaseKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1124,7 +1054,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
 
 ```typescript
 import { BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1133,20 +1063,6 @@ BatchAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct.parameter.x"></a>
 
@@ -1161,7 +1077,7 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>@aws-cdk/aws-lambda-python-alpha.PythonFunction</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
@@ -1183,10 +1099,10 @@ The tree node.
 ##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
 
 ```typescript
-public readonly agentFunction: PythonFunction;
+public readonly agentFunction: IFunction;
 ```
 
-- *Type:* @aws-cdk/aws-lambda-python-alpha.PythonFunction
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
@@ -1325,7 +1241,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1334,20 +1250,6 @@ BedrockDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -1612,7 +1514,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BedrockKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1621,20 +1523,6 @@ BedrockKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1814,7 +1702,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
 
 ```typescript
 import { CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1823,20 +1711,6 @@ CloudWatchTransactionSearch.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct.parameter.x"></a>
 
@@ -1961,7 +1835,7 @@ The IAM policy statement to add.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
 
 ```typescript
 import { DataLoader } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1970,20 +1844,6 @@ DataLoader.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct.parameter.x"></a>
 
@@ -2171,7 +2031,7 @@ public sendViaSfnChain(detailType: string, eventDetail: any): EventBridgePutEven
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
 
 ```typescript
 import { EventbridgeBroker } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2180,20 +2040,6 @@ EventbridgeBroker.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct.parameter.x"></a>
 
@@ -2350,7 +2196,7 @@ Gets the URL of the frontend application.
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
 
 ```typescript
 import { Frontend } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2359,20 +2205,6 @@ Frontend.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct.parameter.x"></a>
 
@@ -2464,6 +2296,265 @@ public readonly domainName: string;
 - *Type:* string
 
 The custom domain name (if configured).
+
+---
+
+
+### InteractiveAgent <a name="InteractiveAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent"></a>
+
+Interactive Agent for real-time conversational AI with SSE streaming.
+
+Creates a complete serverless infrastructure for interactive AI conversations
+using API Gateway REST API with response streaming, Lambda Web Adapter,
+FastAPI, and standard Strands Agent.
+
+## Architecture
+
+```
+Client (fetch + ReadableStream)
+    ↓ POST /chat (Authorization: Bearer JWT)
+API Gateway REST API (responseTransferMode: STREAM)
+    ↓ InvokeWithResponseStream
+Lambda (Python + Lambda Web Adapter + FastAPI)
+    ↓ strands.Agent streaming
+Amazon Bedrock (Claude)
+```
+
+## Features
+
+- **SSE Streaming**: Real-time token-by-token response streaming
+- **15-Minute Timeout**: Extended timeout for long conversations
+- **Session Management**: S3-based conversation persistence
+- **Context Windowing**: Sliding window conversation history
+- **Cognito Auth**: Native JWT validation on REST API
+- **Strategy Interfaces**: Pluggable adapters for all components
+- **Observability**: Lambda Powertools integration
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const systemPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+
+const agent = new InteractiveAgent(this, 'ChatAgent', {
+  agentName: 'MyChatbot',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt: systemPrompt,
+  },
+});
+
+// Access outputs
+agent.apiEndpoint;       // REST API endpoint URL
+agent.sessionBucket;     // S3 session bucket
+agent.authenticator;     // Cognito authenticator (for User Pool info)
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer"></a>
+
+```typescript
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new InteractiveAgent(scope: Construct, id: string, props: InteractiveAgentProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps">InteractiveAgentProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps">InteractiveAgentProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct"></a>
+
+```typescript
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+InteractiveAgent.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.apiEndpoint">apiEndpoint</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.adapter">adapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionStore">sessionStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a></code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentRole"></a>
+
+```typescript
+public readonly agentRole: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.bedrockModel"></a>
+
+```typescript
+public readonly bedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+---
+
+##### `apiEndpoint`<sup>Required</sup> <a name="apiEndpoint" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.apiEndpoint"></a>
+
+```typescript
+public readonly apiEndpoint: string;
+```
+
+- *Type:* string
+
+---
+
+##### `adapter`<sup>Optional</sup> <a name="adapter" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.adapter"></a>
+
+```typescript
+public readonly adapter: ICommunicationAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+
+---
+
+##### `authenticator`<sup>Optional</sup> <a name="authenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.authenticator"></a>
+
+```typescript
+public readonly authenticator: IAuthenticator;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+---
+
+##### `contextStrategy`<sup>Optional</sup> <a name="contextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.contextStrategy"></a>
+
+```typescript
+public readonly contextStrategy: IContextStrategy;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a>
+
+---
+
+##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionBucket"></a>
+
+```typescript
+public readonly sessionBucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+
+---
+
+##### `sessionStore`<sup>Optional</sup> <a name="sessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionStore"></a>
+
+```typescript
+public readonly sessionStore: ISessionStore;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a>
 
 ---
 
@@ -2561,7 +2652,7 @@ public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, p
 
 ---
 
-##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
 
 ```typescript
 import { Network } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2570,20 +2661,6 @@ Network.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
-
-Use this method instead of `instanceof` to properly detect `Construct`
-instances, even when the construct library is symlinked.
-
-Explanation: in JavaScript, multiple copies of the `constructs` library on
-disk are seen as independent, completely different libraries. As a
-consequence, the class `Construct` in each copy of the `constructs` library
-is seen as a different class, and an instance of one class will not test as
-`instanceof` the other class. `npm install` will not create installations
-like this, but users may manually symlink construct libraries together or
-use a monorepo tool: in those cases, multiple copies of the `constructs`
-library can be accidentally installed, and `instanceof` will behave
-unpredictably. It is safest to avoid using `instanceof`, and using
-this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct.parameter.x"></a>
 
@@ -6001,6 +6078,67 @@ Sampling percentage for span indexing.
 
 ---
 
+### CognitoAuthenticatorProps <a name="CognitoAuthenticatorProps" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps"></a>
+
+Configuration properties for CognitoAuthenticator.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.Initializer"></a>
+
+```typescript
+import { CognitoAuthenticatorProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const cognitoAuthenticatorProps: CognitoAuthenticatorProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for Cognito resources. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.userPool">userPool</a></code> | <code>aws-cdk-lib.aws_cognito.UserPool</code> | Cognito User Pool for authentication. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.userPoolClient">userPoolClient</a></code> | <code>aws-cdk-lib.aws_cognito.UserPoolClient</code> | Cognito User Pool Client. |
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for Cognito resources.
+
+---
+
+##### `userPool`<sup>Optional</sup> <a name="userPool" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.userPool"></a>
+
+```typescript
+public readonly userPool: UserPool;
+```
+
+- *Type:* aws-cdk-lib.aws_cognito.UserPool
+- *Default:* Auto-created User Pool with secure defaults
+
+Cognito User Pool for authentication.
+
+---
+
+##### `userPoolClient`<sup>Optional</sup> <a name="userPoolClient" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps.property.userPoolClient"></a>
+
+```typescript
+public readonly userPoolClient: UserPoolClient;
+```
+
+- *Type:* aws-cdk-lib.aws_cognito.UserPoolClient
+- *Default:* Auto-created client with appropriate auth flows
+
+Cognito User Pool Client.
+
+---
+
 ### CreateKnowledgeBaseConfiguration <a name="CreateKnowledgeBaseConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.CreateKnowledgeBaseConfiguration"></a>
 
 Configuration for creating a new Bedrock Knowledge Base.
@@ -7011,6 +7149,351 @@ Documents with tokens > threshold will be chunked.
 
 ---
 
+### InteractiveAgentProps <a name="InteractiveAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps"></a>
+
+Configuration properties for InteractiveAgent.
+
+Extends BaseAgentProps with communication, session, context, and authentication
+strategy interfaces for building real-time conversational AI agents.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.Initializer"></a>
+
+```typescript
+import { InteractiveAgentProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const interactiveAgentProps: InteractiveAgentProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentArchitecture">agentArchitecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | The architecture used by the Lambda function where the agent is hosted. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | Lambda function architecture. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | Communication adapter for client-agent interaction. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | Context strategy for conversation history management. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda function memory size in MB. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit">messageHistoryLimit</a></code> | <code>number</code> | Maximum number of messages to keep in conversation history. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions for the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | S3 bucket for session storage (shorthand for S3SessionManager). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionStore">sessionStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a></code> | Session store for persisting conversation state. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | Time-to-live for sessions. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Lambda function timeout. |
+
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `agentDefinition`<sup>Required</sup> <a name="agentDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentDefinition"></a>
+
+```typescript
+public readonly agentDefinition: AgentDefinitionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a>
+
+Agent related parameters.
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the agent.
+
+---
+
+##### `agentArchitecture`<sup>Optional</sup> <a name="agentArchitecture" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.agentArchitecture"></a>
+
+```typescript
+public readonly agentArchitecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.ARM_64
+
+The architecture used by the Lambda function where the agent is hosted.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable observability for the agent.
+
+When enabled, configures both Lambda Powertools and AWS Bedrock AgentCore observability:
+- **Lambda Powertools**: Provides function-level observability including structured logging,
+  distributed tracing with X-Ray, and custom metrics
+- **AgentCore Observability**: Provides agent-specific observability including agent invocations,
+  reasoning steps, tool usage, token consumption, and agent latency
+
+Both systems publish to Amazon CloudWatch and use the same service name and namespace
+for correlation. This provides complete visibility at both function and agent levels.
+
+**Environment Variables Set** (AgentCore):
+- `AGENT_OBSERVABILITY_ENABLED`: Enables AgentCore observability
+- `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry
+- `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers
+- `AWS_LAMBDA_EXEC_WRAPPER`: ADOT wrapper for automatic instrumentation
+
+**IAM Permissions Granted** (AgentCore):
+- CloudWatch Logs: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+- X-Ray: `xray:PutTraceSegments`, `xray:PutTelemetryRecords`
+
+**Additional Requirements**:
+- BatchAgent automatically adds ADOT (AWS Distro for OpenTelemetry) Lambda Layer
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* new KMS Key would be created
+
+Encryption key to encrypt agent environment variables.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* Agent would not be in a VPC
+
+If the Agent would be running inside a VPC.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for resources created by this construct.
+
+---
+
+##### `architecture`<sup>Optional</sup> <a name="architecture" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.architecture"></a>
+
+```typescript
+public readonly architecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.X86_64
+
+Lambda function architecture.
+
+---
+
+##### `authenticator`<sup>Optional</sup> <a name="authenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.authenticator"></a>
+
+```typescript
+public readonly authenticator: IAuthenticator;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+- *Default:* CognitoAuthenticator
+
+Authenticator for securing API endpoints.
+
+---
+
+##### `communicationAdapter`<sup>Optional</sup> <a name="communicationAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.communicationAdapter"></a>
+
+```typescript
+public readonly communicationAdapter: ICommunicationAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+- *Default:* StreamingHttpAdapter with CognitoAuthenticator
+
+Communication adapter for client-agent interaction.
+
+---
+
+##### `contextStrategy`<sup>Optional</sup> <a name="contextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy"></a>
+
+```typescript
+public readonly contextStrategy: IContextStrategy;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a>
+- *Default:* SlidingWindowConversationManager with 20 messages
+
+Context strategy for conversation history management.
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+- *Default:* 1024
+
+Lambda function memory size in MB.
+
+---
+
+##### `messageHistoryLimit`<sup>Optional</sup> <a name="messageHistoryLimit" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit"></a>
+
+```typescript
+public readonly messageHistoryLimit: number;
+```
+
+- *Type:* number
+- *Default:* 20
+
+Maximum number of messages to keep in conversation history.
+
+Shorthand for SlidingWindowConversationManager windowSize.
+Ignored if contextStrategy is provided.
+
+---
+
+##### `reservedConcurrentExecutions`<sup>Optional</sup> <a name="reservedConcurrentExecutions" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.reservedConcurrentExecutions"></a>
+
+```typescript
+public readonly reservedConcurrentExecutions: number;
+```
+
+- *Type:* number
+- *Default:* No reserved concurrency
+
+Reserved concurrent executions for the Lambda function.
+
+---
+
+##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionBucket"></a>
+
+```typescript
+public readonly sessionBucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+- *Default:* Auto-created bucket
+
+S3 bucket for session storage (shorthand for S3SessionManager).
+
+Ignored if sessionStore is provided.
+
+---
+
+##### `sessionStore`<sup>Optional</sup> <a name="sessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionStore"></a>
+
+```typescript
+public readonly sessionStore: ISessionStore;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a>
+- *Default:* S3SessionManager with 24-hour TTL
+
+Session store for persisting conversation state.
+
+Set to undefined to disable session persistence (stateless mode).
+
+---
+
+##### `sessionTTL`<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionTTL"></a>
+
+```typescript
+public readonly sessionTTL: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.hours(24)
+
+Time-to-live for sessions.
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(15)
+
+Lambda function timeout.
+
+---
+
 ### KnowledgeBaseRuntimeConfig <a name="KnowledgeBaseRuntimeConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.KnowledgeBaseRuntimeConfig"></a>
 
 Runtime configuration exported for the retrieval tool.
@@ -7814,6 +8297,222 @@ category, or date range).
 
 ---
 
+### S3SessionManagerProps <a name="S3SessionManagerProps" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps"></a>
+
+Configuration properties for S3SessionManager.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.Initializer"></a>
+
+```typescript
+import { S3SessionManagerProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const s3SessionManagerProps: S3SessionManagerProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | S3 bucket for session storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | KMS encryption key for the session bucket. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the session bucket. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | Time-to-live for sessions. |
+
+---
+
+##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.bucket"></a>
+
+```typescript
+public readonly bucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+- *Default:* Auto-created bucket with KMS encryption
+
+S3 bucket for session storage.
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: IKey;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.IKey
+- *Default:* Auto-created KMS key with rotation enabled
+
+KMS encryption key for the session bucket.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for the session bucket.
+
+---
+
+##### `sessionTTL`<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.sessionTTL"></a>
+
+```typescript
+public readonly sessionTTL: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.hours(24)
+
+Time-to-live for sessions.
+
+Sessions older than this duration will be automatically deleted.
+
+---
+
+### SlidingWindowConversationManagerProps <a name="SlidingWindowConversationManagerProps" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps"></a>
+
+Configuration properties for SlidingWindowConversationManager.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps.Initializer"></a>
+
+```typescript
+import { SlidingWindowConversationManagerProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const slidingWindowConversationManagerProps: SlidingWindowConversationManagerProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps.property.windowSize">windowSize</a></code> | <code>number</code> | Maximum number of messages to keep in conversation history. |
+
+---
+
+##### `windowSize`<sup>Optional</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps.property.windowSize"></a>
+
+```typescript
+public readonly windowSize: number;
+```
+
+- *Type:* number
+- *Default:* 20 messages
+
+Maximum number of messages to keep in conversation history.
+
+---
+
+### StreamingHttpAdapterProps <a name="StreamingHttpAdapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps"></a>
+
+Configuration properties for StreamingHttpAdapter.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.Initializer"></a>
+
+```typescript
+import { StreamingHttpAdapterProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const streamingHttpAdapterProps: StreamingHttpAdapterProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.stageName">stageName</a></code> | <code>string</code> | REST API stage name. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.throttle">throttle</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings">ThrottleSettings</a></code> | Throttle settings for REST API. |
+
+---
+
+##### `authenticator`<sup>Optional</sup> <a name="authenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.authenticator"></a>
+
+```typescript
+public readonly authenticator: IAuthenticator;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+- *Default:* Uses authenticator from InteractiveAgent
+
+Authenticator for securing API endpoints.
+
+---
+
+##### `stageName`<sup>Optional</sup> <a name="stageName" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.stageName"></a>
+
+```typescript
+public readonly stageName: string;
+```
+
+- *Type:* string
+- *Default:* 'prod'
+
+REST API stage name.
+
+---
+
+##### `throttle`<sup>Optional</sup> <a name="throttle" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.throttle"></a>
+
+```typescript
+public readonly throttle: ThrottleSettings;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings">ThrottleSettings</a>
+- *Default:* No throttling
+
+Throttle settings for REST API.
+
+---
+
+### ThrottleSettings <a name="ThrottleSettings" id="@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings"></a>
+
+Throttle settings for REST API.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings.Initializer"></a>
+
+```typescript
+import { ThrottleSettings } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const throttleSettings: ThrottleSettings = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings.property.burstLimit">burstLimit</a></code> | <code>number</code> | Burst limit (maximum concurrent requests). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings.property.rateLimit">rateLimit</a></code> | <code>number</code> | Rate limit (requests per second). |
+
+---
+
+##### `burstLimit`<sup>Optional</sup> <a name="burstLimit" id="@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings.property.burstLimit"></a>
+
+```typescript
+public readonly burstLimit: number;
+```
+
+- *Type:* number
+
+Burst limit (maximum concurrent requests).
+
+---
+
+##### `rateLimit`<sup>Optional</sup> <a name="rateLimit" id="@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings.property.rateLimit"></a>
+
+```typescript
+public readonly rateLimit: number;
+```
+
+- *Type:* number
+
+Rate limit (requests per second).
+
+---
+
 ### TokenAnalysis <a name="TokenAnalysis" id="@cdklabs/cdk-appmod-catalog-blueprints.TokenAnalysis"></a>
 
 Token analysis results from PDF analysis.
@@ -8158,6 +8857,130 @@ public readonly constructUniqueId: string;
 - *Type:* string
 
 The unique Id of the Construct class.
+
+---
+
+
+### CognitoAuthenticator <a name="CognitoAuthenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+Cognito-based authenticator for securing REST API endpoints.
+
+Creates a Cognito User Pool and integrates with API Gateway REST API
+using the native COGNITO_USER_POOLS authorizer type. Clients send
+JWT tokens in the Authorization header.
+
+## Features
+
+- **Native JWT Validation**: API Gateway validates tokens without custom Lambda
+- **User Management**: Built-in user registration and management
+- **Password Policies**: Enforces strong password requirements
+- **Account Recovery**: Email-based account recovery
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { RemovalPolicy } from 'aws-cdk-lib';
+import { InteractiveAgent, CognitoAuthenticator } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+const authenticator = new CognitoAuthenticator({
+  removalPolicy: RemovalPolicy.RETAIN
+});
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'ChatAgent',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  authenticator
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.Initializer"></a>
+
+```typescript
+import { CognitoAuthenticator } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new CognitoAuthenticator(props?: CognitoAuthenticatorProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps">CognitoAuthenticatorProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticatorProps">CognitoAuthenticatorProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.grantAuthenticate">grantAuthenticate</a></code> | Grant authentication permissions to a Lambda function. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+##### `grantAuthenticate` <a name="grantAuthenticate" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.grantAuthenticate"></a>
+
+```typescript
+public grantAuthenticate(lambdaFunction: IFunction): void
+```
+
+Grant authentication permissions to a Lambda function.
+
+Grants permissions to verify Cognito tokens.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.grantAuthenticate.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.property.userPool">userPool</a></code> | <code>aws-cdk-lib.aws_cognito.UserPool</code> | The Cognito User Pool. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.property.userPoolClient">userPoolClient</a></code> | <code>aws-cdk-lib.aws_cognito.UserPoolClient</code> | The Cognito User Pool Client. |
+
+---
+
+##### `userPool`<sup>Optional</sup> <a name="userPool" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.property.userPool"></a>
+
+```typescript
+public readonly userPool: UserPool;
+```
+
+- *Type:* aws-cdk-lib.aws_cognito.UserPool
+
+The Cognito User Pool.
+
+---
+
+##### `userPoolClient`<sup>Optional</sup> <a name="userPoolClient" id="@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator.property.userPoolClient"></a>
+
+```typescript
+public readonly userPoolClient: UserPoolClient;
+```
+
+- *Type:* aws-cdk-lib.aws_cognito.UserPoolClient
+
+The Cognito User Pool Client.
 
 ---
 
@@ -8828,6 +9651,108 @@ LogGroupDataProtectionUtils.handleDefault(scope: Construct, props?: LogGroupData
 
 
 
+### NoAuthenticator <a name="NoAuthenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+No-authentication authenticator for development and testing.
+
+Disables authentication entirely, allowing any client to connect
+without credentials. This should ONLY be used for development
+and testing environments.
+
+## Security Warning
+
+This authenticator provides NO security. Never use in production.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.Initializer"></a>
+
+```typescript
+import { NoAuthenticator } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new NoAuthenticator()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.grantAuthenticate">grantAuthenticate</a></code> | No-op for NoAuthenticator since no authentication is performed. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+##### `grantAuthenticate` <a name="grantAuthenticate" id="@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.grantAuthenticate"></a>
+
+```typescript
+public grantAuthenticate(_lambdaFunction: IFunction): void
+```
+
+No-op for NoAuthenticator since no authentication is performed.
+
+###### `_lambdaFunction`<sup>Required</sup> <a name="_lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator.grantAuthenticate.parameter._lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+
+
+### NullConversationManager <a name="NullConversationManager" id="@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a>
+
+Null conversation manager for stateless interactions.
+
+Disables conversation history, treating each message as independent.
+Useful for stateless use cases where context is not needed.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager.Initializer"></a>
+
+```typescript
+import { NullConversationManager } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new NullConversationManager()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+
+
+
 ### PowertoolsConfig <a name="PowertoolsConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.PowertoolsConfig.Initializer"></a>
@@ -9047,6 +9972,229 @@ Initializes the adapter.
 
 
 
+### S3SessionManager <a name="S3SessionManager" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a>
+
+S3-based session manager for persisting conversation state.
+
+Uses S3 for durable storage of session data with automatic expiration
+via lifecycle policies. Each HTTP request loads/saves session state,
+enabling multi-turn conversations over stateless HTTP.
+
+## Features
+
+- **Durable Storage**: Sessions persisted to S3 survive Lambda restarts
+- **Automatic Expiration**: Lifecycle policy removes old sessions
+- **Encryption**: KMS encryption at rest
+- **Cost Optimization**: S3 Standard storage with lifecycle management
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent, S3SessionManager } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Duration } from 'aws-cdk-lib';
+
+const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+const sessionManager = new S3SessionManager(this, 'SessionManager', {
+  sessionTTL: Duration.hours(48)
+});
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'ChatAgent',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  sessionStore: sessionManager
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer"></a>
+
+```typescript
+import { S3SessionManager } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new S3SessionManager(scope: Construct, id: string, props?: S3SessionManagerProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps">S3SessionManagerProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps">S3SessionManagerProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.grantReadWrite">grantReadWrite</a></code> | Grant read/write permissions to a Lambda function. |
+
+---
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(lambdaFunction: IFunction): void
+```
+
+Grant read/write permissions to a Lambda function.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.grantReadWrite.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | The S3 bucket used for session storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | The session TTL duration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | The S3 bucket used for session storage (ISessionStore interface). |
+
+---
+
+##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.bucket"></a>
+
+```typescript
+public readonly bucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+
+The S3 bucket used for session storage.
+
+---
+
+##### `sessionTTL`<sup>Required</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionTTL"></a>
+
+```typescript
+public readonly sessionTTL: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+
+The session TTL duration.
+
+---
+
+##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionBucket"></a>
+
+```typescript
+public readonly sessionBucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+
+The S3 bucket used for session storage (ISessionStore interface).
+
+---
+
+
+### SlidingWindowConversationManager <a name="SlidingWindowConversationManager" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a>
+
+Sliding window conversation manager for maintaining recent conversation history.
+
+Keeps a fixed-size window of recent messages, automatically discarding older
+messages as new ones arrive. Provides consistent context size for the agent.
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent, SlidingWindowConversationManager } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+const contextManager = new SlidingWindowConversationManager({ windowSize: 30 });
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'ChatAgent',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  contextStrategy: contextManager
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.Initializer"></a>
+
+```typescript
+import { SlidingWindowConversationManager } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new SlidingWindowConversationManager(props?: SlidingWindowConversationManagerProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps">SlidingWindowConversationManagerProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps">SlidingWindowConversationManagerProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.property.windowSize">windowSize</a></code> | <code>number</code> | The window size (number of messages to keep). |
+
+---
+
+##### `windowSize`<sup>Required</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.property.windowSize"></a>
+
+```typescript
+public readonly windowSize: number;
+```
+
+- *Type:* number
+
+The window size (number of messages to keep).
+
+---
+
+
 ### StateMachineObservabilityPropertyInjector <a name="StateMachineObservabilityPropertyInjector" id="@cdklabs/cdk-appmod-catalog-blueprints.StateMachineObservabilityPropertyInjector"></a>
 
 - *Implements:* aws-cdk-lib.IPropertyInjector
@@ -9128,6 +10276,146 @@ public readonly logGroupDataProtection: LogGroupDataProtectionProps;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+
+---
+
+
+### StreamingHttpAdapter <a name="StreamingHttpAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+
+Streaming HTTP adapter for real-time agent communication via SSE.
+
+This adapter creates an API Gateway REST API with response streaming enabled,
+allowing the Lambda function to stream SSE (Server-Sent Events) responses
+back to clients as the Strands Agent generates tokens.
+
+## Architecture
+
+```
+Client → POST /chat → API Gateway REST API (STREAM mode) → Lambda (FastAPI + LWA) → Bedrock
+Client ← SSE stream ← API Gateway ← Lambda response streaming ← Agent tokens
+```
+
+## Features
+
+- **Response Streaming**: Progressive SSE delivery via API Gateway response streaming
+- **15-Minute Timeout**: Extended timeout for long-running agent conversations
+- **Cognito Auth**: Native COGNITO_USER_POOLS authorizer on REST API
+- **CORS**: Built-in CORS support for browser clients
+- **Throttling**: Configurable rate and burst limits
+
+## Example
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent, StreamingHttpAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+const adapter = new StreamingHttpAdapter({
+  stageName: 'prod',
+  throttle: { rateLimit: 100, burstLimit: 200 }
+});
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'ChatAgent',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  communicationAdapter: adapter
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.Initializer"></a>
+
+```typescript
+import { StreamingHttpAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new StreamingHttpAdapter(props?: StreamingHttpAdapterProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps">StreamingHttpAdapterProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps">StreamingHttpAdapterProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.attachToFunction">attachToFunction</a></code> | Attach the adapter to a Lambda function and create REST API infrastructure. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.grantInvoke">grantInvoke</a></code> | Grant the Lambda function permissions for API Gateway integration. |
+
+---
+
+##### `attachToFunction` <a name="attachToFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.attachToFunction"></a>
+
+```typescript
+public attachToFunction(lambdaFunction: IFunction): string
+```
+
+Attach the adapter to a Lambda function and create REST API infrastructure.
+
+Creates API Gateway REST API with POST /chat endpoint and response streaming.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.attachToFunction.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.grantInvoke"></a>
+
+```typescript
+public grantInvoke(_lambdaFunction: IFunction): void
+```
+
+Grant the Lambda function permissions for API Gateway integration.
+
+For REST API streaming, no additional permissions are needed beyond the invoke permission.
+
+###### `_lambdaFunction`<sup>Required</sup> <a name="_lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.grantInvoke.parameter._lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.apiEndpoint">apiEndpoint</a></code> | <code>string</code> | The API endpoint URL. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.restApi">restApi</a></code> | <code>aws-cdk-lib.aws_apigateway.RestApi</code> | The REST API Gateway. |
+
+---
+
+##### `apiEndpoint`<sup>Optional</sup> <a name="apiEndpoint" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.apiEndpoint"></a>
+
+```typescript
+public readonly apiEndpoint: string;
+```
+
+- *Type:* string
+
+The API endpoint URL.
+
+---
+
+##### `restApi`<sup>Optional</sup> <a name="restApi" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.restApi"></a>
+
+```typescript
+public readonly restApi: RestApi;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.RestApi
+
+The REST API Gateway.
 
 ---
 
@@ -9281,6 +10569,121 @@ Scope to use in relation to the CDK hierarchy.
 The parameters passed to the document processing L3 Construct.
 
 ---
+
+
+### IAuthenticator <a name="IAuthenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.CognitoAuthenticator">CognitoAuthenticator</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.NoAuthenticator">NoAuthenticator</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+Strategy interface for authentication mechanisms.
+
+Authenticators control how API endpoints are secured.
+Different implementations support various authentication methods.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator.grantAuthenticate">grantAuthenticate</a></code> | Grant authentication permissions to a Lambda function. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+##### `grantAuthenticate` <a name="grantAuthenticate" id="@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator.grantAuthenticate"></a>
+
+```typescript
+public grantAuthenticate(lambdaFunction: IFunction): void
+```
+
+Grant authentication permissions to a Lambda function.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator.grantAuthenticate.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+### ICommunicationAdapter <a name="ICommunicationAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter">StreamingHttpAdapter</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+
+Strategy interface for pluggable communication mechanisms.
+
+Default implementation is StreamingHttpAdapter (API Gateway REST API with response streaming).
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.attachToFunction">attachToFunction</a></code> | Attach the adapter to a Lambda function and create communication infrastructure. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.grantInvoke">grantInvoke</a></code> | Grant the Lambda function permission to send responses back to clients. |
+
+---
+
+##### `attachToFunction` <a name="attachToFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.attachToFunction"></a>
+
+```typescript
+public attachToFunction(lambdaFunction: IFunction): string
+```
+
+Attach the adapter to a Lambda function and create communication infrastructure.
+
+Returns the public endpoint URL for client connections.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.attachToFunction.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.grantInvoke"></a>
+
+```typescript
+public grantInvoke(lambdaFunction: IFunction): void
+```
+
+Grant the Lambda function permission to send responses back to clients.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter.grantInvoke.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+---
+
+
+### IContextStrategy <a name="IContextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager">NullConversationManager</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager">SlidingWindowConversationManager</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a>
+
+Strategy interface for conversation history management.
+
+Context strategies control how conversation history is maintained and provided
+to the agent. Different strategies enable different conversation patterns.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
 
 
 ### IKnowledgeBase <a name="IKnowledgeBase" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase"></a>
@@ -9475,6 +10878,59 @@ public readonly metricServiceName: string;
 ```
 
 - *Type:* string
+
+---
+
+### ISessionStore <a name="ISessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager">S3SessionManager</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a>
+
+Strategy interface for session persistence.
+
+Session stores manage conversation state persistence across HTTP requests.
+The default implementation (S3SessionManager) uses S3 for durable storage.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.grantReadWrite">grantReadWrite</a></code> | Grant read/write permissions to a Lambda function. |
+
+---
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(lambdaFunction: IFunction): void
+```
+
+Grant read/write permissions to a Lambda function.
+
+###### `lambdaFunction`<sup>Required</sup> <a name="lambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.grantReadWrite.parameter.lambdaFunction"></a>
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function that needs access to the session store.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | The S3 bucket used for session storage (if S3-based). |
+
+---
+
+##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.property.sessionBucket"></a>
+
+```typescript
+public readonly sessionBucket: IBucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.IBucket
+
+The S3 bucket used for session storage (if S3-based).
 
 ---
 
