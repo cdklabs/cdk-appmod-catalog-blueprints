@@ -15,7 +15,7 @@ import { StateMachine, DefinitionBody, Map, TaskInput } from 'aws-cdk-lib/aws-st
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
-import { DefaultRuntimes } from '../framework';
+import { DefaultRuntimes } from '../framework/custom-resource/default-runtimes';
 
 /**
  * Supported database engines
