@@ -400,7 +400,6 @@ Tool best practices:
 
 ## Additional Resources
 
-- [Agentic Framework Guide](../../../.kiro/steering/agentic-framework-guide.md)
 - [Strands Agent Framework](https://github.com/awslabs/strands-agents)
 - [Amazon Bedrock Documentation](https://docs.aws.amazon.com/bedrock/)
-- [API Reference](../../../API.md)
+- [API Reference](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
