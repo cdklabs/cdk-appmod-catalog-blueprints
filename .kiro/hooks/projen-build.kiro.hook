@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "Projen Build",
+  "description": "Runs npx projen build to compile TypeScript",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run `npx projen build` to compile the JSII TypeScript changes. This is critical for multi-language support and test compatibility. Do not use `tsc` or `npm run build`."
+  },
+  "workspaceFolderName": "cdk-appmod-catalog-blueprints2",
+  "shortName": "projen-build"
+}
