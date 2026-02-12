@@ -865,7 +865,7 @@ export interface InteractiveAgentProps extends BaseAgentProps {
  * ```
  */
 export class InteractiveAgent extends BaseAgent {
-  public readonly agentFunction: Function;
+  public readonly agentFunction: IFunction;
   public readonly adapter?: ICommunicationAdapter;
   public readonly sessionStore?: ISessionStore;
   public readonly contextStrategy?: IContextStrategy;
