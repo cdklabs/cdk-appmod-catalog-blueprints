@@ -498,140 +498,122 @@ const fraudDetectionAgent = new BatchAgent(this, 'FraudDetectionAgent', {
       path: './prompts/fraud_detection.txt'
     }),
     tools: [
-      new Asset(this, 'RiskAnalysisTool', {
-        path: './tools/risk_analysis.py'
-      }),
-      new Asset(this, 'DatabaseLookupTool', {
-        path: './tools/database_lookup.py'
-      })
-    ]
+      new Asset(this, 'KBTool', { path: './tools/knowledge_base_search.py' }),
+    ],
   },
-  prompt: 'Analyze the document for fraud indicators.',
-  expectJson: true
-});
-
-// After deployment, query CloudWatch:
-// 1. View Lambda function logs (Lambda Powertools) - function-level insights
-// 2. View agent reasoning traces (AgentCore) - agent-level insights
-// 3. Correlate by service name: "fraud-detection"
-// 4. Track token usage for cost optimization
-// 5. Monitor tool usage patterns to optimize agent behavior
-```
-
-#### Best Practices
-
-1. **Always enable in production**: Observability is crucial for understanding agent behavior, debugging issues, and optimizing costs
-2. **Use consistent naming**: Use the same service name and namespace across all agents in an application for easier correlation
-3. **Monitor token usage**: Track token consumption to optimize costs and identify inefficient prompts
-4. **Analyze tool usage**: Understand which tools are most frequently called to optimize tool implementations and agent prompts
-5. **Set up alarms**: Create CloudWatch alarms for high error rates, excessive latency, or unusual token consumption
-6. **Review reasoning traces**: Regularly review agent reasoning steps to identify opportunities for prompt optimization
-7. **Correlate metrics**: Use the same service name to correlate Lambda Powertools and AgentCore metrics in CloudWatch dashboards
-8. **Track trends over time**: Monitor agent behavior trends to identify degradation or improvement in performance
-
-#### Troubleshooting
-
-**Metrics not appearing in CloudWatch?**
-- Verify `enableObservability: true` is set on your agent
-- Check that IAM permissions are granted (CloudWatch Logs, X-Ray) - these are added automatically by the framework
-- Verify ADOT Lambda Layer is attached to the Lambda function
-- Check Lambda function logs for OTEL initialization errors
-- Ensure the agent has been invoked at least once (metrics appear after first invocation)
-
-**High token consumption?**
-- Review agent reasoning traces in CloudWatch to identify verbose reasoning steps
-- Optimize system prompt to reduce unnecessary reasoning
-- Consider caching frequently used tool results to avoid redundant LLM calls
-- Check if the agent is making unnecessary tool calls
-- Review the `expectJson` setting - JSON extraction may require additional tokens
-
-**Agent latency issues?**
-- Check tool execution time in traces - slow tools impact overall latency
-- Review reasoning step count - excessive reasoning increases latency
-- Consider optimizing tool implementations for faster execution
-- Check if cross-region inference is enabled for better availability
-- Monitor cold start times and consider provisioned concurrency for latency-sensitive applications
-
-**Missing trace data?**
-- Verify X-Ray tracing is enabled (automatic with `enableObservability: true`)
-- Check that the ADOT Lambda Layer is properly attached
-- Ensure the Lambda function has X-Ray permissions (granted automatically)
-- Review CloudWatch Logs for OTEL exporter errors
-
-**Tool usage not tracked?**
-- Verify tools are properly decorated with `@tool` decorator in Python
-- Check that tool calls are completing successfully (errors may not be tracked)
-- Review agent logs to confirm tools are being invoked
-- Ensure tool implementations return structured responses
-
-For more information on AWS Bedrock AgentCore observability, see the [AWS documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html).
-
-Network Security
-- Optional VPC deployment for network isolation
-- Configurable subnet selection for different security zones
-- Security group management for controlled access
-
-## Example Implementations
-- [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing)
-- [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
-
-## Roadmap
-
-**InteractiveAgent (Coming Soon)**
-Future release will include InteractiveAgent for conversational AI applications:
-- **Real-time chat**: WebSocket and HTTP streaming support
-- **Session management**: Conversation state and memory
-- **Multi-turn conversations**: Context-aware interactions
-- **Integration patterns**: API Gateway, AppSync, and direct Lambda invocation
-
-**Enhanced Tool Ecosystem**
-- **Pre-built tool library**: Common tools for file processing, APIs, and data analysis
-- **Tool marketplace**: Community-contributed tools and integrations
-- **Tool composition**: Combine multiple tools into complex workflows
-
-## Advanced Patterns
-**Multi-Agent Orchestration**
-
-```typescript
-const classificationAgent = new BatchAgent(this, 'ClassificationAgent', {
-  // Configuration for document classification
-});
-
-const processingAgent = new BatchAgent(this, 'ProcessingAgent', {
-  // Configuration for document processing
-});
-
-// Use Step Functions to orchestrate multiple agents
-```
-
-**Custom Tool Libraries**
-Organize tools into reusable libraries:
-
-```typescript
-const toolLibrary = [
-  new Asset(this, 'FileTools', { path: './tools/file_utils.py' }),
-  new Asset(this, 'DataTools', { path: './tools/data_utils.py' }),
-  new Asset(this, 'APITools', { path: './tools/api_utils.py' })
-];
-
-// Reuse across multiple agents
-const agent1 = new BatchAgent(this, 'Agent1', {
-  agentDefinition: { tools: toolLibrary }
+  communicationAdapter: new StreamingHttpAdapter({
+    stageName: 'prod',
+    throttle: { rateLimit: 1000, burstLimit: 2000 },
+  }),
+  sessionTTL: Duration.hours(24),
+  contextStrategy: new SlidingWindowConversationManager({ windowSize: 50 }),
+  authenticator: new CognitoAuthenticator(),
+  memorySize: 2048,
+  timeout: Duration.minutes(15),
+  enableObservability: true,
+  metricNamespace: 'my-app',
+  metricServiceName: 'chatbot',
 });
 ```
 
-**Environment-Specific Configuration**
-Configure agents differently per environment:
+#### SSE Event Format
 
-```typescript
-const isProduction = this.node.tryGetContext('environment') === 'production';
-
-const agent = new BatchAgent(this, 'Agent', {
-  agentDefinition: {
-    bedrockModel: {
-      useCrossRegionInference: isProduction
-    }
-  },
-  enableObservability: isProduction
-});
 ```
+event: metadata
+data: {"session_id": "uuid-string"}
+
+data: {"text": "Hello"}
+data: {"text": ", how can I help?"}
+
+event: done
+data: {}
+```
+
+### Example Implementations
+- [Customer Support Chatbot](../../../examples/chatbot/customer-service-chatbot/) — Full-stack chatbot with React frontend, Cognito auth, and SSE streaming
+
+## Tool Development
+
+Tools extend agent capabilities with custom Python functions. Both BatchAgent and InteractiveAgent support tools.
+
+```python
+from strands import tool
+from typing import Dict, Any
+
+@tool
+def search_knowledge_base(query: str, max_results: int = 5) -> Dict[str, Any]:
+    """
+    Search the company knowledge base for relevant articles.
+
+    Use this tool when the user asks questions about products,
+    policies, or procedures.
+
+    Args:
+        query: Search query string
+        max_results: Maximum number of results to return
+
+    Returns:
+        Dictionary with search results and metadata
+    """
+    try:
+        results = perform_search(query, max_results)
+        return {
+            'success': True,
+            'results': results,
+            'metadata': { 'query': query, 'result_count': len(results) },
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__,
+            'recoverable': True,
+        }
+```
+
+Tool best practices:
+- Clear descriptions (agent uses these to decide when to call tools)
+- Structured return values with `success`/`error` keys
+- Error handling that returns data rather than raising exceptions
+- Type hints for all parameters and returns
+- Single responsibility per tool
+
+## Troubleshooting
+
+### Agent Not Using Tools
+
+1. Verify tools are decorated with `@tool` from `strands`
+2. Check system prompt mentions the tools
+3. Check Lambda logs for tool loading errors from S3
+
+### JSON Parsing Errors (BatchAgent)
+
+1. Verify `expectJson: true` is set
+2. Check system prompt specifies exact JSON output format
+3. Review agent output in Step Functions execution
+
+### Messages Not Streaming (InteractiveAgent)
+
+1. Verify the REST API endpoint URL is correct (check CloudFormation outputs)
+2. Confirm the `Authorization` header contains a valid Cognito JWT
+3. Check Lambda logs: `aws logs tail /aws/lambda/<function-name> --follow`
+4. Verify Bedrock model access is enabled in your region
+
+### Session Data Not Persisting (InteractiveAgent)
+
+1. Verify S3 bucket permissions (Lambda role needs read/write)
+2. Check session TTL hasn't expired
+3. Review Lambda logs for S3 errors
+
+### High Latency
+
+1. Increase Lambda memory (affects CPU allocation)
+2. Enable cross-region inference for better availability
+3. Reduce context window size (InteractiveAgent) to lower token count
+4. Optimize tool implementations
+
+## Additional Resources
+
+- [Strands Agent Framework](https://github.com/awslabs/strands-agents)
+- [Amazon Bedrock Documentation](https://docs.aws.amazon.com/bedrock/)
+- [API Reference](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
