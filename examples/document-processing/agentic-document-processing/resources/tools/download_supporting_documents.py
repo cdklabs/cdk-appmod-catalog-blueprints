@@ -9,12 +9,15 @@ def download_supporting_documents(bucket_name: str, policy_number: str) -> list[
 
     Args:
         bucket_name (str): The name of the bucket where the insurance policy is stored
-        policy_number (str): The insurance policy number
+        policy_number (str): The insurance policy number (will be converted to string if needed)
 
     Returns:
         array: full local path of supporting documents
     """
+    # Ensure policy_number is a string (Bedrock may send it as int)
+    policy_number = str(policy_number)
     print(f"Found the following policy number: {policy_number}")
+    print(f"Documents located in: {bucket_name}")
     s3_supporting_doc_prefix = f"supporting_documents/{policy_number}/"
     
     # List objects in the S3 prefix
@@ -25,6 +28,7 @@ def download_supporting_documents(bucket_name: str, policy_number: str) -> list[
     if 'Contents' in response:
         for obj in response['Contents']:
             s3_key = obj['Key']
+            print(f"Found supporting document: {s3_key}")
             filename = s3_key.split('/')[-1]  # Extract filename from S3 key
             
             if filename:  # Skip empty filenames (directories)

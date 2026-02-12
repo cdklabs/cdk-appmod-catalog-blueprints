@@ -12,7 +12,7 @@ import { DynamoAttributeValue, DynamoUpdateItem, LambdaInvoke } from 'aws-cdk-li
 import { Construct } from 'constructs';
 import { BaseDocumentProcessing, BaseDocumentProcessingProps, DocumentProcessingStepType } from './base-document-processing';
 import { ChunkingConfig } from './chunking-config';
-import { DefaultRuntimes } from '../framework';
+import { DefaultRuntimes, InvokeType } from '../framework';
 import { BedrockModelProps, BedrockModelUtils } from '../framework/bedrock';
 import { LambdaIamUtils } from '../utilities';
 import { PowertoolsConfig } from '../utilities/observability/powertools-config';
@@ -390,7 +390,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         environment: {
           MODEL_ID: adjustedModelId,
           PROMPT: prompt,
-          INVOKE_TYPE: 'classification',
+          INVOKE_TYPE: InvokeType.CLASSIFICATION,
           ...PowertoolsConfig.generateDefaultLambdaConfig(
             this.bedrockDocumentProcessingProps.enableObservability,
             this.metricNamespace,
@@ -466,7 +466,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         environment: {
           MODEL_ID: adjustedModelId,
           PROMPT: prompt,
-          INVOKE_TYPE: 'processing',
+          INVOKE_TYPE: InvokeType.PROCESSING,
           ...PowertoolsConfig.generateDefaultLambdaConfig(
             this.bedrockDocumentProcessingProps.enableObservability,
             this.metricNamespace,
@@ -972,7 +972,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         environment: {
           MODEL_ID: adjustedModelId,
           PROMPT: prompt,
-          INVOKE_TYPE: 'aggregation',
+          INVOKE_TYPE: InvokeType.AGGREGATION,
           INVOKE_MAX_TOKENS: '64000', // Aggregation may need more tokens for merged output
           ...PowertoolsConfig.generateDefaultLambdaConfig(
             this.bedrockDocumentProcessingProps.enableObservability,
