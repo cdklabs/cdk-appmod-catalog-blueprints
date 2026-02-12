@@ -1,0 +1,21 @@
+{
+  "name": "retail-banking-chatbot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "cdk deploy --require-approval never --outputs-file ../outputs.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "aws-cdk": "^2.218.0",
+    "ts-node": "^10.9.1",
+    "typescript": "~5.7.2"
+  },
+  "dependencies": {
+    "@cdklabs/cdk-appmod-catalog-blueprints": "file:../../../../dist/js/cdk-appmod-catalog-blueprints@0.0.0.jsii.tgz",
+    "aws-cdk-lib": "^2.218.0",
+    "constructs": "^10.4.5",
+    "source-map-support": "^0.5.21"
+  }
+}
