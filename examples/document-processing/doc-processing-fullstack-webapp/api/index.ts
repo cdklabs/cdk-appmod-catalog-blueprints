@@ -14,7 +14,7 @@ const headers = {
   'Access-Control-Allow-Headers': 'Content-Type'
 };
 
-const BUCKET_NAME = process.env.BUCKET_NAME!;
+const AGENTIC_BUCKET = 'agenticdocumentprocessing-agenticdocumentprocessin-khfneft673zr';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   if (event.httpMethod === 'OPTIONS') {
@@ -108,12 +108,12 @@ async function handleGetPresignedUrl(event: APIGatewayProxyEvent): Promise<APIGa
       break;
   }
   
-  const s3Location = `s3://${BUCKET_NAME}/${s3Key}`;
+  const s3Location = `s3://${AGENTIC_BUCKET}/${s3Key}`;
 
   try {
     // Generate presigned URL for direct S3 upload
     const command = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
+      Bucket: AGENTIC_BUCKET,
       Key: s3Key,
       ContentType: contentType || 'application/octet-stream'
     });

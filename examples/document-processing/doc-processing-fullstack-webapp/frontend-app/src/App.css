@@ -89,54 +89,16 @@
 
 .upload-area {
   text-align: center;
-  padding: 50px 20px;
-  border: 3px dashed #bdc3c7;
+  padding: 40px 20px;
+  border: 2px dashed #bdc3c7;
   border-radius: 15px;
   background: #f8f9fa;
   transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
 }
 
 .upload-area:hover {
   border-color: #3498db;
   background: #ebf3fd;
-}
-
-.upload-area.drag-over {
-  border-color: #27ae60;
-  background: #e8f8f0;
-  border-style: solid;
-  transform: scale(1.02);
-  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
-}
-
-.upload-area.uploading {
-  border-color: #f39c12;
-  background: #fef9e7;
-  pointer-events: none;
-}
-
-.drop-icon {
-  font-size: 3.5rem;
-  margin-bottom: 15px;
-  transition: transform 0.3s ease;
-}
-
-.upload-area.drag-over .drop-icon {
-  transform: scale(1.2);
-  animation: bounce 0.5s ease infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: scale(1.2) translateY(0); }
-  50% { transform: scale(1.2) translateY(-10px); }
-}
-
-.file-types {
-  margin-top: 8px;
-  color: #95a5a6;
-  font-size: 0.85rem;
 }
 
 .file-input {
@@ -189,41 +151,8 @@
 
 .upload-hint {
   margin-top: 15px;
-  color: #7f8c8d;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.success-message {
-  margin-top: 20px;
-  padding: 20px;
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  border: none;
-  border-radius: 12px;
-  color: #155724;
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.15);
-}
-
-.success-icon {
-  font-size: 1.5rem;
-  background: #27ae60;
-  color: white;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.success-message p {
-  margin: 5px 0 0 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  color: #95a5a6;
+  font-size: 0.9rem;
 }
 
 .status-card {

@@ -1,5 +1,5 @@
 // Configure API endpoint in .env file: REACT_APP_API_BASE_URL=your-api-gateway-url
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 type DocumentType = 'claim' | 'policy' | 'supporting';
@@ -29,21 +29,30 @@ function App() {
   const [status, setStatus] = useState<ProcessingStatus | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDocumentTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setDocumentType(e.target.value as DocumentType);
+    // Clear previous upload status when document type changes
     setUploadSuccess(false);
     setStatus(null);
   };
 
-  const processFile = async (selectedFile: File) => {
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-    if (!allowedTypes.includes(selectedFile.type)) {
-      alert('Please upload a PDF, JPG, or PNG file');
-      return;
-    }
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        const base64 = result.split(',')[1]; // Remove data:type;base64, prefix
+        resolve(base64);
+      };
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
 
     // Validate policy number for supporting documents
     if (documentType === 'supporting' && !policyNumber.trim()) {
@@ -104,8 +113,10 @@ function App() {
 
       console.log('Upload successful.');
       
+      // Show upload success with appropriate message
       setUploadSuccess(true);
       
+      // Only start processing workflow for claims
       if (documentType === 'claim') {
         setStatus({
           documentId: presignedResult.documentId,
@@ -114,8 +125,11 @@ function App() {
           documentType,
           policyNumber: policyNumber.trim() || undefined
         });
+
+        // Poll for status updates
         pollStatus(presignedResult.documentId);
       } else {
+        // For policies and supporting documents, just show upload success
         setStatus({
           documentId: presignedResult.documentId,
           status: 'uploaded',
@@ -139,38 +153,8 @@ function App() {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (!selectedFile) return;
-    await processFile(selectedFile);
-  };
-
-  // Drag and drop handlers
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      await processFile(files[0]);
-    }
-  }, [documentType, policyNumber]);
-
   const pollStatus = async (documentId: string) => {
-    const maxAttempts = 30;
+    const maxAttempts = 30; // 5 minutes max
     let attempts = 0;
 
     const poll = async () => {
@@ -180,9 +164,10 @@ function App() {
         
         if (statusResponse.status === 404) {
           console.log('Document not found yet, continuing to poll...');
+          // Document not found yet, continue polling
           attempts++;
           if (attempts < maxAttempts) {
-            setTimeout(poll, 10000);
+            setTimeout(poll, 10000); // Poll every 10 seconds
           } else {
             console.log('Max polling attempts reached');
             setStatus(prev => prev ? { ...prev, status: 'failed' } : null);
@@ -214,16 +199,18 @@ function App() {
           return;
         }
 
+        // Continue polling if still processing (including classification_complete)
         console.log('Still processing, continuing to poll...');
         attempts++;
         if (attempts < maxAttempts) {
-          setTimeout(poll, 10000);
+          setTimeout(poll, 10000); // Poll every 10 seconds
         } else {
           console.log('Max polling attempts reached');
           setStatus(prev => prev ? { ...prev, status: 'failed' } : null);
         }
       } catch (error) {
         console.error('Status polling error:', error);
+        // Continue polling on error (except 404 which is handled above)
         attempts++;
         if (attempts < maxAttempts) {
           setTimeout(poll, 10000);
@@ -243,6 +230,16 @@ function App() {
       case 'completed': return '#27ae60';
       case 'failed': return '#e74c3c';
       default: return '#95a5a6';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'uploading': return '↑';
+      case 'processing': return '○';
+      case 'completed': return '✓';
+      case 'failed': return '✗';
+      default: return '•';
     }
   };
 
@@ -288,15 +285,7 @@ function App() {
             )}
           </div>
 
-          <div 
-            className={`upload-area ${isDragOver ? 'drag-over' : ''} ${isUploading ? 'uploading' : ''}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <div className="drop-icon">
-              {isUploading ? '⏳' : isDragOver ? '📥' : '📄'}
-            </div>
+          <div className="upload-area">
             <input 
               type="file" 
               accept=".pdf,.jpg,.png,.jpeg"
@@ -308,28 +297,26 @@ function App() {
             <label htmlFor="file-input" className={`upload-button ${isUploading ? 'disabled' : ''}`}>
               {isUploading ? 'Uploading...' : 'Choose Document'}
             </label>
-            <p className="upload-hint">
-              {isDragOver 
-                ? 'Drop your file here!' 
-                : 'Drag & drop your file here, or click to browse'}
-            </p>
-            <p className="file-types">Supports PDF, JPG, PNG files</p>
+            <p className="upload-hint">Supports PDF, JPG, PNG files</p>
           </div>
         </div>
 
         {uploadSuccess && (
-          <div className="success-message">
-            <span className="success-icon">✓</span>
-            <div>
-              <strong>Upload Successful!</strong>
-              <p>{
-                status?.documentType === 'claim' 
-                  ? 'Please check back in a few moments for the results of your insurance claims application.'
-                  : status?.documentType === 'policy'
-                  ? 'Your policy document has been uploaded successfully. Please proceed to file your claim.'
-                  : 'Your supporting document has been uploaded successfully. Please proceed to file your claim.'
-              }</p>
-            </div>
+          <div style={{
+            marginTop: '20px',
+            padding: '15px',
+            backgroundColor: '#d4edda',
+            border: '1px solid #c3e6cb',
+            borderRadius: '5px',
+            color: '#155724'
+          }}>
+            <strong>Upload Successful!</strong> {
+              status?.documentType === 'claim' 
+                ? 'Please check back in a few moments for the results of your insurance claims application.'
+                : status?.documentType === 'policy'
+                ? 'Your policy document has been uploaded successfully. Please proceed to file your claim.'
+                : 'Your supporting document has been uploaded successfully. Please proceed to file your claim.'
+            }
           </div>
         )}
 

@@ -1,0 +1,6 @@
+# Development and testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0  # For async test support
+pytest-cov>=4.0.0       # For coverage reports
+pytest-mock>=3.10.0     # For mocking utilities
+moto>=4.0.0             # For mocking AWS services

@@ -1,3 +1,0 @@
-{
-  "app": "npx --prefix ../../../ ts-node --prefer-ts-exts --project tsconfig.json app.ts"
-}

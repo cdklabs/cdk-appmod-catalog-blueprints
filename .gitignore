@@ -56,9 +56,6 @@ Thumbs.db
 **/.venv
 **/venv
 **/__pycache__
-**/.pytest_cache
-**/cdk.out
-**/cdk.out.test
 /test-reports/
 junit.xml
 /coverage/
