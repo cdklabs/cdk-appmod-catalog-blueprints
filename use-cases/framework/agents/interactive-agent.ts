@@ -19,6 +19,7 @@ import { IFunction, Architecture, ILayerVersion, LayerVersion, Function, Code } 
 import { IBucket, Bucket, BucketEncryption, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
+import { generateKnowledgeBaseSystemPromptAddition } from './batch-agent';
 import { DefaultAgentConfig } from './default-agent-config';
 import { LambdaIamUtils, PowertoolsConfig } from '../../utilities';
 import { DefaultObservabilityConfig } from '../../utilities/observability';
@@ -953,6 +954,12 @@ export class InteractiveAgent extends BaseAgent {
       env.SESSION_BUCKET = this.sessionBucket.bucketName;
     }
 
+    // Add knowledge base configuration if KBs are configured
+    if (this.knowledgeBaseConfigs.length > 0) {
+      env.KNOWLEDGE_BASES_CONFIG = JSON.stringify(this.knowledgeBaseConfigs);
+      env.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = generateKnowledgeBaseSystemPromptAddition(this.knowledgeBaseConfigs);
+    }
+
     // Create Lambda function with Lambda Web Adapter layer
     const { account, region } = Stack.of(this);
     const agentLambdaLogPermissionsResult = LambdaIamUtils.createLogsPermissions({
@@ -973,6 +980,9 @@ export class InteractiveAgent extends BaseAgent {
     const allLayers: ILayerVersion[] = [webAdapterLayer];
     if (props.agentDefinition.lambdaLayers) {
       allLayers.push(...props.agentDefinition.lambdaLayers);
+    }
+    if (this.knowledgeBaseLayers.length > 0) {
+      allLayers.push(...this.knowledgeBaseLayers);
     }
 
     const handlerPath = path.join(__dirname, 'resources/interactive-agent-handler');

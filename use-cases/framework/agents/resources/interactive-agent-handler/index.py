@@ -48,6 +48,7 @@ MODEL_ID = os.getenv('MODEL_ID', 'anthropic.claude-3-5-sonnet-20241022-v2:0')
 SYSTEM_PROMPT_BUCKET = os.getenv('SYSTEM_PROMPT_S3_BUCKET_NAME')
 SYSTEM_PROMPT_KEY = os.getenv('SYSTEM_PROMPT_S3_KEY')
 TOOLS_CONFIG = os.getenv('TOOLS_CONFIG', '[]')
+KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = os.getenv('KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION', '')
 SESSION_BUCKET = os.getenv('SESSION_BUCKET')
 CONTEXT_ENABLED = os.getenv('CONTEXT_ENABLED', 'true').lower() == 'true'
 CONTEXT_STRATEGY = os.getenv('CONTEXT_STRATEGY', 'SlidingWindow')
@@ -129,6 +130,8 @@ def load_tools_from_s3() -> list:
 
 # Cold start: load system prompt and tools
 SYSTEM_PROMPT = load_system_prompt()
+if KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION:
+    SYSTEM_PROMPT = SYSTEM_PROMPT + '\n\n' + KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION
 AGENT_TOOLS = load_tools_from_s3()
 
 

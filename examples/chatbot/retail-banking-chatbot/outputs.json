@@ -1,0 +1,13 @@
+{
+  "RetailBankingChatbotStack": {
+    "BankingAgentChatApiEndpointBC9529A6": "https://nebjlh36h1.execute-api.us-east-1.amazonaws.com/prod/",
+    "UserPoolClientId": "6l72uu8u5mkvd9gpam1bvpkp0g",
+    "UserPoolId": "us-east-1_OnjKwid0D",
+    "ChatApiEndpoint": "https://nebjlh36h1.execute-api.us-east-1.amazonaws.com/prod/chat",
+    "AgentFunctionName": "retail-banking-retailbankingchatbotstackbankingagent0ee1f6d0",
+    "Region": "us-east-1",
+    "TransactionsTableName": "RetailBankingChatbotStack-TransactionsTable0A011FCB-1T2EWSQ6GN8AA",
+    "KnowledgeBaseId": "7VPUYEDTQU",
+    "FrontendUrl": "https://d1qdvv2h8wzuyl.cloudfront.net"
+  }
+}

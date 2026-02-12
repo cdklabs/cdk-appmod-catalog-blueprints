@@ -258,6 +258,7 @@ export class BedrockKnowledgeBase extends BaseKnowledgeBase {
   public retrievalToolAsset(): Asset {
     return new Asset(this, 'BedrockRetrievalTool', {
       path: path.join(__dirname, '../resources/knowledge-base-tool'),
+      exclude: ['test_*', '*_test.py'],
     });
   }
 }
