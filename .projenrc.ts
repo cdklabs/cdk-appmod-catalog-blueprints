@@ -17,6 +17,7 @@ const project = new CdklabsConstructLibrary({
   repository: 'https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git',
   sampleCode: false,
   integrationTestAutoDiscover: false,
+  devDeps: ['jsii-docgen@^10.11.12'],
   docgen: process.env.SKIP_DOCGEN !== 'true',
   private: false,
   peerDeps: ['aws-cdk-lib', `@aws-cdk/aws-lambda-python-alpha@^${CDK_VERSION}-alpha.0`],
