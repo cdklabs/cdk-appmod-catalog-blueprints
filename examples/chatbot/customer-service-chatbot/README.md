@@ -275,7 +275,7 @@ Bedrock is the primary cost driver. Costs scale with usage.
 
 ## Architecture Decisions
 
-- **Claude 3 Haiku**: Fastest response time (<1s), most cost-effective for customer support
+- **Claude 3 Haiku**: Fastest response time (under 1s), most cost-effective for customer support
 - **REST API + SSE** (not WebSocket): Simpler architecture, 15-minute timeout (vs 29s WebSocket idle timeout), native Cognito authorizer, no connection management
 - **Lambda Web Adapter + FastAPI**: Enables Python response streaming in Lambda without custom runtime
 - **20-message context window**: Balances context retention with token cost (~$0.0025 per conversation)
