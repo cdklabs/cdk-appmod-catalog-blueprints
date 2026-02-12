@@ -8,7 +8,7 @@ import { DataProtectionPolicy, LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { LogGroupDataProtectionProps } from './log-group-data-protection-props';
-import { DefaultRuntimes } from '../../framework';
+import { DefaultRuntimes } from '../../framework/custom-resource/default-runtimes';
 import { LambdaIamUtils } from '../lambda-iam-utils';
 
 export interface BedrockObservabilityProps {

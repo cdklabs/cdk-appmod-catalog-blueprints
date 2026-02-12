@@ -5,7 +5,7 @@ import * as path from 'path';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Duration, Stack } from 'aws-cdk-lib';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
-import { Architecture, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, IFunction, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
 import { InvokeType } from './invoke-type';
@@ -72,7 +72,7 @@ When a user asks a question that might be answered by information in these knowl
 }
 
 export class BatchAgent extends BaseAgent {
-  public readonly agentFunction: PythonFunction;
+  public readonly agentFunction: IFunction;
 
   constructor(scope: Construct, id: string, props: BatchAgentProps) {
     super(scope, id, props);

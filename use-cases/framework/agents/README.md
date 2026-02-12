@@ -15,16 +15,16 @@ Build sophisticated AI agents that go beyond simple text generation using this m
 You can leverage the following constructs:
 - **BaseAgent**: Abstract foundation requiring custom agent implementations
 - **BatchAgent**: Ready-to-use agent for batch processing with Bedrock integration
-- **InteractiveAgent**: Coming soon!
+- **InteractiveAgent**: Real-time conversational AI with SSE streaming, session management, and Cognito authentication
 
-All implementations share common infrastructure: Lambda functions, IAM roles, KMS encryption, and built-in observability with AWS Lambda Powertools.
+All implementations share common infrastructure from `BaseAgent` and integrate with the [Strands agent framework](https://github.com/awslabs/strands-agents) for tool execution and model interaction.
 
 ## Composable Architecture
 
 **Mix & Match Components**
 - **BaseAgent**: Foundation infrastructure that works across all use cases
 - **BatchAgent**: Ready-to-use for document processing, data analysis, content generation
-- **InteractiveAgent**: Coming soon for chatbots, customer service, real-time conversations
+- **InteractiveAgent**: Ready-to-use for chatbots, customer service, real-time conversations
 - **Tool Library**: Reusable capabilities that work across different agent types
 
 **Multi-Use Case Support**
@@ -222,6 +222,187 @@ With `expectJson: true`, responses are automatically parsed:
   }
 }
 ```
+
+## [`InteractiveAgent`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/framework/agents/interactive-agent.ts) Construct
+
+The `InteractiveAgent` construct **extends BaseAgent** to provide real-time conversational AI with SSE streaming, session management, and authentication.
+
+### Key Features
+- **Inherits**: All base infrastructure (IAM role, KMS encryption, tool management, observability)
+- **Implements**: Lambda function with Lambda Web Adapter + FastAPI for Python response streaming
+- **Adds**: API Gateway REST API with response streaming, S3 session management, sliding window context, Cognito authentication
+- **Strategy Interfaces**: Pluggable adapters for communication, sessions, context, and authentication
+
+### Architecture
+
+```
+Client (fetch + ReadableStream)
+    ↓ POST /chat (Authorization: Bearer JWT)
+API Gateway REST API (responseTransferMode: STREAM)
+    ↓ InvokeWithResponseStream
+Lambda (Python + Lambda Web Adapter + FastAPI)
+    ↓ strands.Agent streaming
+Amazon Bedrock (Claude)
+```
+
+The Lambda function runs a FastAPI application behind Lambda Web Adapter. When a chat request arrives:
+
+1. API Gateway validates the JWT via native Cognito authorizer
+2. API Gateway invokes Lambda using `InvokeWithResponseStream`
+3. Lambda Web Adapter forwards the HTTP request to FastAPI on `localhost:8080`
+4. FastAPI loads session history from S3, applies context windowing, creates a `strands.Agent`, and streams SSE events as the agent generates tokens
+5. SSE chunks stream back through Lambda Web Adapter → API Gateway → Client
+
+### Components
+
+#### StreamingHttpAdapter (Default Communication Adapter)
+
+Creates an API Gateway REST API with response streaming enabled. Supports 15-minute timeout, native Cognito JWT validation, CORS, and configurable throttling.
+
+```typescript
+const adapter = new StreamingHttpAdapter({
+  stageName: 'prod',
+  throttle: { rateLimit: 100, burstLimit: 200 },
+});
+```
+
+#### S3SessionManager (Default Session Store)
+
+Persists conversation state to S3 with automatic expiration via lifecycle policies. Each HTTP request loads/saves session state, enabling multi-turn conversations over stateless HTTP.
+
+```typescript
+const sessionStore = new S3SessionManager(this, 'SessionStore', {
+  sessionTTL: Duration.hours(48),
+  encryptionKey: myKmsKey,
+});
+```
+
+#### SlidingWindowConversationManager (Default Context Strategy)
+
+Maintains a fixed-size window of recent messages, automatically discarding older messages. Configurable window size (default: 20 messages).
+
+```typescript
+const contextStrategy = new SlidingWindowConversationManager({ windowSize: 50 });
+```
+
+#### NullConversationManager
+
+Disables conversation history. Each message is processed independently.
+
+#### CognitoAuthenticator (Default Authenticator)
+
+Integrates with Amazon Cognito User Pools. API Gateway validates JWT tokens natively using the `COGNITO_USER_POOLS` authorizer type — no custom Lambda authorizer needed.
+
+```typescript
+const authenticator = new CognitoAuthenticator({
+  removalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
+#### NoAuthenticator
+
+Disables authentication entirely. Only use for development and testing.
+
+### Configuration Options
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `communicationAdapter` | `ICommunicationAdapter` | `StreamingHttpAdapter` | Communication mechanism |
+| `sessionStore` | `ISessionStore` | `S3SessionManager` | Session persistence (`undefined` for stateless) |
+| `sessionBucket` | `IBucket` | Auto-created | Custom S3 bucket for sessions |
+| `sessionTTL` | `Duration` | 24 hours | Session expiration time |
+| `contextStrategy` | `IContextStrategy` | `SlidingWindow` size 20 | Context management strategy |
+| `messageHistoryLimit` | `number` | 20 | Max messages in context window |
+| `authenticator` | `IAuthenticator` | `CognitoAuthenticator` | Authentication mechanism |
+| `memorySize` | `number` | 1024 MB | Lambda memory allocation |
+| `timeout` | `Duration` | 15 minutes | Lambda timeout |
+| `architecture` | `Architecture` | X86_64 | Lambda architecture |
+| `reservedConcurrentExecutions` | `number` | `undefined` | Reserved Lambda concurrency |
+| All `BaseAgentProps` | — | — | Inherited from BaseAgent |
+
+### Outputs
+
+```typescript
+agent.apiEndpoint;      // REST API endpoint URL (POST /chat)
+agent.adapter;          // ICommunicationAdapter instance
+agent.sessionStore;     // ISessionStore instance
+agent.sessionBucket;    // S3 bucket for sessions
+agent.contextStrategy;  // IContextStrategy instance
+agent.authenticator;    // IAuthenticator instance (access userPool, userPoolClient)
+agent.agentFunction;    // Lambda function
+agent.agentRole;        // IAM role (inherited from BaseAgent)
+agent.encryptionKey;    // KMS key (inherited from BaseAgent)
+```
+
+### Usage Examples
+
+#### Minimal Configuration
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const systemPrompt = new Asset(this, 'SystemPrompt', {
+  path: './prompts/chatbot_system_prompt.txt',
+});
+
+const agent = new InteractiveAgent(this, 'ChatAgent', {
+  agentName: 'CustomerSupportBot',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+  },
+});
+
+// REST API endpoint for client connections
+console.log('API Endpoint:', agent.apiEndpoint);
+```
+
+#### Full Configuration
+
+```typescript
+const agent = new InteractiveAgent(this, 'ChatAgent', {
+  agentName: 'CustomerSupportBot',
+  agentDefinition: {
+    bedrockModel: {
+      fmModelId: FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0,
+    },
+    systemPrompt,
+    tools: [
+      new Asset(this, 'KBTool', { path: './tools/knowledge_base_search.py' }),
+    ],
+  },
+  communicationAdapter: new StreamingHttpAdapter({
+    stageName: 'prod',
+    throttle: { rateLimit: 1000, burstLimit: 2000 },
+  }),
+  sessionTTL: Duration.hours(24),
+  contextStrategy: new SlidingWindowConversationManager({ windowSize: 50 }),
+  authenticator: new CognitoAuthenticator(),
+  memorySize: 2048,
+  timeout: Duration.minutes(15),
+  enableObservability: true,
+  metricNamespace: 'my-app',
+  metricServiceName: 'chatbot',
+});
+```
+
+#### SSE Event Format
+
+```
+event: metadata
+data: {"session_id": "uuid-string"}
+
+data: {"text": "Hello"}
+data: {"text": ", how can I help?"}
+
+event: done
+data: {}
+```
+
+### Example Implementations
+- [Customer Support Chatbot](../../../examples/chatbot/customer-service-chatbot/) — Full-stack chatbot with React frontend, Cognito auth, and SSE streaming
+
 
 ## Knowledge Base Integration
 
@@ -574,20 +755,6 @@ Network Security
 ## Example Implementations
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing)
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
-
-## Roadmap
-
-**InteractiveAgent (Coming Soon)**
-Future release will include InteractiveAgent for conversational AI applications:
-- **Real-time chat**: WebSocket and HTTP streaming support
-- **Session management**: Conversation state and memory
-- **Multi-turn conversations**: Context-aware interactions
-- **Integration patterns**: API Gateway, AppSync, and direct Lambda invocation
-
-**Enhanced Tool Ecosystem**
-- **Pre-built tool library**: Common tools for file processing, APIs, and data analysis
-- **Tool marketplace**: Community-contributed tools and integrations
-- **Tool composition**: Combine multiple tools into complex workflows
 
 ## Advanced Patterns
 **Multi-Agent Orchestration**

@@ -1,0 +1,14 @@
+{
+  "CustomerSupportChatbotStack": {
+    "DistributionDomain": "d2cwn9pvfkjo14.cloudfront.net",
+    "UserPoolClientId": "7vks55tve3u7rm40ckidr85m1u",
+    "AgentFunctionArn": "arn:aws:lambda:us-east-1:524525408827:function:customer-support-customersupportchatbotstackchatagent1af0020a",
+    "UserPoolId": "us-east-1_RQh0hEaGN",
+    "ChatApiEndpoint": "wss://6rzh41ta2k.execute-api.us-east-1.amazonaws.com/prod",
+    "AgentFunctionName": "customer-support-customersupportchatbotstackchatagent1af0020a",
+    "Region": "us-east-1",
+    "SessionBucket": "customersupportchatbotsta-chatagentsessionmanagerb-tzrd0p6fkgpb",
+    "FrontendBucket": "customersupportchatbotsta-frontendfrontendbucket42-hmxbwsld4cjv",
+    "FrontendUrl": "https://d2cwn9pvfkjo14.cloudfront.net"
+  }
+}

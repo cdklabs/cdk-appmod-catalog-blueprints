@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { PropertyInjectors, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Architecture, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, IFunction, ILayerVersion, LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import { LambdaIamUtils, LambdaObservabilityPropertyInjector, LogGroupDataProtectionProps, LogGroupDataProtectionUtils, ObservableProps } from '../../utilities';
@@ -184,7 +183,7 @@ export interface BaseAgentProps extends ObservableProps {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
  */
 export abstract class BaseAgent extends Construct {
-  public abstract readonly agentFunction: PythonFunction;
+  public abstract readonly agentFunction: IFunction;
   public readonly bedrockModel?: BedrockModelProps;
   public readonly agentRole: Role;
   public readonly encryptionKey: Key;
