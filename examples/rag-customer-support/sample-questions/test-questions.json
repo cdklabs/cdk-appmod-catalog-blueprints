@@ -1,0 +1,130 @@
+{
+  "description": "Sample questions for testing the RAG customer support agent. Each question includes expected topics/keywords that should appear in the agent's response.",
+  "questions": [
+    {
+      "category": "Product Catalog",
+      "question": "What smartphones do you sell and how much do they cost?",
+      "expectedTopics": ["AcmePhone Pro", "AcmePhone Lite", "$899.99", "$499.99", "smartphone"]
+    },
+    {
+      "category": "Product Catalog",
+      "question": "Do you have any laptops in stock?",
+      "expectedTopics": ["AcmeLaptop Ultra", "AcmeLaptop Basic", "in stock", "limited"]
+    },
+    {
+      "category": "Product Catalog",
+      "question": "What is the warranty on electronics?",
+      "expectedTopics": ["1-year", "warranty", "electronics", "manufacturer"]
+    },
+    {
+      "category": "Product Catalog",
+      "question": "What colors is the AcmeWatch Sport available in?",
+      "expectedTopics": ["Black", "White", "Rose Gold", "AcmeWatch Sport"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "How do I track my order?",
+      "expectedTopics": ["tracking", "My Orders", "tracking number", "carrier"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "What shipping options do you offer?",
+      "expectedTopics": ["Standard Shipping", "Express Shipping", "Next Day", "5-7 business days", "2-3 business days"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "Is shipping free?",
+      "expectedTopics": ["free", "$50", "Standard Shipping", "$150", "Express"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "Do you ship internationally?",
+      "expectedTopics": ["international", "Canada", "Europe", "Asia Pacific", "customs"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "My package shows delivered but I haven't received it. What should I do?",
+      "expectedTopics": ["delivered", "check", "neighbors", "48 hours", "customer support"]
+    },
+    {
+      "category": "Orders and Shipping",
+      "question": "What payment methods do you accept?",
+      "expectedTopics": ["Visa", "Mastercard", "PayPal", "Apple Pay", "Google Pay"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "What is your return policy?",
+      "expectedTopics": ["30 days", "return", "original packaging", "unused"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "How long does it take to get a refund?",
+      "expectedTopics": ["5-7 business days", "refund", "credit card", "PayPal"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "How do I return an item?",
+      "expectedTopics": ["return", "My Orders", "return label", "UPS", "FedEx"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "Can I return electronics?",
+      "expectedTopics": ["15 days", "electronics", "return window"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "What items cannot be returned?",
+      "expectedTopics": ["non-returnable", "personalized", "gift cards", "Final Sale", "intimate apparel"]
+    },
+    {
+      "category": "Returns and Refunds",
+      "question": "I received a defective product. What should I do?",
+      "expectedTopics": ["defective", "48 hours", "photos", "replacement", "free shipping"]
+    },
+    {
+      "category": "Account Management",
+      "question": "How do I create an account?",
+      "expectedTopics": ["Sign Up", "email", "password", "verify"]
+    },
+    {
+      "category": "Account Management",
+      "question": "How do I reset my password?",
+      "expectedTopics": ["Forgot Password", "reset", "email", "link", "24 hours"]
+    },
+    {
+      "category": "Account Management",
+      "question": "How do I update my shipping address?",
+      "expectedTopics": ["Account Settings", "Addresses", "edit", "save"]
+    },
+    {
+      "category": "Account Management",
+      "question": "How do I change my notification preferences?",
+      "expectedTopics": ["Account Settings", "Notifications", "email", "SMS"]
+    },
+    {
+      "category": "Account Management",
+      "question": "My account is locked. How do I unlock it?",
+      "expectedTopics": ["locked", "30 minutes", "Forgot Password", "customer support"]
+    },
+    {
+      "category": "Account Management",
+      "question": "How do I delete my account?",
+      "expectedTopics": ["Account Settings", "Privacy", "Delete Account", "permanent"]
+    },
+    {
+      "category": "General FAQ",
+      "question": "What is AcmeRewards?",
+      "expectedTopics": ["AcmeRewards", "loyalty", "points", "1 point per dollar", "redeem"]
+    },
+    {
+      "category": "General FAQ",
+      "question": "How do I contact customer support?",
+      "expectedTopics": ["1-800-ACME-SHOP", "email", "Live Chat", "24/7"]
+    },
+    {
+      "category": "General FAQ",
+      "question": "Can I modify my order after placing it?",
+      "expectedTopics": ["1 hour", "modify", "processing", "customer support"]
+    }
+  ]
+}

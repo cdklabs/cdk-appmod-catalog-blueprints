@@ -80,51 +80,6 @@ Now create the appropriate decision file:
 
 ---
 
-## 🔨 MANDATORY BUILD COMMAND
-
-**CRITICAL: This repository uses JSII for multi-language support. You MUST use the correct build command.**
-
-### ✅ CORRECT Build Command
-```bash
-npx projen build
-```
-
-This command:
-- Runs `jsii --silence-warnings=reserved-word` for proper TypeScript compilation
-- Handles JSII-specific compilation requirements
-- Generates proper JavaScript output in `lib/` directory
-- Creates type definitions for multi-language support
-
-### ❌ NEVER Use These Commands
-```bash
-tsc                    # ❌ WRONG - Does not handle JSII compilation
-npm run build          # ❌ WRONG - May not use correct JSII settings
-npx tsc                # ❌ WRONG - Bypasses JSII compilation
-```
-
-### Why This Matters
-- **JSII Compilation**: This repository publishes to multiple languages (TypeScript, Python, Java, .NET)
-- **Module Resolution**: JSII compilation ensures proper module exports for Jest/ts-jest
-- **Build Artifacts**: Only `npx projen build` generates correct artifacts in `lib/`
-- **Test Compatibility**: Tests depend on properly compiled JSII modules
-
-### When to Build
-- After creating or modifying any TypeScript file in `use-cases/`
-- Before running tests if you've made code changes
-- After clearing build cache (`.jsii`, `lib/tsconfig.tsbuildinfo`)
-- When encountering "Cannot read properties of undefined" errors in tests
-
-### Build Troubleshooting
-If you encounter build issues:
-1. Clear build cache: `rm -rf .jsii lib/tsconfig.tsbuildinfo`
-2. Clear Jest cache: `npx jest --clearCache`
-3. Run clean build: `npx projen build`
-4. Run tests: `npm test`
-
-**🔒 ENFORCEMENT**: Always use `npx projen build` - never use `tsc` or `npm run build` directly.
-
----
-
 ## Critical First Step: Identify What You're Building
 
 **BEFORE writing any code or creating any spec, you MUST determine:**
