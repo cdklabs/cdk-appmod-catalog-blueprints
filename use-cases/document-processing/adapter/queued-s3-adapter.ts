@@ -254,8 +254,8 @@ export class QueuedS3Adapter implements IAdapter {
     if (!narrowActions) {
       statements.push(new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ['s3:GetObject', 's3:CopyObject', 's3:DeleteObject', 's3:PutObject', 's3:List*', ...normalizedIAMActions],
-        resources: [`${bucket.bucketArn}/*`, bucket.bucketArn],
+        actions: ['s3:GetObject', 's3:CopyObject', 's3:DeleteObject', 's3:PutObject', ...normalizedIAMActions],
+        resources: [`${bucket.bucketArn}/*`],
       }));
 
       if (bucket.encryptionKey) {

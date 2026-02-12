@@ -30,9 +30,6 @@ Essential cross-cutting concerns and helper constructs that enhance functionalit
 **Data Protection:**
 - `LogGroupDataProtectionProps` - Configurable data protection policies for CloudWatch logs
 
-**Transaction Search:**
-- `CloudWatchTransactionSearch` - Enables cost-effective X-Ray trace collection and search through CloudWatch Logs
-
 ### Usage Example
 ```typescript
 import { Observability } from '@cdklabs/appmod-catalog-blueprints';
@@ -47,35 +44,6 @@ const observability = new Observability(this, 'Observability', {
 observability.addLambdaFunction(myLambdaFunction);
 observability.addStateMachine(myStateMachine);
 ```
-
-### CloudWatch Transaction Search
-
-Enable cost-effective collection and search of all X-Ray traces through CloudWatch Logs:
-
-```typescript
-import { CloudWatchTransactionSearch } from '@cdklabs/appmod-catalog-blueprints';
-
-// Enable Transaction Search with default 1% sampling
-new CloudWatchTransactionSearch(this, 'TransactionSearch');
-
-// Or customize sampling percentage
-new CloudWatchTransactionSearch(this, 'TransactionSearch', {
-  samplingPercentage: 5  // Index 5% of spans
-});
-```
-
-**Benefits:**
-- **Cost-effective**: Uses CloudWatch Logs pricing instead of X-Ray pricing
-- **Full visibility**: All spans collected and searchable
-- **Automatic indexing**: Configurable sampling for trace summaries
-- **Account-level**: Single deployment enables for entire AWS account
-
-**What it does:**
-1. Creates CloudWatch Logs resource policy allowing X-Ray to send traces
-2. Configures X-Ray to send trace segments to CloudWatch Logs
-3. Sets sampling percentage for span indexing (default 1%)
-
-**Note**: This is an account-level configuration. Once enabled, it affects all X-Ray traces in the account/region.
 
 ## [`Data Masking`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases/utilities/lambda_layers/data-masking)
 

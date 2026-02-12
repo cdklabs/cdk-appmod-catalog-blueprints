@@ -103,10 +103,7 @@ def handler(event, context):
         local_path_attached_doc = download_attached_document(event)
         prompt += f" Attached document is located in {local_path_attached_doc}"
     elif content_type == 'data':
-        if invoke_type == 'batch':
-            prompt += f" Attached document content are as follows: {event['content']['data']}"
-        elif invoke_type == 'attach-directly':
-            prompt += f" {event['content']['data']}"
+        prompt += f" Attached document content are as follows: {event['content']['data']}"
     
     agent = Agent(model=model_id, tools=agent_tools + [file_read], system_prompt=system_prompt)
     response = agent(prompt)

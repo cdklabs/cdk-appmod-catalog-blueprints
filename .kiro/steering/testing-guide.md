@@ -5,6 +5,50 @@ fileMatchPattern: 'use-cases/**'
 
 # Testing Guide
 
+## 🔨 CRITICAL: Build Command Requirements
+
+**Before running any tests, ensure code is properly compiled using the correct build command.**
+
+### ✅ ALWAYS Use This Build Command
+```bash
+npx projen build
+```
+
+**NEVER use:**
+- `tsc` - Does not handle JSII compilation
+- `npm run build` - May not use correct JSII settings
+- `npx tsc` - Bypasses JSII compilation
+
+### Why This Matters for Testing
+This repository uses JSII for multi-language support. Tests depend on properly compiled JSII modules in the `lib/` directory. Using `tsc` directly will cause module resolution issues in Jest/ts-jest, leading to errors like:
+```
+TypeError: Cannot read properties of undefined (reading 'handleDefault')
+```
+
+### Build Before Testing Workflow
+```bash
+# 1. Make code changes in use-cases/
+vim use-cases/framework/agents/my-agent.ts
+
+# 2. Build with JSII compilation
+npx projen build
+
+# 3. Run tests
+npm test
+
+# Or run specific test
+npm test -- use-cases/framework/tests/my-agent.test.ts
+```
+
+### Troubleshooting Test Failures
+If tests fail with "undefined" errors:
+1. Clear build cache: `rm -rf .jsii lib/tsconfig.tsbuildinfo`
+2. Clear Jest cache: `npx jest --clearCache`
+3. Rebuild: `npx projen build`
+4. Run tests: `npm test`
+
+---
+
 ## Testing Philosophy
 
 This repository uses a comprehensive testing approach:

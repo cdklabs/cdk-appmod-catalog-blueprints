@@ -1,6 +1,5 @@
 ---
-inclusion: fileMatch
-fileMatchPattern: 'use-cases/**'
+inclusion: always
 ---
 
 # Construct Development Guide - OOP Best Practices

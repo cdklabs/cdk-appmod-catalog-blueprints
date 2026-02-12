@@ -2,7 +2,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { BedrockCrossRegionInferencePrefix, InvokeType } from '../../framework';
+import { BedrockCrossRegionInferencePrefix } from '../../framework';
 import { createTestApp } from '../../utilities/test-utils';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 
@@ -583,7 +583,7 @@ describe('Chunk-aware classification integration', () => {
       // Count classification Lambdas (should be 1, reused for both paths)
       const lambdas = template.findResources('AWS::Lambda::Function');
       const classificationLambdas = Object.values(lambdas).filter((lambda: any) =>
-        lambda.Properties.Environment?.Variables?.INVOKE_TYPE === InvokeType.CLASSIFICATION,
+        lambda.Properties.Environment?.Variables?.INVOKE_TYPE === 'classification',
       );
 
       // Should have exactly 1 classification Lambda (reused)
