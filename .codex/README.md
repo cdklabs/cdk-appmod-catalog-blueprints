@@ -1,23 +1,34 @@
-# Codex Project Context
+# Codex
 
-This folder contains repository-local guidance for Codex.
+Canonical execution layer for Codex. **Start at `.codex/AGENTS.md`.** Deep-dive: `.kiro/steering/**`.
 
-## Files
+## Scope
 
-- `context/project-overview.md`: quick map of repository architecture and conventions
-- `workflows/spec-driven.md`: requirements -> design -> tasks delivery flow
-- `checklists/pr-ready.md`: pre-handoff quality checks
-- `guides/construct-vs-example.md`: work classification matrix
-- `guides/construct-development.md`: construct design and extension patterns
-- `guides/example-development.md`: example composition and documentation standards
-- `guides/document-processing-and-agents.md`: framework-specific architecture guidance
-- `guides/coding-standards.md`: TypeScript/Python/CDK coding and security standards
-- `guides/testing.md`: unit, CDK Nag, integration, and property-based testing guidance
-- `guides/deployment-operations.md`: deployment, monitoring, and cleanup commands
-- `skills/cdk-blueprint-workflow/SKILL.md`: reusable workflow skill for common work
+- **use-cases/** → `scope/use-cases.md`
+- **examples/** → `scope/examples.md`
+
+## File Map
+
+| Topic | File |
+|-------|------|
+| Working agreement & entrypoint | `AGENTS.md` |
+| Project map, baseline | `context/project-overview.md` |
+| Work type (construct vs example) | `guides/construct-vs-example.md` |
+| Spec workflow (incl. decision-first) | `workflows/spec-driven.md` |
+| Construct rules | `guides/construct-development.md` |
+| Example rules | `guides/example-development.md` |
+| Document processing / agents | `guides/document-processing-and-agents.md` |
+| Testing | `guides/testing.md` |
+| Deployment | `guides/deployment-operations.md` |
+| Coding / security | `guides/coding-standards.md` |
+| Pre-handoff gate | `checklists/pr-ready.md` |
+| Spec-driven skill | `skills/cdk-blueprint-workflow/SKILL.md` |
+| Spec templates | `specs/templates/` (requirements, design, tasks, _decisions-*) |
+
+## Deep-Dive (.kiro/steering)
+
+- `repository-overview.md`, `aidlc-specdriven-core-workflow.md`, `construct-development-guide.md`, `example-development-guide.md`, `document-processing-guide.md`, `agentic-framework-guide.md`, `testing-guide.md`, `deployment-operations.md`, `coding-standards.md`
 
 ## Usage
 
-- `AGENTS.md` is the entrypoint Codex should follow first.
-- Use these files as references for execution details.
-- Keep guidance concise and enforceable; avoid duplicating README/API docs.
+If other files reference Codex instructions, they should link to `.codex/AGENTS.md` and the applicable scope file. Keep `.codex` concise; long rationale stays in `.kiro`

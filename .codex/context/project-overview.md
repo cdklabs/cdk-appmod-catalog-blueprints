@@ -2,7 +2,7 @@
 
 ## Purpose
 
-AppMod Catalog Blueprints provides AWS CDK blueprints for agentic/document-processing systems, plus runnable examples.
+AppMod Catalog Blueprints provides AWS CDK blueprints for agentic/document-processing systems plus runnable examples.
 
 ## Critical Distinction
 
@@ -12,8 +12,8 @@ AppMod Catalog Blueprints provides AWS CDK blueprints for agentic/document-proce
 
 ## Top-Level Map
 
-- `use-cases/`: reusable construct libraries (publishable/reusable patterns)
-- `examples/`: deployable example apps that compose constructs
+- `use-cases/`: reusable construct libraries
+- `examples/`: deployable example apps
 - `test/`: repository-level tests
 - `website/`: docs site
 - `assets/`: shared static assets
@@ -28,21 +28,18 @@ AppMod Catalog Blueprints provides AWS CDK blueprints for agentic/document-proce
 
 ## Change Strategy
 
-- In `use-cases/`: prioritize abstraction, extension points, backwards compatibility.
-- In `examples/`: prioritize clarity, deployability, and docs for end-to-end usage.
+- In `use-cases/`: prioritize abstraction, extension points, backward compatibility.
+- In `examples/`: prioritize deployability, clarity, and accurate operational docs.
 - In `test/`: add/adjust tests with behavior changes.
 
-## Core Patterns
-
-- Template Method for base workflow + subclass hooks.
-- Strategy pattern for pluggable ingress/adapters.
-- Factory methods for subclass-owned specialized resources.
-- Opt-in observability and event integrations as cross-cutting concerns.
-
-## Common Commands
+## Core Commands
 
 - `npm run build`
 - `npm run eslint`
 - `npm test`
 - `npm run test:document-processing:unit`
 - `npm run test:cdk-nag:all`
+
+## Deep Dive
+
+- `.kiro/steering/repository-overview.md`

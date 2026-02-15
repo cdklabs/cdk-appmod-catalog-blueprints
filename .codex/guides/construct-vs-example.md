@@ -4,29 +4,29 @@ Use this before planning implementation.
 
 ## Construct (`use-cases/**`)
 
-Choose construct when the deliverable is:
-- reusable by other teams/projects
+Choose construct when deliverable is:
+- reusable by multiple projects/teams
 - extensible via props, inheritance, or composition
 - part of shared library surface area
-- expected to have unit + CDK Nag coverage
+- expected to carry strong unit + CDK Nag coverage
 
 ## Example (`examples/**`)
 
-Choose example when the deliverable is:
+Choose example when deliverable is:
 - deployable reference implementation
 - opinionated composition of existing constructs
-- focused on user onboarding and end-to-end usage
-- documented with complete deploy/use/monitor/cleanup steps
+- focused on onboarding and end-to-end usage
+- documented with deploy/use/monitor/troubleshoot/cleanup
 
 ## Other Work
 
-Choose other when work is:
-- documentation
-- CI/CD
-- tooling/scripts
-- repository maintenance
+Choose other when work is documentation, CI/CD, tooling/scripts, or repository maintenance.
 
 ## Rule
 
 Do not implement reusable construct architecture in example stacks.
 
+## Deep Dive
+
+- `.kiro/steering/repository-overview.md`
+- `.kiro/steering/aidlc-specdriven-core-workflow.md`

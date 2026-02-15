@@ -2,37 +2,26 @@
 
 Use for work under `**/document-processing/**` or `**/agents/**`.
 
-## Document Processing Layers
+## Layering Rules
 
-- `BaseDocumentProcessing`: shared workflow/infrastructure abstractions.
-- `BedrockDocumentProcessing`: Bedrock model-driven implementation.
-- `AgenticDocumentProcessing`: agent-powered specialization with tools/prompts.
+- Choose the lowest document-processing layer that satisfies requirements.
+- Use `BaseAgent` when creating a new agent type; use higher-level agent constructs for standard flows.
+- Keep observability and event integrations opt-in and explicit.
 
-Choose lowest layer that satisfies the requirement. Do not jump to agentic layer unless tool-based reasoning is needed.
+## Tooling and Prompt Rules
 
-## Agent Framework Layers
+- Keep Python tools single-purpose with clear contracts.
+- Load tool assets explicitly and grant minimum IAM permissions.
+- Define prompt role, tools, process, and output format.
+- Keep expected input/output payload shapes documented and tested.
 
-- `BaseAgent`: infrastructure foundation and shared permissions/config.
-- `BatchAgent`: ready-to-use batch-oriented agent execution.
+## Security and Reliability
 
-Use `BaseAgent` only when building a new agent type. Use `BatchAgent` for standard document/data batch tasks.
+- Keep encryption defaults intact.
+- Keep IAM least privilege and resource-scoped.
+- Ensure failures are structured and observable.
 
-## Tooling Rules
+## Deep Dive
 
-- Keep Python tools single-purpose and clearly described.
-- Load tool assets explicitly and include only required IAM permissions.
-- Keep tool dependencies isolated in layers/requirements.
-- Ensure tool errors are structured and observable.
-
-## Prompt and Runtime Rules
-
-- System prompts should define role, available tools, process, and output format.
-- Keep prompts deterministic enough for production behavior, not only demos.
-- Ensure expected input/output payload shapes are documented and tested.
-
-## Cross-Cutting Features
-
-- Observability should be opt-in and consistent (logs, metrics, traces).
-- EventBridge integration should be optional and explicit.
-- Security defaults remain on: encryption and least privilege.
-
+- `.kiro/steering/document-processing-guide.md`
+- `.kiro/steering/agentic-framework-guide.md`

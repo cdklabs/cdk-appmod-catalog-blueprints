@@ -5,13 +5,7 @@
 - Unit tests for core behavior and edge cases.
 - CDK Nag tests for security/compliance on constructs/stacks.
 - Integration tests for critical workflows.
-- Property-based tests for logic with broad input spaces.
-
-## Organization
-
-- TypeScript unit tests: `*.test.ts`
-- CDK Nag tests: `*-nag.test.ts`
-- Python tests: `test_*.py`
+- Property-based tests for broad/variable input spaces.
 
 ## Commands
 
@@ -23,13 +17,15 @@
 ## Guidance
 
 - Run targeted tests first for fast feedback, then broader suites.
-- Add tests with behavior changes, not after.
+- Add tests with behavior changes.
 - Keep fixtures realistic and minimal.
-- For Python tool/lambda tests, use a virtual environment and pin dependencies when needed.
 
 ## Quality Bar
 
 - No failing tests in touched scope.
-- New feature behavior has positive and negative-path test coverage.
+- New behavior has positive and negative-path coverage.
 - Security/compliance checks remain green.
 
+## Deep Dive
+
+- `.kiro/steering/testing-guide.md`
