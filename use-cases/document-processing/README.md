@@ -14,6 +14,8 @@ You can leverage the following constructs:
 - **BaseDocumentProcessing**: Abstract foundation requiring custom step implementations
 - **BedrockDocumentProcessing**: Ready-to-use genAI document processing implementation with Amazon Bedrock 
 - **AgenticDocumentProcessing**: Advanced agentic capabilities powered by the [Agents Framework](../framework/agents/) with BatchAgent integration
+- **LocalStackBedrockDocumentProcessing**: LocalStack-enabled BedrockDocumentProcessing variant
+- **LocalStackAgenticDocumentProcessing**: LocalStack-enabled AgenticDocumentProcessing variant
 
 All implementations share common infrastructure: Step Functions workflow, DynamoDB metadata storage, EventBridge integration, and built-in observability.
 
@@ -209,6 +211,29 @@ interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps 
 ### Example Implementations
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing) 
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
+
+### LocalStack Usage
+
+Use LocalStack variants to route runtime SDK calls to LocalStack endpoints without replacing existing constructs:
+
+```typescript
+import {
+  LocalStackBedrockDocumentProcessing,
+  LocalStackAgenticDocumentProcessing
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+new LocalStackBedrockDocumentProcessing(this, 'LocalDocProcessor', {
+  localStack: {
+    endpointUrl: 'http://host.docker.internal:4566'
+  },
+  classificationBedrockModel: {
+    customModelId: 'ollama.llama3.2'
+  },
+  processingBedrockModel: {
+    customModelId: 'ollama.llama3.2'
+  }
+});
+```
 
 ## PDF Chunking for Large Documents
 
