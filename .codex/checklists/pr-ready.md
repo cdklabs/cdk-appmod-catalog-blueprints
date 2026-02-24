@@ -1,0 +1,21 @@
+# PR Ready Checklist
+
+- Work type was identified first (construct/example/other).
+- Most specific scope was followed: `.codex/AGENTS.md` and, if applicable, `.codex/scope/use-cases.md` or `.codex/scope/examples.md`.
+- Relevant canonical `.codex/**` guides/workflow were followed.
+- Required deep-dive `.kiro/steering/**` files were consulted when complexity warranted.
+- Scope is limited to task intent; no unrelated refactors.
+- Public API changes are documented and justified.
+- Security defaults preserved (encryption, least-privilege IAM).
+- IAM changes are least-privilege and resource-scoped.
+- Error handling/logging updated where behavior changed.
+- For medium/large work, `.codex/specs/<slug>/requirements.md`, `design.md`, and `tasks.md` exist (created directly or generated after decision files).
+- If decision-first path was used: _decisions-* files were completed and final specs generated.
+- No Codex spec artifacts were added under `.kiro/specs/**`.
+- Tests were added/updated for changed behavior.
+- CDK Nag findings are fixed or suppression rationale is documented.
+- Projen-backed scripts were used for build/lint/test.
+- `npm run eslint` passes.
+- Relevant test suite passes (`npm test` or targeted suites).
+- Example/docs updates included when user-facing behavior changed.
+- Handoff summary includes risks and follow-ups.
