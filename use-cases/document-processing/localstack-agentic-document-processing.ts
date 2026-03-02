@@ -1,10 +1,11 @@
+import * as path from 'path';
 import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { LambdaInvoke } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Construct } from 'constructs';
 import { AgenticDocumentProcessing, AgenticDocumentProcessingProps } from './agentic-document-processing';
 import { DocumentProcessingStepType } from './base-document-processing';
 import { LocalStackBatchAgent } from '../framework/agents/localstack-batch-agent';
-import { LocalStackIntegrationConfig, LocalStackIntegrationUtils } from '../framework/localstack';
+import { LocalStackEndpointOverrides, LocalStackIntegrationUtils } from '../framework/localstack';
 
 export interface LocalStackAgenticDocumentProcessingProps extends AgenticDocumentProcessingProps {
   /**
@@ -12,7 +13,7 @@ export interface LocalStackAgenticDocumentProcessingProps extends AgenticDocumen
    *
    * @default { enabled: true }
    */
-  readonly localStack?: Omit<LocalStackIntegrationConfig, 'enabled'>;
+  readonly localStack?: LocalStackEndpointOverrides;
 }
 
 export class LocalStackAgenticDocumentProcessing extends AgenticDocumentProcessing {
@@ -22,6 +23,10 @@ export class LocalStackAgenticDocumentProcessing extends AgenticDocumentProcessi
   constructor(scope: Construct, id: string, props: LocalStackAgenticDocumentProcessingProps) {
     super(scope, id, props);
     this.applyLocalStackEnvironment(props.localStack || {});
+  }
+
+  protected resolveBedrockInvokeEntry(): string {
+    return path.join(__dirname, 'resources/default-localstack-invoke');
   }
 
   protected processingStep(): DocumentProcessingStepType {
@@ -56,7 +61,7 @@ export class LocalStackAgenticDocumentProcessing extends AgenticDocumentProcessi
     });
   }
 
-  private applyLocalStackEnvironment(localStack: Omit<LocalStackIntegrationConfig, 'enabled'>): void {
+  private applyLocalStackEnvironment(localStack: LocalStackEndpointOverrides): void {
     const localStackEnv = LocalStackIntegrationUtils.toLambdaEnvironment({
       enabled: true,
       ...localStack,

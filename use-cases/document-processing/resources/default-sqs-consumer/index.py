@@ -7,7 +7,22 @@ import re
 from aws_lambda_powertools import Metrics, Tracer
 from aws_lambda_powertools.metrics import MetricUnit
 
-sfn_client = boto3.client('stepfunctions')
+def _resolve_endpoint_url(*service_env_keys):
+    for key in service_env_keys:
+        endpoint = os.getenv(key)
+        if endpoint:
+            return endpoint
+    return None
+
+
+def _create_boto3_client(service_name, *service_env_keys):
+    endpoint_url = _resolve_endpoint_url(*service_env_keys, 'AWS_ENDPOINT_URL')
+    if endpoint_url:
+        return boto3.client(service_name, endpoint_url=endpoint_url)
+    return boto3.client(service_name)
+
+
+sfn_client = _create_boto3_client('stepfunctions', 'AWS_ENDPOINT_URL_STEPFUNCTIONS')
 metrics = Metrics()
 tracer = Tracer()
 
