@@ -1,8 +1,21 @@
+import * as path from 'path';
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { createTestApp } from '../../utilities/test-utils';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 import { LocalStackBedrockDocumentProcessing } from '../localstack-bedrock-document-processing';
+
+class TestableLocalStackBedrockDocumentProcessing extends LocalStackBedrockDocumentProcessing {
+  public runtimeEntryPath(): string {
+    return this.resolveBedrockInvokeEntry();
+  }
+}
+
+class TestableBedrockDocumentProcessing extends BedrockDocumentProcessing {
+  public runtimeEntryPath(): string {
+    return this.resolveBedrockInvokeEntry();
+  }
+}
 
 describe('LocalStackBedrockDocumentProcessing', () => {
   test('injects LocalStack endpoint variables into classification Lambda', () => {
@@ -46,6 +59,19 @@ describe('LocalStackBedrockDocumentProcessing', () => {
     });
   });
 
+  test('uses the LocalStack invoke runtime entry', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'LocalStackBedrockRuntimeStack');
+
+    const processing = new TestableLocalStackBedrockDocumentProcessing(stack, 'LocalStackBedrockRuntime', {
+      classificationBedrockModel: {
+        customModelId: 'ollama.llama3.2',
+      },
+    });
+
+    expect(processing.runtimeEntryPath()).toContain(path.join('resources', 'default-localstack-invoke'));
+  });
+
   test('keeps existing BedrockDocumentProcessing behavior unchanged', () => {
     const app = createTestApp();
     const stack = new Stack(app, 'AwsBedrockStack');
@@ -61,5 +87,13 @@ describe('LocalStackBedrockDocumentProcessing', () => {
       expect(variables.AWS_ENDPOINT_URL).toBeUndefined();
     }
   });
-});
 
+  test('keeps default AWS Bedrock invoke runtime entry', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'AwsBedrockRuntimeStack');
+
+    const processing = new TestableBedrockDocumentProcessing(stack, 'AwsBedrockRuntime', {});
+
+    expect(processing.runtimeEntryPath()).toContain(path.join('resources', 'default-bedrock-invoke'));
+  });
+});

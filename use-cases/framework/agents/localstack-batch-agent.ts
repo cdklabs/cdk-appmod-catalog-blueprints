@@ -1,6 +1,8 @@
+import * as path from 'path';
+import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BatchAgent, BatchAgentProps } from './batch-agent';
-import { LocalStackIntegrationConfig, LocalStackIntegrationUtils } from '../localstack';
+import { LocalStackEndpointOverrides, LocalStackIntegrationUtils } from '../localstack';
 
 export interface LocalStackBatchAgentProps extends BatchAgentProps {
   /**
@@ -8,7 +10,7 @@ export interface LocalStackBatchAgentProps extends BatchAgentProps {
    *
    * @default { enabled: true }
    */
-  readonly localStack?: Omit<LocalStackIntegrationConfig, 'enabled'>;
+  readonly localStack?: LocalStackEndpointOverrides;
 }
 
 export class LocalStackBatchAgent extends BatchAgent {
@@ -20,9 +22,17 @@ export class LocalStackBatchAgent extends BatchAgent {
       ...props.localStack,
     });
 
-    for (const [key, value] of Object.entries(localStackEnv)) {
-      this.agentFunction.addEnvironment(key, value);
+    for (const child of this.node.findAll()) {
+      if (!(child instanceof LambdaFunction)) {
+        continue;
+      }
+      for (const [key, value] of Object.entries(localStackEnv)) {
+        child.addEnvironment(key, value);
+      }
     }
   }
-}
 
+  protected resolveAgentRuntimeEntry(): string {
+    return path.join(__dirname, 'resources/default-ollama-agent');
+  }
+}
