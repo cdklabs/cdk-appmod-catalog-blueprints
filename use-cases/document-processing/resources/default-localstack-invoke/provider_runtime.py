@@ -79,23 +79,26 @@ def _extract_json_object(response_text: str) -> Optional[Dict[str, Any]]:
     except json.JSONDecodeError:
         pass
 
-    json_code_block = JSON_CODE_BLOCK_PATTERN.search(response_text)
-    if json_code_block:
+    candidates: list[tuple[Dict[str, Any], int]] = []
+
+    for json_code_block in JSON_CODE_BLOCK_PATTERN.finditer(response_text):
         try:
             parsed = json.loads(json_code_block.group(1))
             if isinstance(parsed, dict):
-                return parsed
+                candidates.append((parsed, json_code_block.end()))
         except json.JSONDecodeError:
             pass
 
-    raw_json = JSON_OBJECT_PATTERN.search(response_text)
-    if raw_json:
+    for raw_json in JSON_OBJECT_PATTERN.finditer(response_text):
         try:
             parsed = json.loads(raw_json.group(1))
             if isinstance(parsed, dict):
-                return parsed
+                candidates.append((parsed, raw_json.end()))
         except json.JSONDecodeError:
             pass
+
+    if candidates:
+        return max(candidates, key=lambda candidate: candidate[1])[0]
 
     return None
 

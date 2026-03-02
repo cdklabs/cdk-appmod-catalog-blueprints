@@ -53,7 +53,7 @@ export class LocalStackAgenticDocumentProcessing extends AgenticDocumentProcessi
     this._localStackProcessingStepCounter++;
 
     return new LambdaInvoke(this, stepId, {
-      lambdaFunction: this._localStackBatchAgent.agentFunction,
+      lambdaFunction: this._localStackBatchAgent.agentFunction!,
       resultPath: '$.processingResult',
       resultSelector: {
         'result.$': '$.Payload.result',
