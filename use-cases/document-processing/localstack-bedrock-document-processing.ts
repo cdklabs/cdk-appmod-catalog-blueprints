@@ -1,7 +1,8 @@
+import * as path from 'path';
 import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BedrockDocumentProcessing, BedrockDocumentProcessingProps } from './bedrock-document-processing';
-import { LocalStackIntegrationConfig, LocalStackIntegrationUtils } from '../framework/localstack';
+import { LocalStackEndpointOverrides, LocalStackIntegrationUtils } from '../framework/localstack';
 
 export interface LocalStackBedrockDocumentProcessingProps extends BedrockDocumentProcessingProps {
   /**
@@ -9,7 +10,7 @@ export interface LocalStackBedrockDocumentProcessingProps extends BedrockDocumen
    *
    * @default { enabled: true }
    */
-  readonly localStack?: Omit<LocalStackIntegrationConfig, 'enabled'>;
+  readonly localStack?: LocalStackEndpointOverrides;
 }
 
 export class LocalStackBedrockDocumentProcessing extends BedrockDocumentProcessing {
@@ -18,7 +19,11 @@ export class LocalStackBedrockDocumentProcessing extends BedrockDocumentProcessi
     this.applyLocalStackEnvironment(props.localStack);
   }
 
-  private applyLocalStackEnvironment(localStack?: Omit<LocalStackIntegrationConfig, 'enabled'>): void {
+  protected resolveBedrockInvokeEntry(): string {
+    return path.join(__dirname, 'resources/default-localstack-invoke');
+  }
+
+  private applyLocalStackEnvironment(localStack?: LocalStackEndpointOverrides): void {
     const localStackEnv = LocalStackIntegrationUtils.toLambdaEnvironment({
       enabled: true,
       ...localStack,
@@ -33,4 +38,3 @@ export class LocalStackBedrockDocumentProcessing extends BedrockDocumentProcessi
     }
   }
 }
-

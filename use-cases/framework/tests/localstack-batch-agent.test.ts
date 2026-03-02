@@ -5,6 +5,12 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { createTestApp } from '../../utilities/test-utils';
 import { LocalStackBatchAgent } from '../agents/localstack-batch-agent';
 
+class TestableLocalStackBatchAgent extends LocalStackBatchAgent {
+  public runtimeEntryPath(): string {
+    return this.resolveAgentRuntimeEntry();
+  }
+}
+
 describe('LocalStackBatchAgent', () => {
   test('injects LocalStack endpoint environment variables', () => {
     const app = createTestApp();
@@ -41,5 +47,26 @@ describe('LocalStackBatchAgent', () => {
       },
     });
   });
-});
 
+  test('uses the LocalStack/Ollama runtime entry', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'LocalStackBatchAgentRuntimeStack');
+
+    const systemPrompt = new Asset(stack, 'RuntimeSystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+
+    const agent = new TestableLocalStackBatchAgent(stack, 'LocalStackBatchAgentRuntime', {
+      agentName: 'LocalAgentRuntime',
+      prompt: 'Analyze this document',
+      agentDefinition: {
+        bedrockModel: {
+          customModelId: 'ollama.llama3.2',
+        },
+        systemPrompt,
+      },
+    });
+
+    expect(agent.runtimeEntryPath()).toContain(path.join('resources', 'default-ollama-agent'));
+  });
+});
