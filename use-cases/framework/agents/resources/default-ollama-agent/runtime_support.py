@@ -92,18 +92,20 @@ def configure_provider_runtime() -> None:
 
 
 def extract_json_from_text(text: str, logger) -> Optional[Dict[str, Any]]:
-    json_block_match = re.search(r'```json\s*(.*?)\s*```', text, re.DOTALL | re.IGNORECASE)
-    if json_block_match:
+    json_block_pattern = re.compile(r'```json\s*(.*?)\s*```', re.DOTALL | re.IGNORECASE)
+    decoder = json.JSONDecoder()
+    # Track each JSON candidate with its absolute end index in the full response text.
+    # This ensures selection prefers the latest object in the output, not the longest substring.
+    candidates: list[tuple[Dict[str, Any], int]] = []
+    for json_block_match in json_block_pattern.finditer(text):
         block_text = json_block_match.group(1).strip()
         try:
             parsed = json.loads(block_text)
             if isinstance(parsed, dict):
-                return parsed
+                candidates.append((parsed, json_block_match.end()))
         except json.JSONDecodeError as error:
             logger.warning('Failed to parse JSON from code block', extra={'error': str(error)})
 
-    decoder = json.JSONDecoder()
-    candidates: list[tuple[Dict[str, Any], int]] = []
     for start_idx, char in enumerate(text):
         if char != '{':
             continue
@@ -115,7 +117,8 @@ def extract_json_from_text(text: str, logger) -> Optional[Dict[str, Any]]:
         if not isinstance(parsed, dict):
             continue
 
-        candidates.append((parsed, end_idx))
+        absolute_end_idx = start_idx + end_idx
+        candidates.append((parsed, absolute_end_idx))
 
     if candidates:
         if not is_fraud_output_contract_enabled():
