@@ -1,0 +1,320 @@
+# Codebase Structure
+
+**Analysis Date:** 2026-03-01
+
+## Directory Layout
+
+```
+cdk-appmod-catalog-blueprints4/
+├── use-cases/                   # Source TypeScript - compiles to lib/
+│   ├── index.ts                 # Root export barrel file
+│   ├── framework/               # Core AI agent framework
+│   │   ├── index.ts
+│   │   ├── agents/              # Agent implementations and knowledge bases
+│   │   │   ├── base-agent.ts    # Abstract base for all agents
+│   │   │   ├── batch-agent.ts   # Non-interactive batch processing agent
+│   │   │   ├── interactive-agent.ts  # Real-time streaming agent with adapters
+│   │   │   ├── invoke-type.ts   # Invocation strategy enum
+│   │   │   ├── default-agent-config.ts
+│   │   │   ├── knowledge-base/  # Knowledge base implementations and interfaces
+│   │   │   │   ├── i-knowledge-base.ts       # Knowledge base interface (strategy)
+│   │   │   │   ├── knowledge-base-props.ts   # Runtime configuration types
+│   │   │   │   ├── base-knowledge-base.ts    # Abstract base KB implementation
+│   │   │   │   ├── bedrock-knowledge-base.ts # Bedrock KB concrete implementation
+│   │   │   │   └── index.ts
+│   │   │   ├── tests/           # Agent-specific tests
+│   │   │   ├── resources/       # Python agent code, tools, prompts
+│   │   │   └── index.ts
+│   │   ├── foundation/          # Infrastructure primitives
+│   │   │   ├── network.ts       # VPC, subnets, VPC endpoints
+│   │   │   ├── access-log.ts    # API logging configuration
+│   │   │   ├── eventbridge-broker.ts  # Event publishing infrastructure
+│   │   │   └── index.ts
+│   │   ├── bedrock/             # Bedrock model configuration
+│   │   │   ├── bedrock.ts       # Model ID derivation, IAM permissions
+│   │   │   └── index.ts
+│   │   ├── custom-resource/     # Custom resources and runtimes
+│   │   │   ├── default-runtimes.ts  # Python/Node.js runtime definitions
+│   │   │   └── index.ts
+│   │   ├── quickstart/          # Quick start patterns
+│   │   │   ├── base-quickstart.ts
+│   │   │   └── index.ts
+│   │   ├── tests/               # Framework-level integration tests
+│   │   └── index.ts
+│   ├── document-processing/     # Document processing workflow use case
+│   │   ├── index.ts
+│   │   ├── base-document-processing.ts  # Abstract workflow orchestrator
+│   │   ├── bedrock-document-processing.ts  # Bedrock-based concrete implementation
+│   │   ├── agentic-document-processing.ts  # Agent-based concrete implementation
+│   │   ├── default-document-processing-config.ts
+│   │   ├── chunking-config.ts   # PDF chunking strategies
+│   │   ├── adapter/             # Ingress adapter implementations
+│   │   │   ├── adapter.ts       # IAdapter interface (strategy)
+│   │   │   ├── queued-s3-adapter.ts  # S3 → SQS ingress pattern
+│   │   │   └── index.ts
+│   │   ├── resources/           # Lambda function code and configurations
+│   │   │   ├── aggregation/
+│   │   │   ├── default-sqs-consumer/
+│   │   │   ├── default-doc-retrieval-lambda/
+│   │   │   ├── default-strands-agent/
+│   │   │   ├── cleanup/
+│   │   │   ├── default-error-handler/
+│   │   │   ├── default-image-validator/
+│   │   │   ├── pdf-chunking/
+│   │   │   ├── default-bedrock-invoke/
+│   │   │   ├── default-image-processor/
+│   │   │   └── doc-img/        # Documentation images
+│   │   ├── tests/               # Document processing tests
+│   │   ├── doc-img/
+│   │   └── index.ts
+│   ├── webapp/                  # Frontend hosting infrastructure
+│   │   ├── index.ts
+│   │   ├── frontend-construct.ts  # CloudFront + S3 frontend deployment
+│   │   ├── tests/
+│   │   └── doc-img/
+│   ├── utilities/               # Shared utilities and cross-cutting concerns
+│   │   ├── index.ts
+│   │   ├── lambda-iam-utils.ts  # Lambda IAM permission generators
+│   │   ├── data-loader.ts       # Data loading utilities for Lambda
+│   │   ├── cdk-nag-config.ts    # CDK Nag security configuration
+│   │   ├── observability/       # Observability infrastructure
+│   │   │   ├── observable.ts    # IObservable interface and ObservableProps
+│   │   │   ├── lambda-observability-property-injector.ts
+│   │   │   ├── state-machine-observability-property-injector.ts
+│   │   │   ├── cloudfront-distribution-observability-property-injector.ts
+│   │   │   ├── bedrock-observability.ts
+│   │   │   ├── powertools-config.ts
+│   │   │   ├── default-observability-config.ts
+│   │   │   ├── log-group-data-protection-props.ts
+│   │   │   ├── log-group-data-protection-utils.ts
+│   │   │   ├── observability.ts
+│   │   │   ├── cloudwatch-transaction-search.ts
+│   │   │   ├── tests/
+│   │   │   └── index.ts
+│   │   ├── lambda_layers/       # Reusable Lambda layers
+│   │   │   ├── data-masking/    # Lambda layer for data masking
+│   │   │   └── ...
+│   │   ├── tests/               # Shared test utilities
+│   │   └── index.ts
+│   └── __tests__/               # Root-level tests (if any)
+│
+├── lib/                         # Compiled JavaScript output (generated by jsii)
+│   ├── index.js                 # Root export
+│   ├── index.d.ts               # TypeScript definitions
+│   ├── framework/               # Mirrors use-cases structure
+│   ├── document-processing/
+│   ├── utilities/
+│   ├── webapp/
+│   └── ... (compiled .js and .d.ts files)
+│
+├── test/                        # Integration and e2e tests
+│   └── ... (CDK integration tests)
+│
+├── examples/                    # Example applications
+│   ├── chatbot/                 # Interactive agent example
+│   ├── rag-customer-support/    # RAG example
+│   ├── document-processing/     # Document processing example
+│   └── README.md
+│
+├── website/                     # Documentation website (Next.js/Docusaurus)
+│   └── ... (website source)
+│
+├── package.json                 # Root package manifest
+├── tsconfig.json                # Base TypeScript config
+├── tsconfig.dev.json            # Dev-specific TypeScript config
+├── .eslintrc.json               # ESLint configuration
+├── .projenrc.ts                 # Projen project definition
+├── jest.config.js               # Jest testing configuration (auto-generated by projen)
+├── API.md                       # Auto-generated API documentation
+├── README.md                    # Project README
+├── CONTRIBUTING.md              # Contribution guidelines
+└── .planning/                   # GSD planning documents (this directory)
+    ├── codebase/                # Codebase analysis documents
+    │   ├── ARCHITECTURE.md      # Architecture analysis
+    │   ├── STRUCTURE.md         # Directory structure (this file)
+    │   ├── CONVENTIONS.md       # Code conventions
+    │   ├── TESTING.md           # Testing patterns
+    │   ├── STACK.md             # Technology stack
+    │   ├── INTEGRATIONS.md      # External integrations
+    │   └── CONCERNS.md          # Technical concerns
+    └── phases/                  # Implementation phase plans
+```
+
+## Directory Purposes
+
+**use-cases/:**
+- Purpose: Source TypeScript for all framework constructs and use cases
+- Contains: Framework, document processing, webapp, utilities modules
+- Key files: `index.ts` barrel exports at each level
+- Compilation: `jsii` compiles this to `lib/` and generates cross-language bindings (Java, Python, C#)
+
+**use-cases/framework/:**
+- Purpose: Reusable foundation for AI agents on AWS
+- Contains: Agent abstractions, knowledge base interfaces, network/event primitives
+- Key files: `agents/base-agent.ts`, `agents/interactive-agent.ts`, `agents/batch-agent.ts`
+- Exports: All framework constructs via `framework/index.ts`
+
+**use-cases/framework/agents/:**
+- Purpose: Agent implementations and knowledge base abstractions
+- Contains: BaseAgent abstract class, concrete InteractiveAgent and BatchAgent, IKnowledgeBase interface and implementations
+- Key files: `base-agent.ts` (template method), `interactive-agent.ts`, `knowledge-base/i-knowledge-base.ts`
+- Patterns: Template method pattern in base class, strategy pattern for knowledge bases
+
+**use-cases/framework/foundation/:**
+- Purpose: Low-level AWS infrastructure building blocks
+- Contains: Network (VPC config), EventBridge broker, API access logging
+- Key files: `network.ts` (VPC factory), `eventbridge-broker.ts` (event publishing)
+- Usage: Optional injected into higher-level constructs that need VPC, event pub/sub
+
+**use-cases/document-processing/:**
+- Purpose: Serverless document processing workflow orchestration
+- Contains: Abstract workflow coordinator, concrete implementations, ingress adapters
+- Key files: `base-document-processing.ts` (template method), `bedrock-document-processing.ts`, `adapter/adapter.ts` (strategy)
+- Patterns: Template method for workflow steps, strategy for ingress mechanisms
+
+**use-cases/utilities/:**
+- Purpose: Cross-cutting concerns and shared infrastructure
+- Contains: Observability property injectors, Lambda IAM generators, test utilities
+- Key files: `observability/observable.ts` (interface), `observability/*-property-injector.ts` (mixins)
+- Usage: Every construct implementing IObservable can inject observability via PropertyInjectors
+
+**use-cases/utilities/observability/:**
+- Purpose: Observability configuration and infrastructure injection
+- Contains: Property injector implementations, data protection utilities, Bedrock observability
+- Key files: `observable.ts` (IObservable interface), `lambda-observability-property-injector.ts`, `log-group-data-protection-utils.ts`
+- Pattern: Property injector pattern for cross-cutting observability
+
+**lib/:**
+- Purpose: Compiled JavaScript and TypeScript definitions (generated)
+- Generated by: `jsii` compiler during build
+- Structure: Mirrors `use-cases/` directory layout exactly
+- Files: `.js` files (compiled), `.d.ts` files (type definitions)
+- Published: This directory's contents distributed to npm, Maven, PyPI, NuGet
+
+**test/:**
+- Purpose: CDK-level integration tests
+- Pattern: Uses `@aws-cdk/integ-runner` for infrastructure validation
+- Test targets: Cross-platform validation, CDK Nag compliance checks
+
+**examples/:**
+- Purpose: Reference implementations showing real use cases
+- Subdirectories: `chatbot/` (InteractiveAgent), `rag-customer-support/`, `document-processing/`
+- Usage: Developers copy and customize these to bootstrap their own infrastructure
+
+## Key File Locations
+
+**Entry Points:**
+- `use-cases/index.ts`: Root barrel export (re-exports all modules)
+- `lib/index.js`: Compiled entry point for npm consumers
+- Package.json `"main"`: Points to `lib/index.js`
+
+**Configuration:**
+- `tsconfig.json`: TypeScript compiler options (jsii adds rootDir)
+- `tsconfig.dev.json`: Dev-specific overrides for testing
+- `.eslintrc.json`: ESLint rules
+- `package.json`: npm dependencies, build scripts, jsii output targets
+- `.projenrc.ts`: Projen project definition (generates build configuration)
+
+**Core Logic:**
+- Framework agents: `use-cases/framework/agents/base-agent.ts`, `interactive-agent.ts`, `batch-agent.ts`
+- Document processing: `use-cases/document-processing/base-document-processing.ts`
+- Bedrock integration: `use-cases/framework/bedrock/bedrock.ts`
+- Observability: `use-cases/utilities/observability/observable.ts`, `lambda-observability-property-injector.ts`
+
+**Testing:**
+- Unit tests: Co-located with source (e.g., `use-cases/framework/agents/knowledge-base/tests/`)
+- Integration tests: `test/` directory
+- Jest config: `jest.config.js` (auto-generated by projen)
+- Test match patterns: `<rootDir>/@(use-cases|test)/**/*(*.)@(spec|test).ts?(x)`
+
+## Naming Conventions
+
+**Files:**
+- Construct classes: PascalCase + `.ts` (e.g., `InteractiveAgent.ts` but as `interactive-agent.ts` by convention)
+- Interfaces: `I` prefix + PascalCase (e.g., `IKnowledgeBase.ts`, `IAdapter.ts`, `IObservable.ts`)
+- Utilities/helpers: camelCase + `.ts` (e.g., `lambda-iam-utils.ts`, `bedrock-observability.ts`)
+- Tests: `*.test.ts` or `*.spec.ts` (test suite naming)
+- Index files: Always `index.ts` (barrel exports)
+
+**Directories:**
+- Feature/module: kebab-case (e.g., `knowledge-base/`, `document-processing/`, `lambda_layers/`)
+- Test directories: `tests/` subdirectory within feature
+- Resource directories: `resources/` containing non-TypeScript code (Python, Lambda functions)
+
+**Exports:**
+- All exports named via `export class/interface/function` (not default exports except in index files)
+- Barrel files use `export * from './path'` pattern
+- Re-exports preserved for convenience (e.g., `export { InvokeType }` in agents/base-agent.ts)
+
+## Where to Add New Code
+
+**New Feature (Agent Type):**
+- Primary code: `use-cases/framework/agents/{feature-name}.ts` extending `BaseAgent`
+- Interface (if applicable): `use-cases/framework/agents/i-{feature-name}.ts`
+- Tests: `use-cases/framework/agents/tests/{feature-name}.test.ts`
+- Resources: `use-cases/framework/agents/resources/{feature-name}/` for runtime code
+
+**New Document Processing Strategy:**
+- Primary code: `use-cases/document-processing/{strategy-name}-document-processing.ts` extending `BaseDocumentProcessing`
+- Tests: `use-cases/document-processing/tests/{strategy-name}.test.ts`
+- Resources: `use-cases/document-processing/resources/` for Lambda function code
+
+**New Ingress Adapter (Document Processing):**
+- Interface: Already exists at `use-cases/document-processing/adapter/adapter.ts` as `IAdapter`
+- Implementation: `use-cases/document-processing/adapter/{adapter-name}.ts` implementing `IAdapter`
+- Tests: `use-cases/document-processing/adapter/tests/{adapter-name}.test.ts`
+
+**New Knowledge Base Implementation:**
+- Interface: Already exists at `use-cases/framework/agents/knowledge-base/i-knowledge-base.ts` as `IKnowledgeBase`
+- Base class: Already exists at `use-cases/framework/agents/knowledge-base/base-knowledge-base.ts`
+- Implementation: `use-cases/framework/agents/knowledge-base/{kb-type}-knowledge-base.ts` extending `BaseKnowledgeBase`
+- Tests: `use-cases/framework/agents/knowledge-base/tests/{kb-type}.test.ts`
+
+**Utilities (Lambda Layers, Helpers):**
+- Lambda layers: `use-cases/utilities/lambda_layers/{layer-name}/`
+- IAM utilities: `use-cases/utilities/lambda-iam-utils.ts` (add static methods to existing class)
+- Observability: `use-cases/utilities/observability/{concern}-property-injector.ts` for new injectors
+
+**New Observability Feature:**
+- Property injector: `use-cases/utilities/observability/{resource-type}-observability-property-injector.ts`
+- Implementation: Implement `PropertyInjectorBase` pattern
+- Configuration: Add to `DefaultObservabilityConfig` if applicable
+- Tests: `use-cases/utilities/observability/tests/{resource-type}.test.ts`
+
+## Special Directories
+
+**use-cases/framework/agents/resources/:**
+- Purpose: Python agent code, system prompts, tool definitions
+- Generated: No (hand-written Python)
+- Committed: Yes
+- Contents: `default-strands-agent/batch.py`, prompt files, tool definitions
+- Usage: Loaded by agents via Asset construct; S3 uploaded at synthesis
+
+**use-cases/document-processing/resources/:**
+- Purpose: Lambda function code for each document processing step
+- Generated: No (hand-written Node.js/Python)
+- Committed: Yes
+- Structure: Subdirectory per step (sqs-consumer, doc-retrieval, error-handler, etc.)
+- Bundling: Each Lambda packaged separately; S3 deployed at synthesis
+
+**dist/:**
+- Purpose: jsii output for cross-language targets (Java, Python, C#)
+- Generated: Yes (during build)
+- Committed: No (git ignored)
+- Regenerated: `npm run package` or `npm run package-all`
+
+**lib/:**
+- Purpose: Compiled TypeScript to JavaScript
+- Generated: Yes (by jsii/tsc)
+- Committed: No (git ignored)
+- Regenerated: `npm run build` or `npm run compile`
+
+**coverage/:**
+- Purpose: Jest coverage reports
+- Generated: Yes (by jest during test)
+- Committed: No (git ignored)
+- Location: `coverage/` root directory
+
+---
+
+*Structure analysis: 2026-03-01*

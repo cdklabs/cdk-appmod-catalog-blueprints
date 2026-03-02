@@ -76,6 +76,10 @@ export class BatchAgent extends BaseAgent {
 
   constructor(scope: Construct, id: string, props: BatchAgentProps) {
     super(scope, id, props);
+
+    // Grant read access to system prompt S3 asset
+    props.agentDefinition.systemPrompt.grantRead(this.agentRole);
+
     const modelId = BedrockModelUtils.deriveActualModelId(this.bedrockModel);
     const metricNamespace = props.metricNamespace || DefaultObservabilityConfig.DEFAULT_METRIC_NAMESPACE;
     const metricServiceName = props.metricServiceName || DefaultAgentConfig.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME;

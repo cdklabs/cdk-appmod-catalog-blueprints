@@ -20,10 +20,11 @@ import importlib
 import sys
 import tempfile
 import zipfile
+import base64
 import boto3
 from typing import Dict, Any, Optional, List
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -151,6 +152,47 @@ class ChatRequest(BaseModel):
     """Chat request body."""
     message: str
     session_id: Optional[str] = None
+    user_id: Optional[str] = None  # Fallback if JWT extraction fails
+
+
+def extract_user_from_jwt(authorization: Optional[str]) -> Dict[str, str]:
+    """
+    Extract user information from JWT token.
+
+    Decodes the JWT payload (without verification - API Gateway already verified).
+    Returns dict with user_id (sub) and other claims.
+    """
+    if not authorization:
+        return {}
+
+    try:
+        # Remove 'Bearer ' prefix if present
+        token = authorization.replace('Bearer ', '').strip()
+        if not token:
+            return {}
+
+        # JWT format: header.payload.signature
+        parts = token.split('.')
+        if len(parts) != 3:
+            return {}
+
+        # Decode payload (middle part) - add padding if needed
+        payload_b64 = parts[1]
+        padding = 4 - len(payload_b64) % 4
+        if padding != 4:
+            payload_b64 += '=' * padding
+
+        payload_json = base64.urlsafe_b64decode(payload_b64).decode('utf-8')
+        payload = json.loads(payload_json)
+
+        return {
+            'user_id': payload.get('sub', ''),
+            'username': payload.get('cognito:username', payload.get('username', '')),
+            'email': payload.get('email', ''),
+        }
+    except Exception as e:
+        logger.warning(f'Failed to extract user from JWT: {e}')
+        return {}
 
 
 def format_sse(data: str, event: Optional[str] = None) -> str:
@@ -165,17 +207,22 @@ def format_sse(data: str, event: Optional[str] = None) -> str:
 
 
 @app.post('/chat')
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, authorization: Optional[str] = Header(None)):
     """Handle chat request with SSE streaming response."""
     session_id = request.session_id or str(uuid.uuid4())
     user_message = request.message
 
-    logger.info(f'Chat request: session={session_id}, message={user_message[:80]}...')
+    # Extract user information from JWT for multi-tenant support
+    # Fall back to request body user_id if JWT extraction fails
+    user_info = extract_user_from_jwt(authorization)
+    user_id = user_info.get('user_id', '') or request.user_id or ''
+
+    logger.info(f'Chat request: session={session_id}, user={user_id[:8] if user_id else "anonymous"}, message={user_message[:80]}...')
     metrics.add_metric(name='ChatRequests', unit=MetricUnit.Count, value=1)
 
     async def generate_sse():
-        # Send session metadata first
-        yield format_sse(json.dumps({'session_id': session_id}), event='metadata')
+        # Send session metadata first (include user_id for frontend reference)
+        yield format_sse(json.dumps({'session_id': session_id, 'user_id': user_id}), event='metadata')
 
         full_response = ''
         try:
@@ -198,7 +245,7 @@ async def chat(request: ChatRequest):
             # Disable the default callback handler so stream_async yields all events.
             agent = Agent(
                 model=model,
-                system_prompt=SYSTEM_PROMPT,
+                system_prompt=effective_system_prompt,
                 tools=AGENT_TOOLS if AGENT_TOOLS else None,
                 session_manager=session_manager,
                 conversation_manager=conversation_manager,

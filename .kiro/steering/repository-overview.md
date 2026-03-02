@@ -41,19 +41,31 @@ CONSTRUCTS (use-cases/)          vs.    EXAMPLES (examples/)
 │   │   ├── agentic-document-processing.ts    # Layer 3: Agent-powered
 │   │   ├── adapter/                          # Ingress adapters (S3, streaming, etc.)
 │   │   └── tests/                            # Unit + CDK Nag tests
-│   ├── webapp/                 # Web application hosting
+│   ├── webapp/                 # Web application hosting (CloudFront + S3)
 │   ├── framework/              # Foundation components
-│   │   ├── agents/            # Agentic AI framework (BatchAgent, BaseAgent)
-│   │   └── foundation/        # Core infrastructure (VPC, logging, EventBridge)
-│   └── utilities/             # Observability, data masking, helpers
+│   │   ├── agents/             # Agentic AI framework
+│   │   │   ├── base-agent.ts               # Abstract agent foundation
+│   │   │   ├── batch-agent.ts              # Batch processing agent (Strands)
+│   │   │   ├── interactive-agent.ts        # Real-time streaming agent
+│   │   │   └── knowledge-base/             # KB interface + Bedrock implementation
+│   │   ├── foundation/         # Core infrastructure (VPC, logging, EventBridge)
+│   │   ├── bedrock/            # Bedrock model utils and IAM
+│   │   ├── custom-resource/    # Runtime definitions
+│   │   └── quickstart/         # Quick start patterns
+│   └── utilities/              # Observability, data masking, test utils, data loader
 │
 ├── examples/               # Ready-to-deploy example applications
-│   └── document-processing/
-│       ├── bedrock-document-processing/      # Simple Bedrock example
-│       ├── agentic-document-processing/      # Agent with tools example
-│       ├── fraud-detection/                  # Multi-tool fraud detection
-│       ├── minimal-bedrock-doc-processing/   # Minimal example
-│       └── doc-processing-fullstack-webapp/  # Full-stack with frontend
+│   ├── document-processing/
+│   │   ├── bedrock-document-processing/      # Simple Bedrock example
+│   │   ├── agentic-document-processing/      # Agent with tools example
+│   │   ├── fraud-detection/                  # Multi-tool fraud detection
+│   │   ├── summarization-pipeline/           # Document summarization
+│   │   ├── minimal-bedrock-doc-processing/   # Minimal example
+│   │   └── doc-processing-fullstack-webapp/  # Full-stack with frontend
+│   ├── chatbot/
+│   │   ├── customer-service-chatbot/         # Interactive chatbot with KB
+│   │   └── retail-banking-chatbot/           # Banking-focused chatbot
+│   └── rag-customer-support/                 # RAG-powered customer support
 │
 ├── .kiro/                  # Kiro steering documentation
 │   └── steering/
@@ -120,10 +132,12 @@ The repository uses OOP inheritance patterns, but **not all constructs follow th
 **Agentic AI Framework**
 - Composable framework for building AI agents with Amazon Bedrock
 - Tool integration for extending agent capabilities (Python tools with `@tool` decorator)
-- BatchAgent for asynchronous processing (interactive agents coming soon)
+- BatchAgent for asynchronous processing, InteractiveAgent for real-time streaming
+- Knowledge base integration with pluggable vector stores (OpenSearch Serverless, Pinecone, RDS pgvector, S3 Vectors)
+- Cognito authentication and API Gateway for interactive agents
 - System prompts and tools packaged as S3 Assets
 - Lambda Layers for Python dependencies
-- Reusable across diverse use cases (fraud detection, compliance, analysis)
+- Reusable across diverse use cases (chatbots, fraud detection, compliance, analysis)
 
 **Web Application**
 - Static web hosting with CloudFront CDN
@@ -274,6 +288,8 @@ class CustomDocumentProcessing extends BaseDocumentProcessing {
 **See `example-development-guide.md` for complete checklist.**
 
 ### Adding a New Use Case Construct
+
+> **IMPORTANT:** When adding a new use case or example, you MUST update the root `README.md`, `use-cases/README.md`, and `examples/README.md` to include the new entry in the appropriate tables. These are the public-facing indexes of the repository.
 
 1. **Determine layer**: Base class, concrete implementation, or specialized?
 2. **Create directory**: `use-cases/{use-case-name}/`
