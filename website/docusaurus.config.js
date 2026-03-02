@@ -17,11 +17,14 @@ const config = {
   },
 
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownImages: 'warn',
       onBrokenMarkdownLinks: 'warn',
     },
   },
+
+  themes: ['@docusaurus/theme-mermaid'],
 
   presets: [
     [

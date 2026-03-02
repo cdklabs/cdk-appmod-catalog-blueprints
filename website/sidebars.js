@@ -99,6 +99,17 @@ const sidebars = {
             },
           ],
         },
+        {
+          type: 'category',
+          label: 'Data Generation',
+          items: [
+            {
+              type: 'doc',
+              id: 'examples/synthetic-dataset-generator/README',
+              label: 'Synthetic Dataset Generator',
+            },
+          ],
+        },
       ],
     },
   ],

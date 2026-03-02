@@ -1,0 +1,23 @@
+{
+  "name": "synthetic-dataset-generator-example",
+  "version": "0.1.0",
+  "bin": {
+    "synthetic-dataset-generator-example": "app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda-python-alpha": "^2.218.0-alpha.0",
+    "@cdklabs/cdk-appmod-catalog-blueprints": "file:../../",
+    "aws-cdk-lib": "2.218.0",
+    "constructs": "10.0.5",
+    "source-map-support": "^0.5.21"
+  }
+}

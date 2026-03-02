@@ -140,6 +140,7 @@ describe('Framework CDK Nag Tests', () => {
             'Resource::*',
             'Resource::arn:aws:bedrock:*::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0',
             'Resource::arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/TestAgent-teststackagentaa2af0c4:*',
+            'Resource::arn:<AWS::Partition>:s3:::cdk-hnb659fds-assets-123456789012-us-east-1/*',
           ],
         },
         {

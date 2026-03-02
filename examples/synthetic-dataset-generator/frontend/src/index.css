@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme - Tailwind Slate + Blue palette */
+    --background: 222.2 47.4% 11.2%;      /* #0f172a slate-900 */
+    --sidebar: 222.2 84% 4.9%;            /* #020617 slate-950 */
+    --surface: 217.2 32.6% 17.5%;         /* #1e293b slate-800 */
+    --input: 215 25% 27%;                 /* #334155 slate-700 */
+    --border: 217.2 32.6% 17.5%;          /* #1e293b slate-800 */
+
+    --foreground: 210 40% 98%;            /* #f1f5f9 slate-100 */
+    --muted: 215 16.3% 46.9%;             /* #64748b slate-500 */
+    --muted-foreground: 215 20.2% 65.1%;  /* #94a3b8 slate-400 */
+
+    --primary: 199 89% 68%;               /* #7dd3fc sky-300 */
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 38 92% 50%;                 /* #f59e0b amber-500 */
+    --accent-foreground: 222.2 47.4% 11.2%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom scrollbar styling for dark theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}

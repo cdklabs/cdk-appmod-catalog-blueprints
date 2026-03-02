@@ -7,6 +7,7 @@ import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
   Cors,
+  EndpointType,
   GatewayResponse,
   LambdaIntegration,
   ResponseType,
@@ -14,8 +15,9 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { CfnRuntime, CfnRuntimeEndpoint } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { UserPool, UserPoolClient, Mfa, AccountRecovery, UserPoolClientIdentityProvider } from 'aws-cdk-lib/aws-cognito';
+import { AttributeType, BillingMode, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
-import { Role, ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
+import { IGrantable, Role, ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { IFunction, Architecture, ILayerVersion, LayerVersion, Function, Code } from 'aws-cdk-lib/aws-lambda';
 import { IBucket, Bucket, BucketEncryption, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
@@ -85,6 +87,15 @@ export interface StreamingHttpAdapterProps {
    * @default Uses authenticator from InteractiveAgent
    */
   readonly authenticator?: IAuthenticator;
+
+  /**
+   * HTTP methods to allow in CORS preflight responses.
+   * Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+   * added to the REST API.
+   *
+   * @default ['POST', 'OPTIONS']
+   */
+  readonly corsAllowMethods?: string[];
 }
 
 /**
@@ -135,6 +146,11 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
   public readonly restApi?: RestApi;
 
   /**
+   * The Cognito User Pools authorizer (if Cognito authentication is enabled).
+   */
+  public readonly cognitoAuthorizer?: CognitoUserPoolsAuthorizer;
+
+  /**
    * The API endpoint URL.
    */
   public readonly apiEndpoint?: string;
@@ -156,11 +172,16 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
     }
 
     const stageName = this.props.stageName || 'prod';
+    const corsAllowMethods = this.props.corsAllowMethods || ['POST', 'OPTIONS'];
+    const corsAllowMethodsString = corsAllowMethods.join(',');
 
     // Create REST API with CORS
+    // Use REGIONAL endpoint for 5-minute idle timeout (vs 30s for EDGE).
+    // This allows response streaming to exceed API Gateway's 29s limit.
     const restApi = new RestApi(this.scope, 'ChatApi', {
       restApiName: `${Stack.of(this.scope).stackName}-ChatApi`,
       description: 'Interactive Agent Chat API with response streaming',
+      endpointTypes: [EndpointType.REGIONAL],
       deployOptions: {
         stageName,
         throttlingRateLimit: this.props.throttle?.rateLimit,
@@ -168,7 +189,7 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
       },
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
-        allowMethods: ['POST', 'OPTIONS'],
+        allowMethods: corsAllowMethods,
         allowHeaders: ['Content-Type', 'Authorization'],
       },
     });
@@ -183,7 +204,7 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
       responseHeaders: {
         'Access-Control-Allow-Origin': "'*'",
         'Access-Control-Allow-Headers': "'Content-Type,Authorization'",
-        'Access-Control-Allow-Methods': "'POST,OPTIONS'",
+        'Access-Control-Allow-Methods': `'${corsAllowMethodsString}'`,
       },
     });
     new GatewayResponse(this.scope, 'GatewayDefault5XX', {
@@ -192,7 +213,7 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
       responseHeaders: {
         'Access-Control-Allow-Origin': "'*'",
         'Access-Control-Allow-Headers': "'Content-Type,Authorization'",
-        'Access-Control-Allow-Methods': "'POST,OPTIONS'",
+        'Access-Control-Allow-Methods': `'${corsAllowMethodsString}'`,
       },
     });
 
@@ -213,6 +234,7 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
         cognitoUserPools: [this.props.authenticator.userPool],
         authorizerName: 'CognitoAuthorizer',
       });
+      (this as any).cognitoAuthorizer = authorizer;
       authorizationType = AuthorizationType.COGNITO;
     }
 
@@ -723,6 +745,165 @@ export class CognitoAuthenticator implements IAuthenticator {
 }
 
 /**
+ * Strategy interface for session index storage.
+ *
+ * Session indexes provide fast user to session lookups for listing and managing sessions.
+ * The default implementation (DynamoDBSessionIndex) uses DynamoDB for efficient queries.
+ */
+export interface ISessionIndex {
+  /**
+   * Grant read/write permissions to a grantee.
+   *
+   * @param grantee - The principal that needs access to the session index
+   */
+  grantReadWrite(grantee: IGrantable): void;
+
+  /**
+   * Get environment variables for Lambda configuration.
+   *
+   * @returns Environment variables to configure the session index
+   */
+  environmentVariables(): Record<string, string>;
+}
+
+/**
+ * Configuration properties for DynamoDBSessionIndex.
+ */
+export interface DynamoDBSessionIndexProps {
+  /**
+   * Existing DynamoDB table to use.
+   * Table must have partition key 'user_id' (String) and sort key 'session_id' (String).
+   *
+   * @default Auto-created table
+   */
+  readonly table?: ITable;
+
+  /**
+   * Time-to-live for session index records.
+   * When set, expired records are automatically removed by DynamoDB TTL.
+   *
+   * @default No TTL (sessions persist until explicitly deleted)
+   */
+  readonly sessionTTL?: Duration;
+
+  /**
+   * KMS key for table encryption.
+   *
+   * @default AWS managed encryption
+   */
+  readonly encryptionKey?: IKey;
+
+  /**
+   * Removal policy for the DynamoDB table.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * DynamoDB-based session index for fast user to session lookups.
+ *
+ * Creates a DynamoDB table indexed by user_id (partition key) and session_id (sort key)
+ * for efficient querying of a user's sessions. The table stores session metadata
+ * including creation time, last update time, and optional TTL for automatic cleanup.
+ *
+ * ## Table Schema
+ *
+ * - **Partition Key**: user_id (String) - User identifier from authentication
+ * - **Sort Key**: session_id (String) - Unique session identifier
+ * - **Attributes**: created_at, updated_at, last_message, expires_at (optional)
+ *
+ * ## Features
+ *
+ * - **Fast Lookups**: Query all sessions for a user in O(1) using partition key
+ * - **Automatic Expiration**: Optional TTL removes stale sessions automatically
+ * - **On-Demand Capacity**: Pay-per-request billing, no capacity planning needed
+ * - **Encryption**: AWS managed or customer-managed KMS encryption
+ *
+ * ## Usage
+ *
+ * ```typescript
+ * import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+ * import { Duration } from 'aws-cdk-lib';
+ * import { InteractiveAgent, DynamoDBSessionIndex } from '@cdklabs/cdk-appmod-catalog-blueprints';
+ *
+ * const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+ * const sessionIndex = new DynamoDBSessionIndex(this, 'SessionIndex', {
+ *   sessionTTL: Duration.days(7)
+ * });
+ *
+ * const agent = new InteractiveAgent(this, 'Agent', {
+ *   agentName: 'ChatAgent',
+ *   agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+ *   sessionIndex
+ * });
+ * ```
+ */
+export class DynamoDBSessionIndex implements ISessionIndex {
+  /**
+   * The DynamoDB table used for session index storage.
+   */
+  public readonly table: ITable;
+
+  /**
+   * The session TTL duration (if configured).
+   */
+  public readonly sessionTTL?: Duration;
+
+  constructor(scope: Construct, id: string, props: DynamoDBSessionIndexProps = {}) {
+    const removalPolicy = props.removalPolicy || RemovalPolicy.DESTROY;
+
+    // Use provided table or create new one
+    if (props.table) {
+      this.table = props.table;
+    } else {
+      const tableProps: any = {
+        partitionKey: { name: 'user_id', type: AttributeType.STRING },
+        sortKey: { name: 'session_id', type: AttributeType.STRING },
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        encryption: props.encryptionKey ? TableEncryption.CUSTOMER_MANAGED : TableEncryption.AWS_MANAGED,
+        encryptionKey: props.encryptionKey,
+        removalPolicy: removalPolicy,
+        pointInTimeRecovery: true,
+        stream: StreamViewType.NEW_AND_OLD_IMAGES,
+      };
+
+      // Enable TTL if sessionTTL is specified
+      if (props.sessionTTL) {
+        tableProps.timeToLiveAttribute = 'expires_at';
+      }
+
+      this.table = new Table(scope, `${id}Table`, tableProps);
+    }
+
+    this.sessionTTL = props.sessionTTL;
+  }
+
+  /**
+   * Grant read/write permissions to a grantee.
+   */
+  grantReadWrite(grantee: IGrantable): void {
+    this.table.grantReadWriteData(grantee);
+  }
+
+  /**
+   * Get environment variables for Lambda configuration.
+   */
+  environmentVariables(): Record<string, string> {
+    const env: Record<string, string> = {
+      SESSION_INDEX_TABLE: this.table.tableName,
+    };
+
+    if (this.sessionTTL) {
+      env.SESSION_INDEX_TTL_SECONDS = this.sessionTTL.toSeconds().toString();
+    }
+
+    return env;
+  }
+}
+
+/**
  * No-authentication authenticator for development and testing.
  *
  * Disables authentication entirely, allowing any client to connect
@@ -853,6 +1034,15 @@ export interface LambdaHostingAdapterProps {
   readonly authenticator?: IAuthenticator;
 
   /**
+   * HTTP methods to allow in CORS preflight responses.
+   * Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+   * added to the REST API.
+   *
+   * @default ['POST', 'OPTIONS']
+   */
+  readonly corsAllowMethods?: string[];
+
+  /**
    * Lambda function memory size in MB.
    *
    * @default 1024
@@ -927,6 +1117,7 @@ export class LambdaHostingAdapter implements IHostingAdapter {
     // Initialize communication adapter
     const adapter = this.props.communicationAdapter || new StreamingHttpAdapter({
       authenticator,
+      corsAllowMethods: this.props.corsAllowMethods,
     });
     (this as any).communicationAdapter = adapter;
 
@@ -1367,6 +1558,14 @@ export interface InteractiveAgentProps extends BaseAgentProps {
   readonly sessionTTL?: Duration;
 
   /**
+   * Session index for fast user to session lookups.
+   * Provides efficient querying of a user's sessions for listing and management.
+   *
+   * @default DynamoDBSessionIndex (auto-created)
+   */
+  readonly sessionIndex?: ISessionIndex;
+
+  /**
    * Context strategy for conversation history management.
    *
    * @default SlidingWindowConversationManager with 20 messages
@@ -1392,6 +1591,15 @@ export interface InteractiveAgentProps extends BaseAgentProps {
    * @default CognitoAuthenticator
    */
   readonly authenticator?: IAuthenticator;
+
+  /**
+   * HTTP methods to allow in CORS preflight responses.
+   * Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+   * added to the REST API.
+   *
+   * @default ['POST', 'OPTIONS']
+   */
+  readonly corsAllowMethods?: string[];
 
   /**
    * Lambda function memory size in MB.
@@ -1482,6 +1690,18 @@ export class InteractiveAgent extends BaseAgent {
   public readonly apiEndpoint: string;
   public readonly sessionBucket?: IBucket;
   public readonly cfnRuntime?: CfnRuntime;
+  /**
+   * The session index for fast user to session lookups.
+   */
+  public readonly sessionIndex?: ISessionIndex;
+  /**
+   * The REST API Gateway (only available when using LambdaHostingAdapter with StreamingHttpAdapter).
+   */
+  public readonly restApi?: RestApi;
+  /**
+   * The Cognito User Pools authorizer (only available when using LambdaHostingAdapter with CognitoAuthenticator).
+   */
+  public readonly cognitoAuthorizer?: CognitoUserPoolsAuthorizer;
 
   constructor(scope: Construct, id: string, props: InteractiveAgentProps) {
     // Determine hosting adapter BEFORE super() so we can pass its trust principal
@@ -1521,6 +1741,18 @@ export class InteractiveAgent extends BaseAgent {
     }
     this.sessionBucket = this.sessionStore?.sessionBucket;
 
+    // Initialize session index (DynamoDB table for user→session lookups)
+    if (props.sessionIndex !== undefined) {
+      this.sessionIndex = props.sessionIndex;
+    } else {
+      // Default: create DynamoDBSessionIndex
+      this.sessionIndex = new DynamoDBSessionIndex(this, 'SessionIndex', {
+        sessionTTL: props.sessionTTL,
+        encryptionKey: props.encryptionKey,
+        removalPolicy: props.removalPolicy,
+      });
+    }
+
     // Context strategy is deprecated — Strands-native conversation manager handles this.
     // Keep for backward compatibility but do not use env vars.
     if (props.contextStrategy) {
@@ -1548,6 +1780,11 @@ export class InteractiveAgent extends BaseAgent {
     // Add session bucket env var if session store exists
     if (this.sessionBucket) {
       env.SESSION_BUCKET = this.sessionBucket.bucketName;
+    }
+
+    // Add session index env vars if session index exists
+    if (this.sessionIndex) {
+      Object.assign(env, this.sessionIndex.environmentVariables());
     }
 
     // Add knowledge base configuration if KBs are configured
@@ -1589,6 +1826,12 @@ export class InteractiveAgent extends BaseAgent {
     if (hostingAdapter instanceof LambdaHostingAdapter) {
       this.adapter = hostingAdapter.communicationAdapter;
       this.authenticator = hostingAdapter.authenticator;
+
+      // Expose REST API and Cognito authorizer from the communication adapter
+      if (this.adapter instanceof StreamingHttpAdapter) {
+        this.restApi = this.adapter.restApi;
+        this.cognitoAuthorizer = this.adapter.cognitoAuthorizer;
+      }
     }
 
     // Grant system prompt read access
@@ -1602,6 +1845,11 @@ export class InteractiveAgent extends BaseAgent {
         // For AgentCore hosting, grant the agent role direct S3 access
         this.sessionBucket.grantReadWrite(this.agentRole);
       }
+    }
+
+    // Grant session index access
+    if (this.sessionIndex) {
+      this.sessionIndex.grantReadWrite(this.agentRole);
     }
   }
 
