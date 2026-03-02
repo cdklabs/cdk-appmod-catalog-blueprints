@@ -5,6 +5,12 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { createTestApp } from '../../utilities/test-utils';
 import { LocalStackAgenticDocumentProcessing } from '../localstack-agentic-document-processing';
 
+class TestableLocalStackAgenticDocumentProcessing extends LocalStackAgenticDocumentProcessing {
+  public runtimeEntryPath(): string {
+    return this.resolveBedrockInvokeEntry();
+  }
+}
+
 describe('LocalStackAgenticDocumentProcessing', () => {
   test('uses LocalStackBatchAgent and injects LocalStack endpoint env vars', () => {
     const app = createTestApp();
@@ -48,5 +54,31 @@ describe('LocalStackAgenticDocumentProcessing', () => {
       },
     });
   });
-});
 
+  test('uses the LocalStack invoke runtime entry', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'LocalStackAgenticRuntimeStack');
+
+    const systemPrompt = new Asset(stack, 'RuntimeSystemPrompt', {
+      path: path.join(__dirname, '../../framework/agents/resources/default-strands-agent/batch.py'),
+    });
+
+    const processing = new TestableLocalStackAgenticDocumentProcessing(stack, 'LocalStackAgenticRuntime', {
+      classificationBedrockModel: {
+        customModelId: 'ollama.llama3.2',
+      },
+      processingAgentParameters: {
+        agentName: 'LocalAgenticProcessorRuntime',
+        prompt: 'Process the insurance claim document',
+        agentDefinition: {
+          bedrockModel: {
+            customModelId: 'ollama.llama3.2',
+          },
+          systemPrompt,
+        },
+      },
+    });
+
+    expect(processing.runtimeEntryPath()).toContain(path.join('resources', 'default-localstack-invoke'));
+  });
+});

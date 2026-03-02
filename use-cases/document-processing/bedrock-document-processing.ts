@@ -383,7 +383,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         architecture: Architecture.X86_64,
         runtime: DefaultRuntimes.PYTHON,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 512,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),
@@ -459,7 +459,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         runtime: DefaultRuntimes.PYTHON,
         architecture: Architecture.X86_64,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 512,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),
@@ -518,6 +518,10 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         }),
       },
     });
+  }
+
+  protected resolveBedrockInvokeEntry(): string {
+    return path.join(__dirname, 'resources/default-bedrock-invoke');
   }
 
   /**
@@ -965,7 +969,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         architecture: Architecture.X86_64,
         runtime: DefaultRuntimes.PYTHON,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 1024,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),

@@ -34,10 +34,44 @@ export interface LocalStackIntegrationConfig {
   readonly bedrockAgentRuntimeEndpointUrl?: string;
 }
 
+export interface LocalStackEndpointOverrides {
+  /**
+   * Default endpoint used when service-specific endpoints are not provided.
+   *
+   * @default http://localhost.localstack.cloud:4566
+   */
+  readonly endpointUrl?: string;
+  /**
+   * Optional service-specific S3 endpoint override.
+   */
+  readonly s3EndpointUrl?: string;
+  /**
+   * Optional service-specific Step Functions endpoint override.
+   */
+  readonly stepFunctionsEndpointUrl?: string;
+  /**
+   * Optional service-specific Bedrock Runtime endpoint override.
+   */
+  readonly bedrockRuntimeEndpointUrl?: string;
+  /**
+   * Optional service-specific Bedrock Agent Runtime endpoint override.
+   */
+  readonly bedrockAgentRuntimeEndpointUrl?: string;
+}
+
+export interface ResolvedLocalStackIntegrationConfig {
+  readonly enabled: boolean;
+  readonly endpointUrl: string;
+  readonly s3EndpointUrl: string;
+  readonly stepFunctionsEndpointUrl: string;
+  readonly bedrockRuntimeEndpointUrl: string;
+  readonly bedrockAgentRuntimeEndpointUrl: string;
+}
+
 export class LocalStackIntegrationUtils {
   public static readonly DEFAULT_ENDPOINT_URL = 'http://localhost.localstack.cloud:4566';
 
-  public static resolveConfig(config?: LocalStackIntegrationConfig): Required<LocalStackIntegrationConfig> {
+  public static resolveConfig(config?: LocalStackIntegrationConfig): ResolvedLocalStackIntegrationConfig {
     const endpointUrl = config?.endpointUrl || LocalStackIntegrationUtils.DEFAULT_ENDPOINT_URL;
 
     return {
@@ -66,4 +100,3 @@ export class LocalStackIntegrationUtils {
     };
   }
 }
-
