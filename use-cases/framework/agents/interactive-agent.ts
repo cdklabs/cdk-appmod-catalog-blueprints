@@ -1541,7 +1541,7 @@ export class InteractiveAgent extends BaseAgent {
         props.enableObservability,
         metricNamespace,
         metricServiceName,
-        "DEBUG"
+        'DEBUG',
       ),
     };
 
