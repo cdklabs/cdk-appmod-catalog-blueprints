@@ -42,9 +42,6 @@ This example demonstrates AI-powered document processing using the [`BedrockDocu
 # Install dependencies
 npm install
 
-# Build the project
-npm run build
-
 # Deploy the stack
 npx cdk deploy --require-approval never
 ```

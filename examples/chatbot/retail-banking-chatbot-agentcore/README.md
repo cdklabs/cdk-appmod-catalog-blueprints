@@ -95,22 +95,18 @@ A retail banking assistant for **AWSome Bank**, powered by Amazon Bedrock AgentC
 ## Deployment
 
 ```bash
-# From the repo root:
+# From the retail-banking-chatbot-agentcore directory:
 
-# 1. Build the library
-SKIP_DOCGEN=true npx projen build
-npx projen package:js
-
-# 2. Install and deploy infrastructure
-cd examples/chatbot/retail-banking-chatbot-agentcore/infrastructure
+# 1. Install and deploy infrastructure
+cd infrastructure
 npm install
 npx cdk deploy --profile <your-profile> --require-approval never --outputs-file ../outputs.json
 
-# 3. Seed transaction data (creates Cognito user and links transactions)
+# 2. Seed transaction data (creates Cognito user and links transactions)
 cd ..
 ./seed-data.sh
 
-# 4. Configure frontend (copy values from outputs.json)
+# 3. Configure frontend (copy values from outputs.json)
 cat > frontend/.env.production << EOF
 REACT_APP_CHAT_API_ENDPOINT=<AgentCoreEndpoint from outputs.json>
 REACT_APP_USER_POOL_ID=<UserPoolId from outputs.json>
@@ -118,7 +114,7 @@ REACT_APP_USER_POOL_CLIENT_ID=<UserPoolClientId from outputs.json>
 REACT_APP_REGION=<Region from outputs.json>
 EOF
 
-# 5. Build frontend and redeploy
+# 4. Build frontend and redeploy
 cd frontend && npm install && npm run build && cd ../infrastructure
 npx cdk deploy --profile <your-profile> --require-approval never
 ```
@@ -180,7 +176,7 @@ aws dynamodb query --table-name <TransactionsTableName> \
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| Agent not using latest features | Stale library in node_modules | Run `npx projen package:js`, reinstall, redeploy |
+| Agent not using latest features | Stale dependency version | Run `npm update`, redeploy |
 | Frontend shows old version | CloudFront cache | Invalidate: `aws cloudfront create-invalidation --distribution-id <ID> --paths "/*"` |
 | Auth error on frontend | Missing `.env.production` | Generate from `outputs.json` and rebuild frontend |
 | Empty transaction results | Table not seeded | Run `./seed-data.sh` |
