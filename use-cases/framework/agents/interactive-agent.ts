@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as path from 'path';
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { Duration, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
@@ -12,9 +12,11 @@ import {
   ResponseType,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
+import { CfnRuntime, CfnRuntimeEndpoint } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { UserPool, UserPoolClient, Mfa, AccountRecovery, UserPoolClientIdentityProvider } from 'aws-cdk-lib/aws-cognito';
-import { ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
-import { IKey } from 'aws-cdk-lib/aws-kms';
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { Role, ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
+import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { IFunction, Architecture, ILayerVersion, LayerVersion, Function, Code } from 'aws-cdk-lib/aws-lambda';
 import { IBucket, Bucket, BucketEncryption, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -25,6 +27,7 @@ import { LambdaIamUtils, PowertoolsConfig } from '../../utilities';
 import { DefaultObservabilityConfig } from '../../utilities/observability';
 import { BedrockModelUtils } from '../bedrock';
 import { DefaultRuntimes } from '../custom-resource';
+import { Network } from '../foundation';
 
 /**
  * Strategy interface for pluggable communication mechanisms.
@@ -280,6 +283,9 @@ export class StreamingHttpAdapter implements ICommunicationAdapter {
  *
  * Session stores manage conversation state persistence across HTTP requests.
  * The default implementation (S3SessionManager) uses S3 for durable storage.
+ *
+ * @deprecated Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+ * The Python handler now uses Strands-native session management automatically.
  */
 export interface ISessionStore {
   /**
@@ -297,6 +303,8 @@ export interface ISessionStore {
 
 /**
  * Configuration properties for S3SessionManager.
+ *
+ * @deprecated Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
  */
 export interface S3SessionManagerProps {
   /**
@@ -361,6 +369,11 @@ export interface S3SessionManagerProps {
  *   sessionStore: sessionManager
  * });
  * ```
+ *
+ * @deprecated Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+ * The Python handler now uses Strands-native session management automatically.
+ * An S3 bucket is still created for the Strands session manager; this CDK class
+ * is no longer needed to configure session persistence.
  */
 export class S3SessionManager implements ISessionStore {
   /**
@@ -418,6 +431,10 @@ export class S3SessionManager implements ISessionStore {
  *
  * Context strategies control how conversation history is maintained and provided
  * to the agent. Different strategies enable different conversation patterns.
+ *
+ * @deprecated Use Strands-native `SlidingWindowConversationManager` from
+ * `strands.agent.conversation_manager` instead. The Python handler now uses
+ * Strands-native conversation management automatically.
  */
 export interface IContextStrategy {
   /**
@@ -430,6 +447,9 @@ export interface IContextStrategy {
 
 /**
  * Configuration properties for SlidingWindowConversationManager.
+ *
+ * @deprecated Use Strands-native `SlidingWindowConversationManager` from
+ * `strands.agent.conversation_manager` instead.
  */
 export interface SlidingWindowConversationManagerProps {
   /**
@@ -461,6 +481,10 @@ export interface SlidingWindowConversationManagerProps {
  *   contextStrategy: contextManager
  * });
  * ```
+ *
+ * @deprecated Use Strands-native `SlidingWindowConversationManager` from
+ * `strands.agent.conversation_manager` instead. The Python handler now handles
+ * conversation windowing natively.
  */
 export class SlidingWindowConversationManager implements IContextStrategy {
   /**
@@ -495,6 +519,9 @@ export class SlidingWindowConversationManager implements IContextStrategy {
  *
  * Disables conversation history, treating each message as independent.
  * Useful for stateless use cases where context is not needed.
+ *
+ * @deprecated The Python handler now uses Strands-native conversation management.
+ * To disable conversation history, omit the session bucket configuration.
  */
 export class NullConversationManager implements IContextStrategy {
   /**
@@ -726,12 +753,587 @@ export class NoAuthenticator implements IAuthenticator {
 
 
 /**
+ * Configuration passed to a hosting adapter's deploy method.
+ */
+export interface AgentHostingConfig {
+  /** CDK scope for creating resources. */
+  readonly scope: Construct;
+  /** Agent name identifier. */
+  readonly agentName: string;
+  /** IAM role for the agent runtime. */
+  readonly agentRole: Role;
+  /** Environment variables to set on the runtime. */
+  readonly environment: Record<string, string>;
+  /** KMS encryption key. */
+  readonly encryptionKey: Key;
+  /** Optional VPC network configuration. */
+  readonly network?: Network;
+  /** Lambda architecture (Lambda hosting only). */
+  readonly architecture?: Architecture;
+  /** Lambda memory size in MB (Lambda hosting only). */
+  readonly memorySize?: number;
+  /** Lambda timeout (Lambda hosting only). */
+  readonly timeout?: Duration;
+  /** Reserved concurrent executions (Lambda hosting only). */
+  readonly reservedConcurrentExecutions?: number;
+  /** Lambda layers from agent definition (Lambda hosting only). */
+  readonly lambdaLayers?: ILayerVersion[];
+  /** Lambda layers from knowledge bases (Lambda hosting only). */
+  readonly knowledgeBaseLayers?: ILayerVersion[];
+  /** Whether observability is enabled. */
+  readonly enableObservability?: boolean;
+  /** Agent tools location definitions (JSON serialized). */
+  readonly toolsConfig: string;
+  /** System prompt S3 bucket name. */
+  readonly systemPromptBucket: string;
+  /** System prompt S3 key. */
+  readonly systemPromptKey: string;
+  /** Knowledge base configs (JSON serialized). */
+  readonly knowledgeBaseConfigs?: string;
+  /** Knowledge base system prompt addition. */
+  readonly knowledgeBaseSystemPromptAddition?: string;
+  /** Removal policy for resources. */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * Result returned by a hosting adapter's deploy method.
+ */
+export interface AgentHostingResult {
+  /** The agent endpoint URL or ARN. */
+  readonly endpoint: string;
+  /** The Lambda function (if Lambda-hosted). */
+  readonly agentFunction?: IFunction;
+  /** The AgentCore CfnRuntime (if AgentCore-hosted). */
+  readonly cfnRuntime?: CfnRuntime;
+}
+
+/**
+ * Strategy interface for pluggable hosting backends.
+ *
+ * Hosting adapters encapsulate the infrastructure needed to run an agent.
+ * The default implementation is `LambdaHostingAdapter` (Lambda + LWA + API Gateway).
+ * `AgentCoreRuntimeHostingAdapter` provides an alternative using AgentCore Runtime.
+ */
+export interface IHostingAdapter {
+  /**
+   * The IAM service principal that this hosting backend requires.
+   *
+   * BaseAgent uses this to create the agent role with the correct trust policy.
+   * For example, Lambda hosting requires `lambda.amazonaws.com` while AgentCore
+   * hosting requires `bedrock-agentcore.amazonaws.com`.
+   */
+  readonly servicePrincipal: ServicePrincipal;
+
+  /**
+   * Deploy the agent hosting infrastructure.
+   *
+   * @param config - Configuration for the agent hosting
+   * @returns The hosting result including endpoint and optional resources
+   */
+  deploy(config: AgentHostingConfig): AgentHostingResult;
+}
+
+/**
+ * Configuration properties for LambdaHostingAdapter.
+ */
+export interface LambdaHostingAdapterProps {
+  /**
+   * Communication adapter for client-agent interaction.
+   *
+   * @default StreamingHttpAdapter
+   */
+  readonly communicationAdapter?: ICommunicationAdapter;
+
+  /**
+   * Authenticator for securing API endpoints.
+   *
+   * @default CognitoAuthenticator
+   */
+  readonly authenticator?: IAuthenticator;
+
+  /**
+   * Lambda function memory size in MB.
+   *
+   * @default 1024
+   */
+  readonly memorySize?: number;
+
+  /**
+   * Lambda function timeout.
+   *
+   * @default Duration.minutes(15)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * Lambda function architecture.
+   *
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
+
+  /**
+   * Reserved concurrent executions for the Lambda function.
+   *
+   * @default No reserved concurrency
+   */
+  readonly reservedConcurrentExecutions?: number;
+}
+
+/**
+ * Lambda hosting adapter for InteractiveAgent.
+ *
+ * Deploys the agent as a Lambda function behind Lambda Web Adapter and API Gateway
+ * REST API with response streaming. This is the default hosting backend.
+ *
+ * ## Architecture
+ *
+ * ```
+ * Client → POST /chat → API Gateway REST API (STREAM) → Lambda (FastAPI + LWA) → Bedrock
+ * Client ← SSE stream ← API Gateway ← Lambda response streaming ← Agent tokens
+ * ```
+ */
+export class LambdaHostingAdapter implements IHostingAdapter {
+  /** The communication adapter. */
+  public readonly communicationAdapter?: ICommunicationAdapter;
+  /** The authenticator. */
+  public readonly authenticator?: IAuthenticator;
+
+  private readonly props: LambdaHostingAdapterProps;
+
+  constructor(props: LambdaHostingAdapterProps = {}) {
+    this.props = props;
+  }
+
+  get servicePrincipal() { return new ServicePrincipal('lambda.amazonaws.com'); }
+
+  /**
+   * Deploy Lambda + LWA + API Gateway hosting infrastructure.
+   */
+  deploy(config: AgentHostingConfig): AgentHostingResult {
+    const scope = config.scope;
+
+    // Initialize authenticator
+    const authenticator = this.props.authenticator !== undefined
+      ? this.props.authenticator
+      : new CognitoAuthenticator();
+    (this as any).authenticator = authenticator;
+
+    if (authenticator instanceof CognitoAuthenticator) {
+      authenticator._setScope(scope);
+    }
+
+    // Initialize communication adapter
+    const adapter = this.props.communicationAdapter || new StreamingHttpAdapter({
+      authenticator,
+    });
+    (this as any).communicationAdapter = adapter;
+
+    if (adapter instanceof StreamingHttpAdapter) {
+      adapter._setScope(scope);
+    }
+
+    // Build environment variables
+    const env: Record<string, string> = {
+      ...config.environment,
+      // Lambda Web Adapter configuration
+      AWS_LAMBDA_EXEC_WRAPPER: '/opt/bootstrap',
+      AWS_LWA_INVOKE_MODE: 'response_stream',
+      AWS_LWA_READINESS_CHECK_PATH: '/health',
+      AWS_LWA_PORT: '8080',
+      PORT: '8080',
+      ...authenticator.environmentVariables(),
+    };
+
+    // Create Lambda function with Lambda Web Adapter layer
+    const { account, region } = Stack.of(scope);
+    const agentLambdaLogPermissionsResult = LambdaIamUtils.createLogsPermissions({
+      account,
+      region,
+      scope,
+      functionName: config.agentName,
+      enableObservability: config.enableObservability,
+    });
+
+    // Lambda Web Adapter layer
+    const webAdapterLayer = LayerVersion.fromLayerVersionArn(
+      scope,
+      'LambdaWebAdapterLayer',
+      `arn:aws:lambda:${region}:753240598075:layer:LambdaAdapterLayerX86:25`,
+    );
+
+    const allLayers: ILayerVersion[] = [webAdapterLayer];
+    if (config.lambdaLayers) {
+      allLayers.push(...config.lambdaLayers);
+    }
+    if (config.knowledgeBaseLayers && config.knowledgeBaseLayers.length > 0) {
+      allLayers.push(...config.knowledgeBaseLayers);
+    }
+
+    const handlerPath = path.join(__dirname, 'resources/interactive-agent-handler');
+
+    // All Python version references derived from DefaultRuntimes.PYTHON
+    const pythonRuntime = DefaultRuntimes.PYTHON;
+    const pyVersion = pythonRuntime.name.replace('python', ''); // e.g. "3.13"
+
+    const architecture = this.props.architecture || config.architecture || Architecture.X86_64;
+    const memorySize = this.props.memorySize || config.memorySize || 1024;
+    const timeout = this.props.timeout || config.timeout || Duration.minutes(15);
+    const reservedConcurrentExecutions = this.props.reservedConcurrentExecutions ?? config.reservedConcurrentExecutions;
+
+    const agentFunction = new Function(scope, 'InteractiveAgentFunction', {
+      functionName: agentLambdaLogPermissionsResult.uniqueFunctionName,
+      architecture,
+      code: Code.fromAsset(handlerPath, {
+        bundling: {
+          image: pythonRuntime.bundlingImage,
+          command: [
+            'bash', '-c',
+            'pip install -r requirements.txt -t /asset-output && cp -a . /asset-output',
+          ],
+          local: {
+            tryBundle(outputDir: string): boolean {
+              try {
+                const proc = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
+                const pythonCandidates = [`python${pyVersion}`, 'python3', 'python'];
+                let pythonBin = 'python3';
+                for (const candidate of pythonCandidates) {
+                  try {
+                    const ver = proc.execSync(`${candidate} --version 2>&1`, { encoding: 'utf-8' }).trim();
+                    const match = ver.match(/Python (\d+)\.(\d+)/);
+                    if (match && (parseInt(match[1]) > 3 || (parseInt(match[1]) === 3 && parseInt(match[2]) >= 11))) {
+                      pythonBin = candidate;
+                      break;
+                    }
+                  } catch {
+                    continue;
+                  }
+                }
+                proc.execSync(
+                  `${pythonBin} -m pip install -r requirements.txt -t "${outputDir}" --platform manylinux2014_x86_64 --only-binary=:all: --python-version ${pyVersion}`,
+                  { cwd: handlerPath, stdio: 'inherit' },
+                );
+                proc.execSync(
+                  `cp -r . "${outputDir}"`,
+                  { cwd: handlerPath, stdio: 'inherit' },
+                );
+                return true;
+              } catch {
+                return false;
+              }
+            },
+          },
+        },
+      }),
+      role: config.agentRole,
+      handler: 'run.sh',
+      runtime: pythonRuntime,
+      layers: allLayers,
+      timeout,
+      memorySize,
+      environment: env,
+      environmentEncryption: config.encryptionKey,
+      vpc: config.network ? config.network.vpc : undefined,
+      vpcSubnets: config.network ? config.network.applicationSubnetSelection() : undefined,
+      reservedConcurrentExecutions,
+    });
+
+    // Grant log permissions
+    for (const s of agentLambdaLogPermissionsResult.policyStatements) {
+      config.agentRole.addToPrincipalPolicy(s);
+    }
+
+    // Grant authenticator permissions
+    if (authenticator) {
+      authenticator.grantAuthenticate(agentFunction);
+    }
+
+    // Attach communication adapter and get endpoint
+    const endpoint = adapter.attachToFunction(agentFunction);
+    adapter.grantInvoke(agentFunction);
+
+    return { endpoint, agentFunction };
+  }
+}
+
+/**
+ * Custom JWT authorizer configuration for AgentCore Runtime.
+ */
+export interface AgentCoreJwtAuthorizerConfig {
+  /** OIDC discovery URL. */
+  readonly discoveryUrl: string;
+  /** Allowed audiences. */
+  readonly allowedAudience?: string[];
+  /** Allowed client IDs. */
+  readonly allowedClients?: string[];
+}
+
+/**
+ * Configuration properties for AgentCoreRuntimeHostingAdapter.
+ */
+export interface AgentCoreRuntimeHostingAdapterProps {
+  /**
+   * ECR container image URI. If not provided, builds from the bundled handler source.
+   *
+   * @default Builds from agentcore-agent-handler directory
+   */
+  readonly containerImageUri?: string;
+
+  /**
+   * Network mode: 'PUBLIC' or 'VPC'.
+   *
+   * @default 'PUBLIC'
+   */
+  readonly networkMode?: string;
+
+  /**
+   * Custom JWT authorizer configuration.
+   * Omit for IAM-only auth.
+   */
+  readonly customJwtAuthorizer?: AgentCoreJwtAuthorizerConfig;
+
+  /**
+   * Protocol configuration: 'HTTP' | 'MCP' | 'A2A'.
+   *
+   * @default 'HTTP'
+   */
+  readonly protocolConfiguration?: string;
+
+  /**
+   * Runtime endpoint name.
+   *
+   * @default Auto-generated from agent name
+   */
+  readonly endpointName?: string;
+}
+
+/**
+ * AgentCore Runtime hosting adapter for InteractiveAgent.
+ *
+ * Deploys the agent as a container running on AgentCore Runtime (microVM).
+ * Uses L1 constructs `CfnRuntime` and `CfnRuntimeEndpoint` from
+ * `aws-cdk-lib/aws-bedrockagentcore`.
+ *
+ * ## Architecture
+ *
+ * ```
+ * Client → AgentCore Runtime Endpoint → Container (FastAPI on port 8080) → Bedrock
+ * ```
+ *
+ * ## Features
+ *
+ * - **Session Isolation**: microVM provides per-session isolation (no S3 session bucket needed)
+ * - **Managed Infrastructure**: No Lambda cold starts or timeout limits
+ * - **Multiple Protocols**: HTTP, MCP, or A2A protocol support
+ * - **Container-Based**: Standard Docker image deployment
+ *
+ * ## Usage
+ *
+ * ```typescript
+ * import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+ * import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+ *
+ * declare const myPrompt: Asset;
+ *
+ * new InteractiveAgent(this, 'Agent', {
+ *   agentName: 'MyChatbot',
+ *   agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+ *   hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+ *     networkMode: 'PUBLIC',
+ *   }),
+ * });
+ * ```
+ */
+export class AgentCoreRuntimeHostingAdapter implements IHostingAdapter {
+  private readonly props: AgentCoreRuntimeHostingAdapterProps;
+
+  constructor(props: AgentCoreRuntimeHostingAdapterProps = {}) {
+    this.props = props;
+  }
+
+  get servicePrincipal() { return new ServicePrincipal('bedrock-agentcore.amazonaws.com'); }
+
+  /**
+   * Deploy AgentCore Runtime hosting infrastructure.
+   */
+  deploy(config: AgentHostingConfig): AgentHostingResult {
+    const scope = config.scope;
+    const networkMode = this.props.networkMode || 'PUBLIC';
+
+    // Build or reference container image
+    let containerUri: string;
+    if (this.props.containerImageUri) {
+      containerUri = this.props.containerImageUri;
+    } else {
+      const handlerPath = path.join(__dirname, 'resources/agentcore-agent-handler');
+      const imageAsset = new DockerImageAsset(scope, 'AgentCoreHandlerImage', {
+        directory: handlerPath,
+      });
+      containerUri = imageAsset.imageUri;
+    }
+
+    // Reuse the single agentRole (already has bedrock-agentcore trust from BaseAgent).
+    // Only add ECR pull permissions — all other permissions (Bedrock InvokeModel,
+    // S3 tool assets, KB access, session bucket, observability) are already granted
+    // by BaseAgent on config.agentRole.
+    const ecrPolicyResult = config.agentRole.addToPrincipalPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'ecr:GetDownloadUrlForLayer',
+        'ecr:BatchGetImage',
+        'ecr:GetAuthorizationToken',
+      ],
+      resources: ['*'],
+    }));
+
+    // Add ADOT observability permissions when enabled.
+    // The container Dockerfile uses `opentelemetry-instrument` as its CMD wrapper;
+    // ADOT needs these permissions to export traces, logs, and metrics from the container.
+    // Note: We use explicit statements instead of CloudWatchLambdaApplicationSignalsExecutionRolePolicy
+    // because that managed policy only covers /aws/application-signals/data log group
+    // and misses permissions ADOT needs (DescribeLogGroups, DescribeLogStreams, PutMetricData).
+    if (config.enableObservability) {
+      config.agentRole.addToPrincipalPolicy(new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'logs:DescribeLogGroups',
+          'logs:DescribeLogStreams',
+        ],
+        resources: ['*'],
+      }));
+      config.agentRole.addToPrincipalPolicy(new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'cloudwatch:PutMetricData',
+        ],
+        resources: ['*'],
+      }));
+    }
+
+    // Build environment variables for the container
+    const { region, account } = Stack.of(scope);
+    const envVars: Record<string, string> = {
+      // Unlike Lambda, AgentCore containers don't get AWS_REGION automatically.
+      // boto3 and other AWS SDKs need it to make API calls.
+      AWS_REGION: region,
+      AWS_DEFAULT_REGION: region,
+    };
+    for (const [key, value] of Object.entries(config.environment)) {
+      envVars[key] = value;
+    }
+
+    // Note: AGENT_OBSERVABILITY_ENABLED and OTEL_* env vars are NOT set here.
+    // For AgentCore-hosted agents, the ADOT auto-instrumentation via
+    // `opentelemetry-instrument` in the Dockerfile CMD handles trace/span
+    // export automatically. These env vars are only needed for agents
+    // hosted outside of AgentCore.
+
+    // Build network configuration
+    const networkConfiguration: any = {
+      networkMode,
+    };
+
+    // Build authorization configuration if JWT authorizer is specified
+    const authConfig = this.props.customJwtAuthorizer ? {
+      customJwtAuthorizer: {
+        discoveryUrl: this.props.customJwtAuthorizer.discoveryUrl,
+        allowedAudience: this.props.customJwtAuthorizer.allowedAudience,
+        allowedClients: this.props.customJwtAuthorizer.allowedClients,
+      },
+    } : undefined;
+
+    // Create CfnRuntime
+    const runtime = new CfnRuntime(scope, 'AgentCoreRuntime', {
+      agentRuntimeName: `${config.agentName.replace(/-/g, '_')}_runtime`,
+      agentRuntimeArtifact: {
+        containerConfiguration: {
+          containerUri,
+        },
+      },
+      roleArn: config.agentRole.roleArn,
+      networkConfiguration,
+      authorizerConfiguration: authConfig,
+      environmentVariables: envVars,
+    });
+
+    runtime.applyRemovalPolicy(config.removalPolicy || RemovalPolicy.DESTROY);
+
+    // When JWT auth is configured, allowlist the Authorization header so the
+    // container can extract user identity claims from the forwarded JWT token.
+    // See: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html#oauth-propagate-jwt-token
+    if (this.props.customJwtAuthorizer) {
+      runtime.addPropertyOverride('RequestHeaderConfiguration', {
+        RequestHeaderAllowlist: ['Authorization'],
+      });
+    }
+
+    // Ensure CfnRuntime waits for the role and its policies to be fully created/updated.
+    // Without this, CloudFormation may validate the role before:
+    // - The trust policy is updated to bedrock-agentcore.amazonaws.com (during stack updates)
+    // - The ECR permissions policy is attached
+    runtime.node.addDependency(config.agentRole);
+    if (ecrPolicyResult.policyDependable) {
+      runtime.node.addDependency(ecrPolicyResult.policyDependable);
+    }
+
+    // Create CfnRuntimeEndpoint
+    const endpointName = this.props.endpointName || `${config.agentName.replace(/-/g, '_')}_endpoint`;
+    const runtimeEndpoint = new CfnRuntimeEndpoint(scope, 'AgentCoreRuntimeEndpoint', {
+      agentRuntimeId: runtime.ref,
+      agentRuntimeVersion: runtime.attrAgentRuntimeVersion,
+      name: endpointName,
+      ...(this.props.protocolConfiguration && {
+        protocolConfiguration: {
+          serverProtocol: this.props.protocolConfiguration,
+        },
+      }),
+    });
+    runtimeEndpoint.applyRemovalPolicy(config.removalPolicy || RemovalPolicy.DESTROY);
+
+    // Construct the full invocation URL for direct HTTPS access (required for JWT auth).
+    // Format: https://bedrock-agentcore.{region}.amazonaws.com/runtimes/{URL-encoded-ARN}/invocations?qualifier={endpointName}
+    const encodedArn = Fn.join('', [
+      'arn%3Aaws%3Abedrock-agentcore%3A',
+      region,
+      '%3A',
+      account,
+      '%3Aruntime%2F',
+      runtime.attrAgentRuntimeId,
+    ]);
+    const endpoint = Fn.join('', [
+      'https://bedrock-agentcore.',
+      region,
+      '.amazonaws.com/runtimes/',
+      encodedArn,
+      '/invocations?qualifier=',
+      endpointName,
+    ]);
+
+    return { endpoint, cfnRuntime: runtime };
+  }
+}
+
+/**
  * Configuration properties for InteractiveAgent.
  *
  * Extends BaseAgentProps with communication, session, context, and authentication
  * strategy interfaces for building real-time conversational AI agents.
  */
 export interface InteractiveAgentProps extends BaseAgentProps {
+  /**
+   * Hosting adapter for deploying the agent runtime.
+   *
+   * Use `LambdaHostingAdapter` for Lambda + API Gateway (default) or
+   * `AgentCoreRuntimeHostingAdapter` for AgentCore Runtime hosting.
+   *
+   * When provided, `communicationAdapter`, `authenticator`, `memorySize`,
+   * `timeout`, `architecture`, and `reservedConcurrentExecutions` props
+   * are ignored (configure them on the adapter directly).
+   *
+   * @default LambdaHostingAdapter
+   */
+  readonly hostingAdapter?: IHostingAdapter;
   /**
    * Communication adapter for client-agent interaction.
    *
@@ -744,6 +1346,8 @@ export interface InteractiveAgentProps extends BaseAgentProps {
    * Set to undefined to disable session persistence (stateless mode).
    *
    * @default S3SessionManager with 24-hour TTL
+   * @deprecated Session management is now handled by Strands-native `S3SessionManager`.
+   * An S3 bucket is always created and passed as `SESSION_BUCKET` env var.
    */
   readonly sessionStore?: ISessionStore;
 
@@ -766,6 +1370,8 @@ export interface InteractiveAgentProps extends BaseAgentProps {
    * Context strategy for conversation history management.
    *
    * @default SlidingWindowConversationManager with 20 messages
+   * @deprecated Conversation management is now handled by Strands-native
+   * `SlidingWindowConversationManager` in the Python handler.
    */
   readonly contextStrategy?: IContextStrategy;
 
@@ -775,6 +1381,8 @@ export interface InteractiveAgentProps extends BaseAgentProps {
    * Ignored if contextStrategy is provided.
    *
    * @default 20
+   * @deprecated Conversation windowing is now handled by Strands-native
+   * `SlidingWindowConversationManager` in the Python handler (default: 20).
    */
   readonly messageHistoryLimit?: number;
 
@@ -866,16 +1474,27 @@ export interface InteractiveAgentProps extends BaseAgentProps {
  * ```
  */
 export class InteractiveAgent extends BaseAgent {
-  public readonly agentFunction: IFunction;
+  public readonly agentFunction?: IFunction;
   public readonly adapter?: ICommunicationAdapter;
   public readonly sessionStore?: ISessionStore;
   public readonly contextStrategy?: IContextStrategy;
   public readonly authenticator?: IAuthenticator;
   public readonly apiEndpoint: string;
   public readonly sessionBucket?: IBucket;
+  public readonly cfnRuntime?: CfnRuntime;
 
   constructor(scope: Construct, id: string, props: InteractiveAgentProps) {
-    super(scope, id, props);
+    // Determine hosting adapter BEFORE super() so we can pass its trust principal
+    const hostingAdapter = props.hostingAdapter || new LambdaHostingAdapter({
+      communicationAdapter: props.communicationAdapter,
+      authenticator: props.authenticator,
+      memorySize: props.memorySize,
+      timeout: props.timeout,
+      architecture: props.architecture,
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+    });
+
+    super(scope, id, { ...props, servicePrincipal: hostingAdapter.servicePrincipal });
 
     // Validate props
     this.validateProps(props);
@@ -884,22 +1503,7 @@ export class InteractiveAgent extends BaseAgent {
     const metricNamespace = props.metricNamespace || DefaultObservabilityConfig.DEFAULT_METRIC_NAMESPACE;
     const metricServiceName = props.metricServiceName || DefaultAgentConfig.DEFAULT_OBSERVABILITY_METRIC_SVC_NAME;
 
-    // Initialize authenticator
-    this.authenticator = props.authenticator !== undefined ? props.authenticator : new CognitoAuthenticator();
-    if (this.authenticator instanceof CognitoAuthenticator) {
-      this.authenticator._setScope(this);
-    }
-
-    // Initialize communication adapter
-    const adapter = props.communicationAdapter || new StreamingHttpAdapter({
-      authenticator: this.authenticator,
-    });
-    this.adapter = adapter;
-    if (adapter instanceof StreamingHttpAdapter) {
-      adapter._setScope(this);
-    }
-
-    // Initialize session store
+    // Initialize session store (S3 bucket for Strands-native S3SessionManager)
     if (props.sessionStore !== undefined) {
       this.sessionStore = props.sessionStore;
     } else if (props.sessionStore === undefined && props.sessionBucket) {
@@ -908,7 +1512,7 @@ export class InteractiveAgent extends BaseAgent {
         sessionTTL: props.sessionTTL,
       });
     } else {
-      // Default: create S3SessionManager
+      // Default: create S3SessionManager (bucket used by Strands-native session manager)
       this.sessionStore = new S3SessionManager(this, 'SessionManager', {
         sessionTTL: props.sessionTTL,
         encryptionKey: props.encryptionKey,
@@ -917,7 +1521,8 @@ export class InteractiveAgent extends BaseAgent {
     }
     this.sessionBucket = this.sessionStore?.sessionBucket;
 
-    // Initialize context strategy
+    // Context strategy is deprecated — Strands-native conversation manager handles this.
+    // Keep for backward compatibility but do not use env vars.
     if (props.contextStrategy) {
       this.contextStrategy = props.contextStrategy;
     } else {
@@ -926,26 +1531,17 @@ export class InteractiveAgent extends BaseAgent {
       });
     }
 
-    // Build environment variables
+    // Build base environment variables
     const env: Record<string, string> = {
       MODEL_ID: modelId,
       SYSTEM_PROMPT_S3_BUCKET_NAME: props.agentDefinition.systemPrompt.s3BucketName,
       SYSTEM_PROMPT_S3_KEY: props.agentDefinition.systemPrompt.s3ObjectKey,
       TOOLS_CONFIG: JSON.stringify(this.agentToolsLocationDefinitions),
-      // Lambda Web Adapter configuration
-      // AWS_LAMBDA_EXEC_WRAPPER tells Lambda to use LWA's bootstrap script
-      // which intercepts the runtime and proxies requests to the web app
-      AWS_LAMBDA_EXEC_WRAPPER: '/opt/bootstrap',
-      AWS_LWA_INVOKE_MODE: 'response_stream',
-      AWS_LWA_READINESS_CHECK_PATH: '/health',
-      AWS_LWA_PORT: '8080',
-      PORT: '8080',
-      ...this.contextStrategy.environmentVariables(),
-      ...this.authenticator.environmentVariables(),
       ...PowertoolsConfig.generateDefaultLambdaConfig(
         props.enableObservability,
         metricNamespace,
         metricServiceName,
+        'DEBUG',
       ),
     };
 
@@ -960,116 +1556,53 @@ export class InteractiveAgent extends BaseAgent {
       env.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = generateKnowledgeBaseSystemPromptAddition(this.knowledgeBaseConfigs);
     }
 
-    // Create Lambda function with Lambda Web Adapter layer
-    const { account, region } = Stack.of(this);
-    const agentLambdaLogPermissionsResult = LambdaIamUtils.createLogsPermissions({
-      account,
-      region,
+    // Deploy via hosting adapter
+    const hostingResult = hostingAdapter.deploy({
       scope: this,
-      functionName: props.agentName,
-      enableObservability: props.enableObservability,
-    });
-
-    // Lambda Web Adapter layer
-    const webAdapterLayer = LayerVersion.fromLayerVersionArn(
-      this,
-      'LambdaWebAdapterLayer',
-      `arn:aws:lambda:${region}:753240598075:layer:LambdaAdapterLayerX86:25`,
-    );
-
-    const allLayers: ILayerVersion[] = [webAdapterLayer];
-    if (props.agentDefinition.lambdaLayers) {
-      allLayers.push(...props.agentDefinition.lambdaLayers);
-    }
-    if (this.knowledgeBaseLayers.length > 0) {
-      allLayers.push(...this.knowledgeBaseLayers);
-    }
-
-    const handlerPath = path.join(__dirname, 'resources/interactive-agent-handler');
-
-    // All Python version references derived from DefaultRuntimes.PYTHON
-    const pythonRuntime = DefaultRuntimes.PYTHON;
-    const pyVersion = pythonRuntime.name.replace('python', ''); // e.g. "3.13"
-
-    this.agentFunction = new Function(this, 'InteractiveAgentFunction', {
-      functionName: agentLambdaLogPermissionsResult.uniqueFunctionName,
-      architecture: props.architecture || Architecture.X86_64,
-      code: Code.fromAsset(handlerPath, {
-        bundling: {
-          image: pythonRuntime.bundlingImage,
-          command: [
-            'bash', '-c',
-            'pip install -r requirements.txt -t /asset-output && cp -a . /asset-output',
-          ],
-          local: {
-            tryBundle(outputDir: string): boolean {
-              try {
-                const proc = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
-                // Find a local Python >= 3.11 for pip (system default may be too old)
-                const pythonCandidates = [`python${pyVersion}`, 'python3', 'python'];
-                let pythonBin = 'python3';
-                for (const candidate of pythonCandidates) {
-                  try {
-                    const ver = proc.execSync(`${candidate} --version 2>&1`, { encoding: 'utf-8' }).trim();
-                    const match = ver.match(/Python (\d+)\.(\d+)/);
-                    if (match && (parseInt(match[1]) > 3 || (parseInt(match[1]) === 3 && parseInt(match[2]) >= 11))) {
-                      pythonBin = candidate;
-                      break;
-                    }
-                  } catch {
-                    continue;
-                  }
-                }
-                proc.execSync(
-                  `${pythonBin} -m pip install -r requirements.txt -t "${outputDir}" --platform manylinux2014_x86_64 --only-binary=:all: --python-version ${pyVersion}`,
-                  { cwd: handlerPath, stdio: 'inherit' },
-                );
-                proc.execSync(
-                  `cp -r . "${outputDir}"`,
-                  { cwd: handlerPath, stdio: 'inherit' },
-                );
-                return true;
-              } catch {
-                return false;
-              }
-            },
-          },
-        },
-      }),
-      role: this.agentRole,
-      handler: 'run.sh',
-      runtime: pythonRuntime,
-      layers: allLayers,
-      timeout: props.timeout || Duration.minutes(15),
-      memorySize: props.memorySize || 1024,
+      agentName: props.agentName,
+      agentRole: this.agentRole,
       environment: env,
-      environmentEncryption: this.encryptionKey,
-      vpc: props.network ? props.network.vpc : undefined,
-      vpcSubnets: props.network ? props.network.applicationSubnetSelection() : undefined,
+      encryptionKey: this.encryptionKey,
+      network: props.network,
+      architecture: props.architecture,
+      memorySize: props.memorySize,
+      timeout: props.timeout,
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+      lambdaLayers: props.agentDefinition.lambdaLayers,
+      knowledgeBaseLayers: this.knowledgeBaseLayers,
+      enableObservability: props.enableObservability,
+      toolsConfig: JSON.stringify(this.agentToolsLocationDefinitions),
+      systemPromptBucket: props.agentDefinition.systemPrompt.s3BucketName,
+      systemPromptKey: props.agentDefinition.systemPrompt.s3ObjectKey,
+      knowledgeBaseConfigs: this.knowledgeBaseConfigs.length > 0 ? JSON.stringify(this.knowledgeBaseConfigs) : undefined,
+      knowledgeBaseSystemPromptAddition: this.knowledgeBaseConfigs.length > 0
+        ? generateKnowledgeBaseSystemPromptAddition(this.knowledgeBaseConfigs)
+        : undefined,
+      removalPolicy: props.removalPolicy,
     });
+
+    this.apiEndpoint = hostingResult.endpoint;
+    this.agentFunction = hostingResult.agentFunction;
+    this.cfnRuntime = hostingResult.cfnRuntime;
+
+    // Set adapter and authenticator references for backward compatibility
+    if (hostingAdapter instanceof LambdaHostingAdapter) {
+      this.adapter = hostingAdapter.communicationAdapter;
+      this.authenticator = hostingAdapter.authenticator;
+    }
 
     // Grant system prompt read access
     props.agentDefinition.systemPrompt.grantRead(this.agentRole);
 
-    // Grant log permissions
-    for (const s of agentLambdaLogPermissionsResult.policyStatements) {
-      this.agentRole.addToPrincipalPolicy(s);
-    }
-
     // Grant session store access
     if (this.sessionStore) {
-      this.sessionStore.grantReadWrite(this.agentFunction);
+      if (this.agentFunction) {
+        this.sessionStore.grantReadWrite(this.agentFunction);
+      } else if (this.sessionBucket) {
+        // For AgentCore hosting, grant the agent role direct S3 access
+        this.sessionBucket.grantReadWrite(this.agentRole);
+      }
     }
-
-    // Grant authenticator permissions
-    if (this.authenticator) {
-      this.authenticator.grantAuthenticate(this.agentFunction);
-    }
-
-    // Attach communication adapter and get endpoint
-    this.apiEndpoint = this.adapter!.attachToFunction(this.agentFunction);
-    this.adapter!.grantInvoke(this.agentFunction);
   }
 
   /**

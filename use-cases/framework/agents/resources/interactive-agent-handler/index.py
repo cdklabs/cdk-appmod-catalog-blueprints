@@ -16,7 +16,6 @@ Architecture:
 import os
 import json
 import uuid
-import time
 import importlib
 import sys
 import tempfile
@@ -32,6 +31,8 @@ import uvicorn
 
 from strands import Agent
 from strands.models import BedrockModel
+from strands.agent.conversation_manager import SlidingWindowConversationManager
+from strands.session.s3_session_manager import S3SessionManager as StrandsS3SessionManager
 from aws_lambda_powertools import Logger, Tracer, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 
@@ -50,9 +51,6 @@ SYSTEM_PROMPT_KEY = os.getenv('SYSTEM_PROMPT_S3_KEY')
 TOOLS_CONFIG = os.getenv('TOOLS_CONFIG', '[]')
 KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = os.getenv('KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION', '')
 SESSION_BUCKET = os.getenv('SESSION_BUCKET')
-CONTEXT_ENABLED = os.getenv('CONTEXT_ENABLED', 'true').lower() == 'true'
-CONTEXT_STRATEGY = os.getenv('CONTEXT_STRATEGY', 'SlidingWindow')
-CONTEXT_WINDOW_SIZE = int(os.getenv('CONTEXT_WINDOW_SIZE', '20'))
 
 
 def load_system_prompt() -> str:
@@ -135,74 +133,6 @@ if KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION:
 AGENT_TOOLS = load_tools_from_s3()
 
 
-class SessionManager:
-    """Manages conversation sessions in S3."""
-
-    def __init__(self, bucket: Optional[str] = None):
-        self.bucket = bucket
-        self.enabled = bucket is not None
-
-    def get_session(self, session_id: str) -> List[Dict[str, Any]]:
-        """Retrieve message history from S3."""
-        if not self.enabled:
-            return []
-
-        key = f'sessions/{session_id}.json'
-        try:
-            response = s3_client.get_object(Bucket=self.bucket, Key=key)
-            data = json.loads(response['Body'].read().decode('utf-8'))
-            return data.get('messages', [])
-        except s3_client.exceptions.NoSuchKey:
-            return []
-        except Exception as e:
-            logger.warning(f'Failed to load session {session_id}: {e}')
-            return []
-
-    def save_session(self, session_id: str, messages: List[Dict[str, Any]]) -> None:
-        """Save message history to S3."""
-        if not self.enabled:
-            return
-
-        key = f'sessions/{session_id}.json'
-        data = {
-            'session_id': session_id,
-            'messages': messages,
-            'updated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-        }
-        try:
-            s3_client.put_object(
-                Bucket=self.bucket,
-                Key=key,
-                Body=json.dumps(data),
-                ContentType='application/json'
-            )
-        except Exception as e:
-            logger.error(f'Failed to save session {session_id}: {e}')
-
-
-class ContextManager:
-    """Manages conversation context windowing."""
-
-    def __init__(self, strategy: str = 'SlidingWindow', window_size: int = 20, enabled: bool = True):
-        self.strategy = strategy
-        self.window_size = window_size
-        self.enabled = enabled
-
-    def get_context(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Apply context windowing to message history."""
-        if not self.enabled or self.strategy == 'Null':
-            return []
-
-        if self.strategy == 'SlidingWindow':
-            return messages[-self.window_size:] if len(messages) > self.window_size else list(messages)
-
-        return list(messages)
-
-
-# Initialize managers
-session_manager = SessionManager(SESSION_BUCKET)
-context_manager = ContextManager(CONTEXT_STRATEGY, CONTEXT_WINDOW_SIZE, CONTEXT_ENABLED)
-
 # FastAPI app
 app = FastAPI()
 
@@ -249,28 +179,34 @@ async def chat(request: ChatRequest):
 
         full_response = ''
         try:
-            # Load session history
-            messages = session_manager.get_session(session_id)
+            # Create Strands-native session manager (handles load/save automatically)
+            session_manager = None
+            if SESSION_BUCKET:
+                session_manager = StrandsS3SessionManager(
+                    session_id=session_id,
+                    bucket_name=SESSION_BUCKET,
+                )
 
-            # Apply context windowing
-            context = context_manager.get_context(messages)
+            # Create Strands-native conversation manager for context windowing
+            conversation_manager = SlidingWindowConversationManager(window_size=20)
 
             # Create Bedrock model
             model = BedrockModel(model_id=MODEL_ID, streaming=True)
 
-            # Create agent with system prompt, tools, and conversation history.
+            # Create agent with Strands-native session and conversation management.
+            # Strands handles session persistence and context windowing automatically.
             # Disable the default callback handler so stream_async yields all events.
             agent = Agent(
                 model=model,
                 system_prompt=SYSTEM_PROMPT,
                 tools=AGENT_TOOLS if AGENT_TOOLS else None,
-                messages=list(context) if context else None,
+                session_manager=session_manager,
+                conversation_manager=conversation_manager,
                 callback_handler=None,
             )
 
             # Use stream_async for true token-by-token streaming.
             # Each event with a "data" key contains a text chunk from the model.
-            result = None
             async for event in agent.stream_async(user_message):
                 # Text chunk from model — stream it to the client immediately
                 if 'data' in event:
@@ -278,20 +214,7 @@ async def chat(request: ChatRequest):
                     full_response += chunk
                     yield format_sse(json.dumps({'text': chunk}))
 
-                # Capture the final result for session saving
-                if 'result' in event:
-                    result = event['result']
-
-            # Save updated session with the agent's actual messages if available.
-            # The agent maintains its own messages list during stream_async,
-            # so we can use it directly for accurate conversation history.
-            if hasattr(agent, 'messages') and agent.messages:
-                session_manager.save_session(session_id, list(agent.messages))
-            else:
-                # Fallback: append manually
-                messages.append({'role': 'user', 'content': [{'text': user_message}]})
-                messages.append({'role': 'assistant', 'content': [{'text': full_response}]})
-                session_manager.save_session(session_id, messages)
+            # Session is saved automatically by Strands S3SessionManager
 
             metrics.add_metric(name='ChatResponses', unit=MetricUnit.Count, value=1)
 

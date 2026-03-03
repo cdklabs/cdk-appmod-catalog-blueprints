@@ -1,0 +1,16 @@
+[
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250115-001", "date": "2025-01-15", "description": "Direct Deposit - Acme Corp Payroll", "amount": 4200.00, "type": "credit", "balance": 12450.00},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250116-001", "date": "2025-01-16", "description": "Rent Payment - Maplewood Apartments", "amount": -1650.00, "type": "debit", "balance": 10800.00},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250117-001", "date": "2025-01-17", "description": "Grocery - Whole Foods Market", "amount": -127.43, "type": "debit", "balance": 10672.57},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250118-001", "date": "2025-01-18", "description": "Gas Station - Shell", "amount": -58.20, "type": "debit", "balance": 10614.37},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250120-001", "date": "2025-01-20", "description": "Online Transfer to Savings", "amount": -1000.00, "type": "debit", "balance": 9614.37},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250122-001", "date": "2025-01-22", "description": "Netflix Subscription", "amount": -15.99, "type": "debit", "balance": 9598.38},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250125-001", "date": "2025-01-25", "description": "Electric Bill - Pacific Gas & Electric", "amount": -142.50, "type": "debit", "balance": 9455.88},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250127-001", "date": "2025-01-27", "description": "Restaurant - Olive Garden", "amount": -65.20, "type": "debit", "balance": 9390.68},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250128-001", "date": "2025-01-28", "description": "Amazon.com Purchase", "amount": -89.99, "type": "debit", "balance": 9300.69},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250201-001", "date": "2025-02-01", "description": "Direct Deposit - Acme Corp Payroll", "amount": 4200.00, "type": "credit", "balance": 13500.69},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250202-001", "date": "2025-02-02", "description": "Rent Payment - Maplewood Apartments", "amount": -1650.00, "type": "debit", "balance": 11850.69},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250205-001", "date": "2025-02-05", "description": "ATM Withdrawal - AWSome Bank Downtown", "amount": -200.00, "type": "debit", "balance": 11650.69},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250207-001", "date": "2025-02-07", "description": "Grocery - Trader Joe's", "amount": -93.17, "type": "debit", "balance": 11557.52},
+  {"customerId": "CUST-001", "customerName": "Sarah Chen", "transactionId": "TXN-20250208-001", "date": "2025-02-08", "description": "Suspicious - Electronics Store Lagos NG", "amount": -1299.99, "type": "debit", "balance": 10257.53}
+]

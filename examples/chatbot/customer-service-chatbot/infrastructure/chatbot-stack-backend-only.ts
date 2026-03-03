@@ -106,7 +106,7 @@ export class ChatbotStackBackendOnly extends cdk.Stack {
 
     // Output Lambda function name for testing
     new CfnOutput(this, 'AgentFunctionName', {
-      value: this.agent.agentFunction.functionName,
+      value: this.agent.agentFunction?.functionName || 'Not available',
       description: 'Lambda function name',
       exportName: `${this.stackName}-AgentFunctionName`,
     });

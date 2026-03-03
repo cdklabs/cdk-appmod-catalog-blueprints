@@ -72,7 +72,7 @@ When a user asks a question that might be answered by information in these knowl
 }
 
 export class BatchAgent extends BaseAgent {
-  public readonly agentFunction: IFunction;
+  public readonly agentFunction?: IFunction;
 
   constructor(scope: Construct, id: string, props: BatchAgentProps) {
     super(scope, id, props);

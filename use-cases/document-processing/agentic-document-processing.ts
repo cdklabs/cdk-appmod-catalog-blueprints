@@ -46,7 +46,7 @@ export class AgenticDocumentProcessing extends BedrockDocumentProcessing {
     this._agenticProcessingStepCounter++;
 
     return new LambdaInvoke(this, stepId, {
-      lambdaFunction: this._batchAgent.agentFunction,
+      lambdaFunction: this._batchAgent.agentFunction!,
       resultPath: '$.processingResult',
       resultSelector: {
         'result.$': '$.Payload.result',

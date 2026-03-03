@@ -510,9 +510,9 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The Lambda function for the agent (when using Lambda hosting). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
 
 ---
@@ -526,16 +526,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
-
-```typescript
-public readonly agentFunction: IFunction;
-```
-
-- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
@@ -556,6 +546,20 @@ public readonly encryptionKey: Key;
 ```
 
 - *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `agentFunction`<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function for the agent (when using Lambda hosting).
+
+May be undefined for non-Lambda hosting backends (e.g. AgentCore Runtime).
 
 ---
 
@@ -1077,9 +1081,9 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The Lambda function for the agent (when using Lambda hosting). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
 
 ---
@@ -1093,16 +1097,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
-
-```typescript
-public readonly agentFunction: IFunction;
-```
-
-- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
@@ -1123,6 +1117,20 @@ public readonly encryptionKey: Key;
 ```
 
 - *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `agentFunction`<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function for the agent (when using Lambda hosting).
+
+May be undefined for non-Lambda hosting backends (e.g. AgentCore Runtime).
 
 ---
 
@@ -2433,13 +2441,14 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The Lambda function for the agent (when using Lambda hosting). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.apiEndpoint">apiEndpoint</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.adapter">adapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.cfnRuntime">cfnRuntime</a></code> | <code>aws-cdk-lib.aws_bedrockagentcore.CfnRuntime</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionStore">sessionStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a></code> | *No description.* |
@@ -2455,16 +2464,6 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
-
----
-
-##### `agentFunction`<sup>Required</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction"></a>
-
-```typescript
-public readonly agentFunction: IFunction;
-```
-
-- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
@@ -2485,6 +2484,20 @@ public readonly encryptionKey: Key;
 ```
 
 - *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `agentFunction`<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function for the agent (when using Lambda hosting).
+
+May be undefined for non-Lambda hosting backends (e.g. AgentCore Runtime).
 
 ---
 
@@ -2525,6 +2538,16 @@ public readonly authenticator: IAuthenticator;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+---
+
+##### `cfnRuntime`<sup>Optional</sup> <a name="cfnRuntime" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.cfnRuntime"></a>
+
+```typescript
+public readonly cfnRuntime: CfnRuntime;
+```
+
+- *Type:* aws-cdk-lib.aws_bedrockagentcore.CfnRuntime
 
 ---
 
@@ -2933,6 +2956,156 @@ Optional web ACL ID for the distribution.
 
 ---
 
+### AgentCoreJwtAuthorizerConfig <a name="AgentCoreJwtAuthorizerConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig"></a>
+
+Custom JWT authorizer configuration for AgentCore Runtime.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.Initializer"></a>
+
+```typescript
+import { AgentCoreJwtAuthorizerConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentCoreJwtAuthorizerConfig: AgentCoreJwtAuthorizerConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.discoveryUrl">discoveryUrl</a></code> | <code>string</code> | OIDC discovery URL. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.allowedAudience">allowedAudience</a></code> | <code>string[]</code> | Allowed audiences. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.allowedClients">allowedClients</a></code> | <code>string[]</code> | Allowed client IDs. |
+
+---
+
+##### `discoveryUrl`<sup>Required</sup> <a name="discoveryUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.discoveryUrl"></a>
+
+```typescript
+public readonly discoveryUrl: string;
+```
+
+- *Type:* string
+
+OIDC discovery URL.
+
+---
+
+##### `allowedAudience`<sup>Optional</sup> <a name="allowedAudience" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.allowedAudience"></a>
+
+```typescript
+public readonly allowedAudience: string[];
+```
+
+- *Type:* string[]
+
+Allowed audiences.
+
+---
+
+##### `allowedClients`<sup>Optional</sup> <a name="allowedClients" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig.property.allowedClients"></a>
+
+```typescript
+public readonly allowedClients: string[];
+```
+
+- *Type:* string[]
+
+Allowed client IDs.
+
+---
+
+### AgentCoreRuntimeHostingAdapterProps <a name="AgentCoreRuntimeHostingAdapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps"></a>
+
+Configuration properties for AgentCoreRuntimeHostingAdapter.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.Initializer"></a>
+
+```typescript
+import { AgentCoreRuntimeHostingAdapterProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentCoreRuntimeHostingAdapterProps: AgentCoreRuntimeHostingAdapterProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.containerImageUri">containerImageUri</a></code> | <code>string</code> | ECR container image URI. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.customJwtAuthorizer">customJwtAuthorizer</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig">AgentCoreJwtAuthorizerConfig</a></code> | Custom JWT authorizer configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.endpointName">endpointName</a></code> | <code>string</code> | Runtime endpoint name. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.networkMode">networkMode</a></code> | <code>string</code> | Network mode: 'PUBLIC' or 'VPC'. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.protocolConfiguration">protocolConfiguration</a></code> | <code>string</code> | Protocol configuration: 'HTTP' \| 'MCP' \| 'A2A'. |
+
+---
+
+##### `containerImageUri`<sup>Optional</sup> <a name="containerImageUri" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.containerImageUri"></a>
+
+```typescript
+public readonly containerImageUri: string;
+```
+
+- *Type:* string
+- *Default:* Builds from agentcore-agent-handler directory
+
+ECR container image URI.
+
+If not provided, builds from the bundled handler source.
+
+---
+
+##### `customJwtAuthorizer`<sup>Optional</sup> <a name="customJwtAuthorizer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.customJwtAuthorizer"></a>
+
+```typescript
+public readonly customJwtAuthorizer: AgentCoreJwtAuthorizerConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig">AgentCoreJwtAuthorizerConfig</a>
+
+Custom JWT authorizer configuration.
+
+Omit for IAM-only auth.
+
+---
+
+##### `endpointName`<sup>Optional</sup> <a name="endpointName" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.endpointName"></a>
+
+```typescript
+public readonly endpointName: string;
+```
+
+- *Type:* string
+- *Default:* Auto-generated from agent name
+
+Runtime endpoint name.
+
+---
+
+##### `networkMode`<sup>Optional</sup> <a name="networkMode" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.networkMode"></a>
+
+```typescript
+public readonly networkMode: string;
+```
+
+- *Type:* string
+- *Default:* 'PUBLIC'
+
+Network mode: 'PUBLIC' or 'VPC'.
+
+---
+
+##### `protocolConfiguration`<sup>Optional</sup> <a name="protocolConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.protocolConfiguration"></a>
+
+```typescript
+public readonly protocolConfiguration: string;
+```
+
+- *Type:* string
+- *Default:* 'HTTP'
+
+Protocol configuration: 'HTTP' | 'MCP' | 'A2A'.
+
+---
+
 ### AgentDefinitionProps <a name="AgentDefinitionProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps"></a>
 
 Parameters that influences the behavior of the agent.
@@ -3058,6 +3231,330 @@ List of tools defined in python files.
 This tools would automatically
 be loaded by the agent. You can also use this to incorporate other specialized
 agents as tools.
+
+---
+
+### AgentHostingConfig <a name="AgentHostingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig"></a>
+
+Configuration passed to a hosting adapter's deploy method.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.Initializer"></a>
+
+```typescript
+import { AgentHostingConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentHostingConfig: AgentHostingConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.agentName">agentName</a></code> | <code>string</code> | Agent name identifier. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | IAM role for the agent runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS encryption key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.environment">environment</a></code> | <code>{[ key: string ]: string}</code> | Environment variables to set on the runtime. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.scope">scope</a></code> | <code>constructs.Construct</code> | CDK scope for creating resources. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.systemPromptBucket">systemPromptBucket</a></code> | <code>string</code> | System prompt S3 bucket name. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.systemPromptKey">systemPromptKey</a></code> | <code>string</code> | System prompt S3 key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.toolsConfig">toolsConfig</a></code> | <code>string</code> | Agent tools location definitions (JSON serialized). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | Lambda architecture (Lambda hosting only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Whether observability is enabled. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseConfigs">knowledgeBaseConfigs</a></code> | <code>string</code> | Knowledge base configs (JSON serialized). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseLayers">knowledgeBaseLayers</a></code> | <code>aws-cdk-lib.aws_lambda.ILayerVersion[]</code> | Lambda layers from knowledge bases (Lambda hosting only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseSystemPromptAddition">knowledgeBaseSystemPromptAddition</a></code> | <code>string</code> | Knowledge base system prompt addition. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.lambdaLayers">lambdaLayers</a></code> | <code>aws-cdk-lib.aws_lambda.ILayerVersion[]</code> | Lambda layers from agent definition (Lambda hosting only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda memory size in MB (Lambda hosting only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Optional VPC network configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions (Lambda hosting only). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Lambda timeout (Lambda hosting only). |
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Agent name identifier.
+
+---
+
+##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.agentRole"></a>
+
+```typescript
+public readonly agentRole: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+IAM role for the agent runtime.
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+KMS encryption key.
+
+---
+
+##### `environment`<sup>Required</sup> <a name="environment" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.environment"></a>
+
+```typescript
+public readonly environment: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: string}
+
+Environment variables to set on the runtime.
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.scope"></a>
+
+```typescript
+public readonly scope: Construct;
+```
+
+- *Type:* constructs.Construct
+
+CDK scope for creating resources.
+
+---
+
+##### `systemPromptBucket`<sup>Required</sup> <a name="systemPromptBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.systemPromptBucket"></a>
+
+```typescript
+public readonly systemPromptBucket: string;
+```
+
+- *Type:* string
+
+System prompt S3 bucket name.
+
+---
+
+##### `systemPromptKey`<sup>Required</sup> <a name="systemPromptKey" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.systemPromptKey"></a>
+
+```typescript
+public readonly systemPromptKey: string;
+```
+
+- *Type:* string
+
+System prompt S3 key.
+
+---
+
+##### `toolsConfig`<sup>Required</sup> <a name="toolsConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.toolsConfig"></a>
+
+```typescript
+public readonly toolsConfig: string;
+```
+
+- *Type:* string
+
+Agent tools location definitions (JSON serialized).
+
+---
+
+##### `architecture`<sup>Optional</sup> <a name="architecture" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.architecture"></a>
+
+```typescript
+public readonly architecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+
+Lambda architecture (Lambda hosting only).
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+
+Whether observability is enabled.
+
+---
+
+##### `knowledgeBaseConfigs`<sup>Optional</sup> <a name="knowledgeBaseConfigs" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseConfigs"></a>
+
+```typescript
+public readonly knowledgeBaseConfigs: string;
+```
+
+- *Type:* string
+
+Knowledge base configs (JSON serialized).
+
+---
+
+##### `knowledgeBaseLayers`<sup>Optional</sup> <a name="knowledgeBaseLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseLayers"></a>
+
+```typescript
+public readonly knowledgeBaseLayers: ILayerVersion[];
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.ILayerVersion[]
+
+Lambda layers from knowledge bases (Lambda hosting only).
+
+---
+
+##### `knowledgeBaseSystemPromptAddition`<sup>Optional</sup> <a name="knowledgeBaseSystemPromptAddition" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.knowledgeBaseSystemPromptAddition"></a>
+
+```typescript
+public readonly knowledgeBaseSystemPromptAddition: string;
+```
+
+- *Type:* string
+
+Knowledge base system prompt addition.
+
+---
+
+##### `lambdaLayers`<sup>Optional</sup> <a name="lambdaLayers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.lambdaLayers"></a>
+
+```typescript
+public readonly lambdaLayers: ILayerVersion[];
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.ILayerVersion[]
+
+Lambda layers from agent definition (Lambda hosting only).
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+
+Lambda memory size in MB (Lambda hosting only).
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+
+Optional VPC network configuration.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+
+Removal policy for resources.
+
+---
+
+##### `reservedConcurrentExecutions`<sup>Optional</sup> <a name="reservedConcurrentExecutions" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.reservedConcurrentExecutions"></a>
+
+```typescript
+public readonly reservedConcurrentExecutions: number;
+```
+
+- *Type:* number
+
+Reserved concurrent executions (Lambda hosting only).
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+
+Lambda timeout (Lambda hosting only).
+
+---
+
+### AgentHostingResult <a name="AgentHostingResult" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult"></a>
+
+Result returned by a hosting adapter's deploy method.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.Initializer"></a>
+
+```typescript
+import { AgentHostingResult } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const agentHostingResult: AgentHostingResult = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.endpoint">endpoint</a></code> | <code>string</code> | The agent endpoint URL or ARN. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The Lambda function (if Lambda-hosted). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.cfnRuntime">cfnRuntime</a></code> | <code>aws-cdk-lib.aws_bedrockagentcore.CfnRuntime</code> | The AgentCore CfnRuntime (if AgentCore-hosted). |
+
+---
+
+##### `endpoint`<sup>Required</sup> <a name="endpoint" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.endpoint"></a>
+
+```typescript
+public readonly endpoint: string;
+```
+
+- *Type:* string
+
+The agent endpoint URL or ARN.
+
+---
+
+##### `agentFunction`<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function (if Lambda-hosted).
+
+---
+
+##### `cfnRuntime`<sup>Optional</sup> <a name="cfnRuntime" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingResult.property.cfnRuntime"></a>
+
+```typescript
+public readonly cfnRuntime: CfnRuntime;
+```
+
+- *Type:* aws-cdk-lib.aws_bedrockagentcore.CfnRuntime
+
+The AgentCore CfnRuntime (if AgentCore-hosted).
 
 ---
 
@@ -3694,6 +4191,7 @@ const baseAgentProps: BaseAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal for the agent role's trust policy. |
 
 ---
 
@@ -3846,6 +4344,22 @@ public readonly removalPolicy: RemovalPolicy;
 - *Default:* RemovalPolicy.DESTROY
 
 Removal policy for resources created by this construct.
+
+---
+
+##### `servicePrincipal`<sup>Optional</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgentProps.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+- *Default:* ServicePrincipal('lambda.amazonaws.com')
+
+The IAM service principal for the agent role's trust policy.
+
+This is typically set by the hosting adapter (e.g., `lambda.amazonaws.com`
+for Lambda hosting, `bedrock-agentcore.amazonaws.com` for AgentCore).
 
 ---
 
@@ -4152,6 +4666,7 @@ const batchAgentProps: BatchAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal for the agent role's trust policy. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.invokeType">invokeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType">InvokeType</a></code> | Agent invocation type. |
@@ -4307,6 +4822,22 @@ public readonly removalPolicy: RemovalPolicy;
 - *Default:* RemovalPolicy.DESTROY
 
 Removal policy for resources created by this construct.
+
+---
+
+##### `servicePrincipal`<sup>Optional</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+- *Default:* ServicePrincipal('lambda.amazonaws.com')
+
+The IAM service principal for the agent role's trust policy.
+
+This is typically set by the hosting adapter (e.g., `lambda.amazonaws.com`
+for Lambda hosting, `bedrock-agentcore.amazonaws.com` for AgentCore).
 
 ---
 
@@ -7178,10 +7709,12 @@ const interactiveAgentProps: InteractiveAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal for the agent role's trust policy. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | Lambda function architecture. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | Communication adapter for client-agent interaction. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | Context strategy for conversation history management. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.hostingAdapter">hostingAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a></code> | Hosting adapter for deploying the agent runtime. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda function memory size in MB. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit">messageHistoryLimit</a></code> | <code>number</code> | Maximum number of messages to keep in conversation history. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions for the Lambda function. |
@@ -7344,6 +7877,22 @@ Removal policy for resources created by this construct.
 
 ---
 
+##### `servicePrincipal`<sup>Optional</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+- *Default:* ServicePrincipal('lambda.amazonaws.com')
+
+The IAM service principal for the agent role's trust policy.
+
+This is typically set by the hosting adapter (e.g., `lambda.amazonaws.com`
+for Lambda hosting, `bedrock-agentcore.amazonaws.com` for AgentCore).
+
+---
+
 ##### `architecture`<sup>Optional</sup> <a name="architecture" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.architecture"></a>
 
 ```typescript
@@ -7383,7 +7932,10 @@ Communication adapter for client-agent interaction.
 
 ---
 
-##### `contextStrategy`<sup>Optional</sup> <a name="contextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy"></a>
+##### ~~`contextStrategy`~~<sup>Optional</sup> <a name="contextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy"></a>
+
+- *Deprecated:* Conversation management is now handled by Strands-native
+`SlidingWindowConversationManager` in the Python handler.
 
 ```typescript
 public readonly contextStrategy: IContextStrategy;
@@ -7393,6 +7945,26 @@ public readonly contextStrategy: IContextStrategy;
 - *Default:* SlidingWindowConversationManager with 20 messages
 
 Context strategy for conversation history management.
+
+---
+
+##### `hostingAdapter`<sup>Optional</sup> <a name="hostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.hostingAdapter"></a>
+
+```typescript
+public readonly hostingAdapter: IHostingAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a>
+- *Default:* LambdaHostingAdapter
+
+Hosting adapter for deploying the agent runtime.
+
+Use `LambdaHostingAdapter` for Lambda + API Gateway (default) or
+`AgentCoreRuntimeHostingAdapter` for AgentCore Runtime hosting.
+
+When provided, `communicationAdapter`, `authenticator`, `memorySize`,
+`timeout`, `architecture`, and `reservedConcurrentExecutions` props
+are ignored (configure them on the adapter directly).
 
 ---
 
@@ -7409,7 +7981,10 @@ Lambda function memory size in MB.
 
 ---
 
-##### `messageHistoryLimit`<sup>Optional</sup> <a name="messageHistoryLimit" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit"></a>
+##### ~~`messageHistoryLimit`~~<sup>Optional</sup> <a name="messageHistoryLimit" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit"></a>
+
+- *Deprecated:* Conversation windowing is now handled by Strands-native
+`SlidingWindowConversationManager` in the Python handler (default: 20).
 
 ```typescript
 public readonly messageHistoryLimit: number;
@@ -7453,7 +8028,10 @@ Ignored if sessionStore is provided.
 
 ---
 
-##### `sessionStore`<sup>Optional</sup> <a name="sessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionStore"></a>
+##### ~~`sessionStore`~~<sup>Optional</sup> <a name="sessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionStore"></a>
+
+- *Deprecated:* Session management is now handled by Strands-native `S3SessionManager`.
+An S3 bucket is always created and passed as `SESSION_BUCKET` env var.
 
 ```typescript
 public readonly sessionStore: ISessionStore;
@@ -7641,6 +8219,109 @@ public readonly vectorStore: VectorStoreConfiguration;
 - *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.VectorStoreConfiguration">VectorStoreConfiguration</a>
 
 Vector store configuration (for Bedrock implementations).
+
+---
+
+### LambdaHostingAdapterProps <a name="LambdaHostingAdapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps"></a>
+
+Configuration properties for LambdaHostingAdapter.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.Initializer"></a>
+
+```typescript
+import { LambdaHostingAdapterProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const lambdaHostingAdapterProps: LambdaHostingAdapterProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | Lambda function architecture. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | Communication adapter for client-agent interaction. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda function memory size in MB. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions for the Lambda function. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Lambda function timeout. |
+
+---
+
+##### `architecture`<sup>Optional</sup> <a name="architecture" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.architecture"></a>
+
+```typescript
+public readonly architecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.X86_64
+
+Lambda function architecture.
+
+---
+
+##### `authenticator`<sup>Optional</sup> <a name="authenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.authenticator"></a>
+
+```typescript
+public readonly authenticator: IAuthenticator;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+- *Default:* CognitoAuthenticator
+
+Authenticator for securing API endpoints.
+
+---
+
+##### `communicationAdapter`<sup>Optional</sup> <a name="communicationAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.communicationAdapter"></a>
+
+```typescript
+public readonly communicationAdapter: ICommunicationAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+- *Default:* StreamingHttpAdapter
+
+Communication adapter for client-agent interaction.
+
+---
+
+##### `memorySize`<sup>Optional</sup> <a name="memorySize" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.memorySize"></a>
+
+```typescript
+public readonly memorySize: number;
+```
+
+- *Type:* number
+- *Default:* 1024
+
+Lambda function memory size in MB.
+
+---
+
+##### `reservedConcurrentExecutions`<sup>Optional</sup> <a name="reservedConcurrentExecutions" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.reservedConcurrentExecutions"></a>
+
+```typescript
+public readonly reservedConcurrentExecutions: number;
+```
+
+- *Type:* number
+- *Default:* No reserved concurrency
+
+Reserved concurrent executions for the Lambda function.
+
+---
+
+##### `timeout`<sup>Optional</sup> <a name="timeout" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.timeout"></a>
+
+```typescript
+public readonly timeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(15)
+
+Lambda function timeout.
 
 ---
 
@@ -8320,7 +9001,9 @@ const s3SessionManagerProps: S3SessionManagerProps = { ... }
 
 ---
 
-##### `bucket`<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.bucket"></a>
+##### ~~`bucket`~~<sup>Optional</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.bucket"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
 
 ```typescript
 public readonly bucket: IBucket;
@@ -8333,7 +9016,9 @@ S3 bucket for session storage.
 
 ---
 
-##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.encryptionKey"></a>
+##### ~~`encryptionKey`~~<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.encryptionKey"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
 
 ```typescript
 public readonly encryptionKey: IKey;
@@ -8346,7 +9031,9 @@ KMS encryption key for the session bucket.
 
 ---
 
-##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.removalPolicy"></a>
+##### ~~`removalPolicy`~~<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.removalPolicy"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
 
 ```typescript
 public readonly removalPolicy: RemovalPolicy;
@@ -8359,7 +9046,9 @@ Removal policy for the session bucket.
 
 ---
 
-##### `sessionTTL`<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.sessionTTL"></a>
+##### ~~`sessionTTL`~~<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManagerProps.property.sessionTTL"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
 
 ```typescript
 public readonly sessionTTL: Duration;
@@ -8394,7 +9083,10 @@ const slidingWindowConversationManagerProps: SlidingWindowConversationManagerPro
 
 ---
 
-##### `windowSize`<sup>Optional</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps.property.windowSize"></a>
+##### ~~`windowSize`~~<sup>Optional</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManagerProps.property.windowSize"></a>
+
+- *Deprecated:* Use Strands-native `SlidingWindowConversationManager` from
+`strands.agent.conversation_manager` instead.
 
 ```typescript
 public readonly windowSize: number;
@@ -8732,6 +9424,114 @@ Type of vector store.
 ---
 
 ## Classes <a name="Classes" id="Classes"></a>
+
+### AgentCoreRuntimeHostingAdapter <a name="AgentCoreRuntimeHostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a>
+
+AgentCore Runtime hosting adapter for InteractiveAgent.
+
+Deploys the agent as a container running on AgentCore Runtime (microVM).
+Uses L1 constructs `CfnRuntime` and `CfnRuntimeEndpoint` from
+`aws-cdk-lib/aws-bedrockagentcore`.
+
+## Architecture
+
+```
+Client → AgentCore Runtime Endpoint → Container (FastAPI on port 8080) → Bedrock
+```
+
+## Features
+
+- **Session Isolation**: microVM provides per-session isolation (no S3 session bucket needed)
+- **Managed Infrastructure**: No Lambda cold starts or timeout limits
+- **Multiple Protocols**: HTTP, MCP, or A2A protocol support
+- **Container-Based**: Standard Docker image deployment
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+declare const myPrompt: Asset;
+
+new InteractiveAgent(this, 'Agent', {
+  agentName: 'MyChatbot',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+    networkMode: 'PUBLIC',
+  }),
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.Initializer"></a>
+
+```typescript
+import { AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new AgentCoreRuntimeHostingAdapter(props?: AgentCoreRuntimeHostingAdapterProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps">AgentCoreRuntimeHostingAdapterProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps">AgentCoreRuntimeHostingAdapterProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.deploy">deploy</a></code> | Deploy AgentCore Runtime hosting infrastructure. |
+
+---
+
+##### `deploy` <a name="deploy" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.deploy"></a>
+
+```typescript
+public deploy(config: AgentHostingConfig): AgentHostingResult
+```
+
+Deploy AgentCore Runtime hosting infrastructure.
+
+###### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.deploy.parameter.config"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig">AgentHostingConfig</a>
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal that this hosting backend requires. |
+
+---
+
+##### `servicePrincipal`<sup>Required</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+
+The IAM service principal that this hosting backend requires.
+
+BaseAgent uses this to create the agent role with the correct trust policy.
+For example, Lambda hosting requires `lambda.amazonaws.com` while AgentCore
+hosting requires `bedrock-agentcore.amazonaws.com`.
+
+---
+
 
 ### BedrockModelUtils <a name="BedrockModelUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelUtils"></a>
 
@@ -9176,6 +9976,116 @@ public readonly PYTHON_FUNCTION_BUNDLING: BundlingOptions;
 Default bundling arguments for Python function.
 
 ---
+
+### LambdaHostingAdapter <a name="LambdaHostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a>
+
+Lambda hosting adapter for InteractiveAgent.
+
+Deploys the agent as a Lambda function behind Lambda Web Adapter and API Gateway
+REST API with response streaming. This is the default hosting backend.
+
+## Architecture
+
+```
+Client → POST /chat → API Gateway REST API (STREAM) → Lambda (FastAPI + LWA) → Bedrock
+Client ← SSE stream ← API Gateway ← Lambda response streaming ← Agent tokens
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.Initializer"></a>
+
+```typescript
+import { LambdaHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LambdaHostingAdapter(props?: LambdaHostingAdapterProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps">LambdaHostingAdapterProps</a></code> | *No description.* |
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps">LambdaHostingAdapterProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.deploy">deploy</a></code> | Deploy Lambda + LWA + API Gateway hosting infrastructure. |
+
+---
+
+##### `deploy` <a name="deploy" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.deploy"></a>
+
+```typescript
+public deploy(config: AgentHostingConfig): AgentHostingResult
+```
+
+Deploy Lambda + LWA + API Gateway hosting infrastructure.
+
+###### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.deploy.parameter.config"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig">AgentHostingConfig</a>
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal that this hosting backend requires. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | The authenticator. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | The communication adapter. |
+
+---
+
+##### `servicePrincipal`<sup>Required</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+
+The IAM service principal that this hosting backend requires.
+
+BaseAgent uses this to create the agent role with the correct trust policy.
+For example, Lambda hosting requires `lambda.amazonaws.com` while AgentCore
+hosting requires `bedrock-agentcore.amazonaws.com`.
+
+---
+
+##### `authenticator`<sup>Optional</sup> <a name="authenticator" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.authenticator"></a>
+
+```typescript
+public readonly authenticator: IAuthenticator;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a>
+
+The authenticator.
+
+---
+
+##### `communicationAdapter`<sup>Optional</sup> <a name="communicationAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter.property.communicationAdapter"></a>
+
+```typescript
+public readonly communicationAdapter: ICommunicationAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a>
+
+The communication adapter.
+
+---
+
 
 ### LambdaIamUtils <a name="LambdaIamUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaIamUtils"></a>
 
@@ -9742,7 +10652,7 @@ new NullConversationManager()
 
 ---
 
-##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager.environmentVariables"></a>
+##### ~~`environmentVariables`~~ <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.NullConversationManager.environmentVariables"></a>
 
 ```typescript
 public environmentVariables(): {[ key: string ]: string}
@@ -10050,7 +10960,7 @@ new S3SessionManager(scope: Construct, id: string, props?: S3SessionManagerProps
 
 ---
 
-##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.grantReadWrite"></a>
+##### ~~`grantReadWrite`~~ <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.grantReadWrite"></a>
 
 ```typescript
 public grantReadWrite(lambdaFunction: IFunction): void
@@ -10075,7 +10985,12 @@ Grant read/write permissions to a Lambda function.
 
 ---
 
-##### `bucket`<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.bucket"></a>
+##### ~~`bucket`~~<sup>Required</sup> <a name="bucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.bucket"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+The Python handler now uses Strands-native session management automatically.
+An S3 bucket is still created for the Strands session manager; this CDK class
+is no longer needed to configure session persistence.
 
 ```typescript
 public readonly bucket: IBucket;
@@ -10087,7 +11002,12 @@ The S3 bucket used for session storage.
 
 ---
 
-##### `sessionTTL`<sup>Required</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionTTL"></a>
+##### ~~`sessionTTL`~~<sup>Required</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionTTL"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+The Python handler now uses Strands-native session management automatically.
+An S3 bucket is still created for the Strands session manager; this CDK class
+is no longer needed to configure session persistence.
 
 ```typescript
 public readonly sessionTTL: Duration;
@@ -10099,7 +11019,12 @@ The session TTL duration.
 
 ---
 
-##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionBucket"></a>
+##### ~~`sessionBucket`~~<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.S3SessionManager.property.sessionBucket"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+The Python handler now uses Strands-native session management automatically.
+An S3 bucket is still created for the Strands session manager; this CDK class
+is no longer needed to configure session persistence.
 
 ```typescript
 public readonly sessionBucket: IBucket;
@@ -10165,7 +11090,7 @@ new SlidingWindowConversationManager(props?: SlidingWindowConversationManagerPro
 
 ---
 
-##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.environmentVariables"></a>
+##### ~~`environmentVariables`~~ <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.environmentVariables"></a>
 
 ```typescript
 public environmentVariables(): {[ key: string ]: string}
@@ -10182,7 +11107,11 @@ Get environment variables for Lambda configuration.
 
 ---
 
-##### `windowSize`<sup>Required</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.property.windowSize"></a>
+##### ~~`windowSize`~~<sup>Required</sup> <a name="windowSize" id="@cdklabs/cdk-appmod-catalog-blueprints.SlidingWindowConversationManager.property.windowSize"></a>
+
+- *Deprecated:* Use Strands-native `SlidingWindowConversationManager` from
+`strands.agent.conversation_manager` instead. The Python handler now handles
+conversation windowing natively.
 
 ```typescript
 public readonly windowSize: number;
@@ -10677,7 +11606,7 @@ to the agent. Different strategies enable different conversation patterns.
 
 ---
 
-##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy.environmentVariables"></a>
+##### ~~`environmentVariables`~~ <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy.environmentVariables"></a>
 
 ```typescript
 public environmentVariables(): {[ key: string ]: string}
@@ -10685,6 +11614,64 @@ public environmentVariables(): {[ key: string ]: string}
 
 Get environment variables for Lambda configuration.
 
+
+### IHostingAdapter <a name="IHostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapter">AgentCoreRuntimeHostingAdapter</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter">LambdaHostingAdapter</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a>
+
+Strategy interface for pluggable hosting backends.
+
+Hosting adapters encapsulate the infrastructure needed to run an agent.
+The default implementation is `LambdaHostingAdapter` (Lambda + LWA + API Gateway).
+`AgentCoreRuntimeHostingAdapter` provides an alternative using AgentCore Runtime.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter.deploy">deploy</a></code> | Deploy the agent hosting infrastructure. |
+
+---
+
+##### `deploy` <a name="deploy" id="@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter.deploy"></a>
+
+```typescript
+public deploy(config: AgentHostingConfig): AgentHostingResult
+```
+
+Deploy the agent hosting infrastructure.
+
+###### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter.deploy.parameter.config"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentHostingConfig">AgentHostingConfig</a>
+
+Configuration for the agent hosting.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal that this hosting backend requires. |
+
+---
+
+##### `servicePrincipal`<sup>Required</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+
+The IAM service principal that this hosting backend requires.
+
+BaseAgent uses this to create the agent role with the correct trust policy.
+For example, Lambda hosting requires `lambda.amazonaws.com` while AgentCore
+hosting requires `bedrock-agentcore.amazonaws.com`.
+
+---
 
 ### IKnowledgeBase <a name="IKnowledgeBase" id="@cdklabs/cdk-appmod-catalog-blueprints.IKnowledgeBase"></a>
 
@@ -10898,7 +11885,7 @@ The default implementation (S3SessionManager) uses S3 for durable storage.
 
 ---
 
-##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.grantReadWrite"></a>
+##### ~~`grantReadWrite`~~ <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.grantReadWrite"></a>
 
 ```typescript
 public grantReadWrite(lambdaFunction: IFunction): void
@@ -10922,7 +11909,10 @@ The Lambda function that needs access to the session store.
 
 ---
 
-##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.property.sessionBucket"></a>
+##### ~~`sessionBucket`~~<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore.property.sessionBucket"></a>
+
+- *Deprecated:* Use Strands-native `S3SessionManager` from `strands.session.s3_session_manager` instead.
+The Python handler now uses Strands-native session management automatically.
 
 ```typescript
 public readonly sessionBucket: IBucket;
