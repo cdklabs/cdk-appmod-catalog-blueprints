@@ -181,13 +181,15 @@ export class RetailBankingChatbotStack extends Stack {
     });
 
     // Grant the agent Lambda access to DynamoDB
-    transactionsTable.grantReadData(agent.agentFunction);
-    // Pass table name as env var to the agent function
-    const cfnFunction = agent.agentFunction.node.defaultChild as any;
-    cfnFunction.addPropertyOverride(
-      'Environment.Variables.TRANSACTIONS_TABLE_NAME',
-      transactionsTable.tableName,
-    );
+    if (agent.agentFunction) {
+      transactionsTable.grantReadData(agent.agentFunction);
+      // Pass table name as env var to the agent function
+      const cfnFunction = agent.agentFunction?.node.defaultChild as any;
+      cfnFunction.addPropertyOverride(
+        'Environment.Variables.TRANSACTIONS_TABLE_NAME',
+        transactionsTable.tableName,
+      );
+    }
 
     agent.node.addDependency(ingestionTrigger);
 
@@ -224,6 +226,6 @@ export class RetailBankingChatbotStack extends Stack {
     new CfnOutput(this, 'FrontendUrl', { value: frontend.url() });
     new CfnOutput(this, 'TransactionsTableName', { value: transactionsTable.tableName });
     new CfnOutput(this, 'KnowledgeBaseId', { value: knowledgeBase.attrKnowledgeBaseId });
-    new CfnOutput(this, 'AgentFunctionName', { value: agent.agentFunction.functionName });
+    new CfnOutput(this, 'AgentFunctionName', { value: agent.agentFunction?.functionName || 'Not available' });
   }
 }

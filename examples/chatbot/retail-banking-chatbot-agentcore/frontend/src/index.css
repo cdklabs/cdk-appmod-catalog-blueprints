@@ -1,0 +1,48 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e8eaed;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a365d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2a4a7f;
+}
+
+.markdown-body p { margin: 4px 0; }
+.markdown-body h2 { margin: 12px 0 4px 0; font-size: 16px; }
+.markdown-body h3 { margin: 8px 0 4px 0; font-size: 14px; }
+.markdown-body ul, .markdown-body ol { margin: 4px 0; padding-left: 20px; }
+.markdown-body li { margin: 2px 0; }
+.markdown-body table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+.markdown-body th, .markdown-body td { border: 1px solid #d1d5db; padding: 4px 8px; }
+.markdown-body th { background: #f3f4f6; }

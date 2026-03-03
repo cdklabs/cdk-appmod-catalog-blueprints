@@ -4,7 +4,7 @@ import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { createTestApp } from '../../utilities/test-utils';
-import { InteractiveAgent } from '../agents/interactive-agent';
+import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '../agents/interactive-agent';
 
 describe('InteractiveAgent CDK Nag', () => {
   const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
@@ -114,6 +114,67 @@ describe('InteractiveAgent CDK Nag', () => {
     Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
 
     // Synthesize once - validates all three agent configurations
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+  });
+
+  test('passes AWS Solutions checks for AgentCore Runtime configuration', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'AgentCoreTestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const systemPrompt = new Asset(stack, 'SystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+
+    // Scenario: AgentCore Runtime hosting
+    new InteractiveAgent(stack, 'AgentCoreAgent', {
+      agentName: 'AgentCoreAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        networkMode: 'PUBLIC',
+      }),
+    });
+
+    // Suppressions for AgentCore
+    NagSuppressions.addStackSuppressions(stack, [
+      {
+        id: 'AwsSolutions-IAM4',
+        reason: 'AgentCore runtime role requires managed policies',
+      },
+      {
+        id: 'AwsSolutions-IAM5',
+        reason: 'ECR GetAuthorizationToken requires wildcard resource. S3 and KMS wildcards are for session bucket object-level operations.',
+        appliesTo: [
+          'Resource::*',
+          'Action::s3:GetObject*',
+          'Action::s3:GetBucket*',
+          'Action::s3:List*',
+          'Action::s3:Abort*',
+          'Action::s3:DeleteObject*',
+          'Action::kms:ReEncrypt*',
+          'Action::kms:GenerateDataKey*',
+          'Resource::<AgentCoreAgentSessionManagerBucket*>/*',
+        ],
+      },
+      {
+        id: 'AwsSolutions-S1',
+        reason: 'Session storage bucket does not require access logging as it contains temporary session data',
+      },
+      {
+        id: 'AwsSolutions-L1',
+        reason: 'Auto-delete custom resource Lambda uses runtime managed by CDK',
+      },
+    ]);
+
+    Aspects.of(stack).add(new AwsSolutionsChecks({ verbose: true }));
+
     expect(() => {
       app.synth();
     }).not.toThrow();

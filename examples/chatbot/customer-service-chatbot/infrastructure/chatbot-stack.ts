@@ -138,13 +138,13 @@ export class ChatbotStack extends cdk.Stack {
 
     // Lambda Function
     new CfnOutput(this, 'AgentFunctionName', {
-      value: this.agent.agentFunction.functionName,
+      value: this.agent.agentFunction?.functionName || 'Not available',
       description: 'Lambda function name for the chat agent',
       exportName: `${this.stackName}-AgentFunctionName`,
     });
 
     new CfnOutput(this, 'AgentFunctionArn', {
-      value: this.agent.agentFunction.functionArn,
+      value: this.agent.agentFunction?.functionArn || 'Not available',
       description: 'Lambda function ARN for the chat agent',
       exportName: `${this.stackName}-AgentFunctionArn`,
     });

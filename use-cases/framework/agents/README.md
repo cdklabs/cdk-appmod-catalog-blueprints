@@ -233,7 +233,13 @@ The `InteractiveAgent` construct **extends BaseAgent** to provide real-time conv
 - **Adds**: API Gateway REST API with response streaming, S3 session management, sliding window context, Cognito authentication
 - **Strategy Interfaces**: Pluggable adapters for communication, sessions, context, and authentication
 
-### Architecture
+### Hosting Options
+
+InteractiveAgent supports two hosting backends via the `IHostingAdapter` strategy interface:
+
+#### Lambda Hosting (Default)
+
+The default `LambdaHostingAdapter` deploys the agent as a Lambda function behind Lambda Web Adapter and API Gateway REST API with response streaming.
 
 ```
 Client (fetch + ReadableStream)
@@ -250,8 +256,41 @@ The Lambda function runs a FastAPI application behind Lambda Web Adapter. When a
 1. API Gateway validates the JWT via native Cognito authorizer
 2. API Gateway invokes Lambda using `InvokeWithResponseStream`
 3. Lambda Web Adapter forwards the HTTP request to FastAPI on `localhost:8080`
-4. FastAPI loads session history from S3, applies context windowing, creates a `strands.Agent`, and streams SSE events as the agent generates tokens
+4. FastAPI uses Strands-native `S3SessionManager` and `SlidingWindowConversationManager` for session persistence and context windowing
 5. SSE chunks stream back through Lambda Web Adapter → API Gateway → Client
+
+#### AgentCore Runtime Hosting
+
+The `AgentCoreRuntimeHostingAdapter` deploys the agent as a container on AgentCore Runtime (microVM). This provides session isolation via microVM, no Lambda cold starts or 15-minute timeout limits, and support for HTTP, MCP, or A2A protocols.
+
+```
+Client → AgentCore Runtime Endpoint → Container (FastAPI on port 8080) → Bedrock
+```
+
+```typescript
+import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'MyChatbot',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+  },
+  hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+    networkMode: 'PUBLIC',
+  }),
+});
+```
+
+##### AgentCore Runtime Props
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `containerImageUri` | `string` | Builds from handler | ECR container image URI |
+| `networkMode` | `string` | `'PUBLIC'` | Network mode: `'PUBLIC'` or `'VPC'` |
+| `customJwtAuthorizer` | `object` | IAM auth | Custom JWT authorizer config |
+| `protocolConfiguration` | `string` | `'HTTP'` | Protocol: `'HTTP'`, `'MCP'`, or `'A2A'` |
+| `endpointName` | `string` | Auto-generated | Runtime endpoint name |
 
 ### Components
 
@@ -266,28 +305,15 @@ const adapter = new StreamingHttpAdapter({
 });
 ```
 
-#### S3SessionManager (Default Session Store)
+#### Session & Context Management (Strands-Native)
 
-Persists conversation state to S3 with automatic expiration via lifecycle policies. Each HTTP request loads/saves session state, enabling multi-turn conversations over stateless HTTP.
+Session persistence and conversation windowing are now handled by the Strands Agents SDK natively:
+- **Session persistence**: Uses Strands-native `S3SessionManager` (for Lambda hosting) or microVM session isolation (for AgentCore Runtime)
+- **Conversation windowing**: Uses Strands-native `SlidingWindowConversationManager` with a default window size of 20 messages
 
-```typescript
-const sessionStore = new S3SessionManager(this, 'SessionStore', {
-  sessionTTL: Duration.hours(48),
-  encryptionKey: myKmsKey,
-});
-```
+The CDK construct automatically creates an S3 bucket and passes it as the `SESSION_BUCKET` environment variable. No CDK-level configuration is needed.
 
-#### SlidingWindowConversationManager (Default Context Strategy)
-
-Maintains a fixed-size window of recent messages, automatically discarding older messages. Configurable window size (default: 20 messages).
-
-```typescript
-const contextStrategy = new SlidingWindowConversationManager({ windowSize: 50 });
-```
-
-#### NullConversationManager
-
-Disables conversation history. Each message is processed independently.
+> **Deprecated**: The `S3SessionManager`, `SlidingWindowConversationManager`, `NullConversationManager` CDK classes and the `sessionStore`, `contextStrategy`, `messageHistoryLimit` props are deprecated. They remain functional for backward compatibility but are no longer used internally. Use Strands-native equivalents in your Python handler instead.
 
 #### CognitoAuthenticator (Default Authenticator)
 

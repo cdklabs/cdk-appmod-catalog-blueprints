@@ -14,6 +14,8 @@ import {
   NullConversationManager,
   CognitoAuthenticator,
   NoAuthenticator,
+  LambdaHostingAdapter,
+  AgentCoreRuntimeHostingAdapter,
 } from '../agents/interactive-agent';
 import { BedrockKnowledgeBase } from '../agents/knowledge-base';
 
@@ -222,7 +224,7 @@ describe('InteractiveAgent', () => {
       });
     });
 
-    test('Lambda function has context strategy env vars', () => {
+    test('Lambda function does not have deprecated context strategy env vars', () => {
       new InteractiveAgent(stack, 'Agent', {
         agentName: 'TestAgent',
         agentDefinition: {
@@ -232,15 +234,15 @@ describe('InteractiveAgent', () => {
       });
 
       const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::Lambda::Function', {
-        Environment: {
-          Variables: Match.objectLike({
-            CONTEXT_ENABLED: 'true',
-            CONTEXT_STRATEGY: 'SlidingWindow',
-            CONTEXT_WINDOW_SIZE: '20',
-          }),
-        },
-      });
+      const functions = template.findResources('AWS::Lambda::Function');
+      const fn = Object.values(functions).find((f: any) =>
+        f.Properties?.FunctionName?.includes('TestAgent'),
+      ) as any;
+
+      // Context env vars should no longer be set (handled by Strands-native handler)
+      expect(fn.Properties.Environment.Variables.CONTEXT_ENABLED).toBeUndefined();
+      expect(fn.Properties.Environment.Variables.CONTEXT_STRATEGY).toBeUndefined();
+      expect(fn.Properties.Environment.Variables.CONTEXT_WINDOW_SIZE).toBeUndefined();
     });
 
     test('Lambda function has session bucket env var', () => {
@@ -974,5 +976,290 @@ describe('InteractiveAgent Knowledge Base Integration', () => {
 
     expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASES_CONFIG).toBeUndefined();
     expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION).toBeUndefined();
+  });
+});
+
+
+describe('LambdaHostingAdapter', () => {
+  let app: App;
+  let stack: Stack;
+  let systemPrompt: Asset;
+  const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
+
+  beforeEach(() => {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    systemPrompt = new Asset(stack, 'SystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+  });
+
+  test('is used by default when no hostingAdapter specified', () => {
+    const agent = new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+    });
+
+    // Should have a Lambda function and API endpoint
+    expect(agent.agentFunction).toBeDefined();
+    expect(agent.apiEndpoint).toBeDefined();
+
+    // Should have created API Gateway and Cognito resources
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      FunctionName: Match.stringLikeRegexp('TestAgent'),
+    });
+    template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
+    template.resourceCountIs('AWS::Cognito::UserPool', 1);
+  });
+
+  test('explicit LambdaHostingAdapter with custom authenticator', () => {
+    const agent = new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new LambdaHostingAdapter({
+        authenticator: new NoAuthenticator(),
+      }),
+    });
+
+    expect(agent.agentFunction).toBeDefined();
+    expect(agent.apiEndpoint).toBeDefined();
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      FunctionName: Match.stringLikeRegexp('TestAgent'),
+    });
+    // No Cognito with NoAuthenticator
+    template.resourceCountIs('AWS::Cognito::UserPool', 0);
+  });
+
+  test('hostingAdapter prop overrides top-level authenticator/communicationAdapter', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      // These should be ignored when hostingAdapter is provided
+      authenticator: new CognitoAuthenticator(),
+      hostingAdapter: new LambdaHostingAdapter({
+        authenticator: new NoAuthenticator(),
+      }),
+    });
+
+    // Adapter-level authenticator should win — no Cognito pool
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Cognito::UserPool', 0);
+  });
+});
+
+
+describe('AgentCoreRuntimeHostingAdapter', () => {
+  let app: App;
+  let stack: Stack;
+  let systemPrompt: Asset;
+  const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
+
+  beforeEach(() => {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    systemPrompt = new Asset(stack, 'SystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+  });
+
+  test('creates CfnRuntime with container URI', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        networkMode: 'PUBLIC',
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'TestAgent_runtime',
+      AgentRuntimeArtifact: {
+        ContainerConfiguration: {
+          ContainerUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        },
+      },
+      NetworkConfiguration: {
+        NetworkMode: 'PUBLIC',
+      },
+    });
+  });
+
+  test('creates CfnRuntimeEndpoint', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'TestAgent_endpoint',
+    });
+  });
+
+  test('creates single IAM role with bedrock-agentcore trust', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    const roles = template.findResources('AWS::IAM::Role');
+    // Find all roles with bedrock-agentcore trust
+    const agentCoreRoles = Object.values(roles).filter((role: any) =>
+      role.Properties.AssumeRolePolicyDocument?.Statement?.some(
+        (stmt: any) => stmt.Principal?.Service === 'bedrock-agentcore.amazonaws.com',
+      ),
+    );
+    // Should be exactly ONE role (the agent role), not a separate runtime role
+    expect(agentCoreRoles).toHaveLength(1);
+  });
+
+  test('passes environment variables', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      EnvironmentVariables: Match.objectLike({
+        MODEL_ID: Match.anyValue(),
+      }),
+    });
+  });
+
+  test('defaults to PUBLIC network mode', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      NetworkConfiguration: {
+        NetworkMode: 'PUBLIC',
+      },
+    });
+  });
+
+  test('S3 session bucket created for AgentCore hosting', () => {
+    const agent = new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    // Session bucket should be created for S3-backed persistence
+    expect(agent.sessionBucket).toBeDefined();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {});
+  });
+
+  test('no agent Lambda function created for AgentCore hosting', () => {
+    const agent = new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    expect(agent.agentFunction).toBeUndefined();
+  });
+
+  test('custom JWT authorizer configuration', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        customJwtAuthorizer: {
+          discoveryUrl: 'https://example.com/.well-known/openid-configuration',
+          allowedAudience: ['my-audience'],
+          allowedClients: ['my-client'],
+        },
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AuthorizerConfiguration: Match.objectLike({
+        CustomJWTAuthorizer: Match.objectLike({
+          DiscoveryUrl: 'https://example.com/.well-known/openid-configuration',
+        }),
+      }),
+    });
+  });
+
+  test('sets cfnRuntime property on agent', () => {
+    const agent = new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+      }),
+    });
+
+    expect(agent.cfnRuntime).toBeDefined();
   });
 });

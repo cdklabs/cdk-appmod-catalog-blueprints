@@ -91,6 +91,16 @@ export interface BaseAgentProps extends ObservableProps {
   readonly agentName: string;
 
   /**
+   * The IAM service principal for the agent role's trust policy.
+   *
+   * This is typically set by the hosting adapter (e.g., `lambda.amazonaws.com`
+   * for Lambda hosting, `bedrock-agentcore.amazonaws.com` for AgentCore).
+   *
+   * @default ServicePrincipal('lambda.amazonaws.com')
+   */
+  readonly servicePrincipal?: ServicePrincipal;
+
+  /**
      * Agent related parameters
      */
   readonly agentDefinition: AgentDefinitionProps;
@@ -183,7 +193,11 @@ export interface BaseAgentProps extends ObservableProps {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html
  */
 export abstract class BaseAgent extends Construct {
-  public abstract readonly agentFunction: IFunction;
+  /**
+   * The Lambda function for the agent (when using Lambda hosting).
+   * May be undefined for non-Lambda hosting backends (e.g. AgentCore Runtime).
+   */
+  public abstract readonly agentFunction?: IFunction;
   public readonly bedrockModel?: BedrockModelProps;
   public readonly agentRole: Role;
   public readonly encryptionKey: Key;
@@ -253,7 +267,7 @@ export abstract class BaseAgent extends Construct {
     }
 
     this.agentRole = new Role(this, `Agent-${props.agentName}-Role`, {
-      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: props.servicePrincipal || new ServicePrincipal('lambda.amazonaws.com'),
       inlinePolicies,
     });
 

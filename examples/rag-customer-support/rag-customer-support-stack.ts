@@ -255,12 +255,12 @@ export class RagCustomerSupportStack extends Stack {
     });
 
     new CfnOutput(this, 'AgentFunctionArn', {
-      value: supportAgent.agentFunction.functionArn,
+      value: supportAgent.agentFunction?.functionArn || 'Not available',
       description: 'Lambda function ARN for invoking the agent',
     });
 
     new CfnOutput(this, 'AgentFunctionName', {
-      value: supportAgent.agentFunction.functionName,
+      value: supportAgent.agentFunction?.functionName || 'Not available',
       description: 'Lambda function name for invoke-agent.sh',
     });
   }
