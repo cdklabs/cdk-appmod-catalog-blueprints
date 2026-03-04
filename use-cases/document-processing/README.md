@@ -218,19 +218,24 @@ Use LocalStack variants to route runtime SDK calls to LocalStack endpoints witho
 
 ```typescript
 import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
   LocalStackBedrockDocumentProcessing,
   LocalStackAgenticDocumentProcessing
 } from '@cdklabs/cdk-appmod-catalog-blueprints';
 
+process.env.OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? DEFAULT_LOCALSTACK_OLLAMA_BASE_URL;
+
 new LocalStackBedrockDocumentProcessing(this, 'LocalDocProcessor', {
   localStack: {
-    endpointUrl: 'http://host.docker.internal:4566'
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
   },
   classificationBedrockModel: {
-    customModelId: 'ollama.llama3.2'
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
   },
   processingBedrockModel: {
-    customModelId: 'ollama.llama3.2'
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
   }
 });
 ```
