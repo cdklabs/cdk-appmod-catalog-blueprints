@@ -1,11 +1,11 @@
 import * as path from 'path';
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { createTestApp } from '../../utilities/test-utils';
 import {
   DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
   DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
 } from '../../framework/localstack';
+import { createTestApp } from '../../utilities/test-utils';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 import { LocalStackBedrockDocumentProcessing } from '../localstack-bedrock-document-processing';
 
