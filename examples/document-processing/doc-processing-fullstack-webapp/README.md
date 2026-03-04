@@ -56,7 +56,7 @@ This example demonstrates a complete full-stack web application that provides a 
 # Install dependencies
 npm install
 
-# Build and deploy all stacks
+# Deploy all stacks
 npx cdk deploy --all --require-approval never
 
 # Deploy individual stacks (optional)

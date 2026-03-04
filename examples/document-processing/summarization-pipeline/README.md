@@ -77,14 +77,6 @@ Install dependencies:
 npm install
 ```
 
-## Build
-
-Compile TypeScript to JavaScript:
-
-```bash
-npm run build
-```
-
 ## Deployment
 
 Deploy the stack to your AWS account:
@@ -104,8 +96,6 @@ The pipeline will automatically process uploaded documents and store summaries w
 
 ## Useful Commands
 
-- `npm run build`   - Compile TypeScript to JavaScript
-- `npm run watch`   - Watch for changes and compile
 - `npm run test`    - Run unit tests
 - `cdk deploy`      - Deploy this stack to your default AWS account/region
 - `cdk diff`        - Compare deployed stack with current state
