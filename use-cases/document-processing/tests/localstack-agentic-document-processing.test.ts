@@ -2,11 +2,11 @@ import * as path from 'path';
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { createTestApp } from '../../utilities/test-utils';
 import {
   DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
   DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
 } from '../../framework/localstack';
+import { createTestApp } from '../../utilities/test-utils';
 import { LocalStackAgenticDocumentProcessing } from '../localstack-agentic-document-processing';
 
 class TestableLocalStackAgenticDocumentProcessing extends LocalStackAgenticDocumentProcessing {
