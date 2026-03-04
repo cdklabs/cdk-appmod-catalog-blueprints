@@ -68,6 +68,19 @@ export interface ResolvedLocalStackIntegrationConfig {
   readonly bedrockAgentRuntimeEndpointUrl: string;
 }
 
+/**
+ * Default local model ID used for LocalStack/Ollama sandbox examples and tests.
+ */
+export const DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID = 'ollama.qwen3.5:9b';
+/**
+ * LocalStack edge endpoint commonly used by containerized local runtimes.
+ */
+export const DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL = 'http://host.docker.internal:4566';
+/**
+ * Ollama endpoint commonly used by containerized local runtimes.
+ */
+export const DEFAULT_LOCALSTACK_OLLAMA_BASE_URL = 'http://host.docker.internal:11434';
+
 export class LocalStackIntegrationUtils {
   public static readonly DEFAULT_ENDPOINT_URL = 'http://localhost.localstack.cloud:4566';
 
