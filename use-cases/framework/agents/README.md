@@ -176,19 +176,26 @@ const agent = new BatchAgent(this, 'DocumentAnalysisAgent', {
 Use `LocalStackBatchAgent` when running with LocalStack:
 
 ```typescript
-import { LocalStackBatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+  LocalStackBatchAgent
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+process.env.OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? DEFAULT_LOCALSTACK_OLLAMA_BASE_URL;
 
 new LocalStackBatchAgent(this, 'LocalAgent', {
   agentName: 'LocalAgent',
   prompt: 'Analyze the input document.',
   agentDefinition: {
     bedrockModel: {
-      customModelId: 'ollama.llama3.2'
+      customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
     },
     systemPrompt: myPromptAsset
   },
   localStack: {
-    endpointUrl: 'http://host.docker.internal:4566'
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
   }
 });
 ```
