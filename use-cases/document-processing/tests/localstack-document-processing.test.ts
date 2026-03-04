@@ -2,6 +2,10 @@ import * as path from 'path';
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { createTestApp } from '../../utilities/test-utils';
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+} from '../../framework/localstack';
 import { BedrockDocumentProcessing } from '../bedrock-document-processing';
 import { LocalStackBedrockDocumentProcessing } from '../localstack-bedrock-document-processing';
 
@@ -24,14 +28,14 @@ describe('LocalStackBedrockDocumentProcessing', () => {
 
     new LocalStackBedrockDocumentProcessing(stack, 'LocalStackBedrock', {
       classificationBedrockModel: {
-        customModelId: 'ollama.llama3.2',
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
         useCrossRegionInference: true,
       },
       processingBedrockModel: {
-        customModelId: 'ollama.llama3.2',
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
       },
       localStack: {
-        endpointUrl: 'http://host.docker.internal:4566',
+        endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
       },
     });
 
@@ -41,10 +45,10 @@ describe('LocalStackBedrockDocumentProcessing', () => {
       Environment: {
         Variables: Match.objectLike({
           INVOKE_TYPE: 'classification',
-          MODEL_ID: 'ollama.llama3.2',
+          MODEL_ID: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
           LOCALSTACK_ENABLED: 'true',
-          AWS_ENDPOINT_URL_BEDROCK_RUNTIME: 'http://host.docker.internal:4566',
-          AWS_ENDPOINT_URL_S3: 'http://host.docker.internal:4566',
+          AWS_ENDPOINT_URL_BEDROCK_RUNTIME: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+          AWS_ENDPOINT_URL_S3: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
         }),
       },
     });
@@ -53,7 +57,7 @@ describe('LocalStackBedrockDocumentProcessing', () => {
       Environment: {
         Variables: Match.objectLike({
           STATE_MACHINE_ARN: Match.anyValue(),
-          AWS_ENDPOINT_URL_STEPFUNCTIONS: 'http://host.docker.internal:4566',
+          AWS_ENDPOINT_URL_STEPFUNCTIONS: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
         }),
       },
     });
@@ -65,7 +69,7 @@ describe('LocalStackBedrockDocumentProcessing', () => {
 
     const processing = new TestableLocalStackBedrockDocumentProcessing(stack, 'LocalStackBedrockRuntime', {
       classificationBedrockModel: {
-        customModelId: 'ollama.llama3.2',
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
       },
     });
 

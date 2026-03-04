@@ -4,6 +4,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { createTestApp } from '../../utilities/test-utils';
 import { LocalStackBatchAgent } from '../agents/localstack-batch-agent';
+import { DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID, DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL } from '../localstack';
 
 class TestableLocalStackBatchAgent extends LocalStackBatchAgent {
   public runtimeEntryPath(): string {
@@ -25,12 +26,12 @@ describe('LocalStackBatchAgent', () => {
       prompt: 'Analyze this document',
       agentDefinition: {
         bedrockModel: {
-          customModelId: 'ollama.llama3.2',
+          customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
         },
         systemPrompt,
       },
       localStack: {
-        endpointUrl: 'http://host.docker.internal:4566',
+        endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
       },
     });
 
@@ -39,10 +40,10 @@ describe('LocalStackBatchAgent', () => {
       Environment: {
         Variables: Match.objectLike({
           LOCALSTACK_ENABLED: 'true',
-          AWS_ENDPOINT_URL: 'http://host.docker.internal:4566',
-          AWS_ENDPOINT_URL_S3: 'http://host.docker.internal:4566',
-          AWS_ENDPOINT_URL_BEDROCK_RUNTIME: 'http://host.docker.internal:4566',
-          AWS_ENDPOINT_URL_BEDROCK_AGENT_RUNTIME: 'http://host.docker.internal:4566',
+          AWS_ENDPOINT_URL: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+          AWS_ENDPOINT_URL_S3: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+          AWS_ENDPOINT_URL_BEDROCK_RUNTIME: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+          AWS_ENDPOINT_URL_BEDROCK_AGENT_RUNTIME: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
         }),
       },
     });
@@ -61,7 +62,7 @@ describe('LocalStackBatchAgent', () => {
       prompt: 'Analyze this document',
       agentDefinition: {
         bedrockModel: {
-          customModelId: 'ollama.llama3.2',
+          customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
         },
         systemPrompt,
       },
