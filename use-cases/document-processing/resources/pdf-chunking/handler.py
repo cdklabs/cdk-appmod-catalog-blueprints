@@ -68,8 +68,23 @@ structured_logger = get_logger(__name__)
 logger = logging.getLogger()
 logger.setLevel(os.environ.get('LOG_LEVEL', 'INFO'))
 
+def _resolve_endpoint_url(*service_env_keys: str) -> Optional[str]:
+    for key in service_env_keys:
+        endpoint = os.getenv(key)
+        if endpoint:
+            return endpoint
+    return None
+
+
+def _create_boto3_client(service_name: str, *service_env_keys: str):
+    endpoint_url = _resolve_endpoint_url(*service_env_keys, 'AWS_ENDPOINT_URL')
+    if endpoint_url:
+        return boto3.client(service_name, endpoint_url=endpoint_url)
+    return boto3.client(service_name)
+
+
 # Initialize AWS clients
-s3_client = boto3.client('s3')
+s3_client = _create_boto3_client('s3', 'AWS_ENDPOINT_URL_S3')
 
 # Get Powertools metrics instance
 metrics = get_metrics()

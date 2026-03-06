@@ -26,6 +26,16 @@ export interface BedrockModelProps {
   readonly fmModelId?: FoundationModelIdentifier;
 
   /**
+   * Direct model ID override.
+   *
+   * Use this when invoking a model ID not available in `FoundationModelIdentifier`,
+   * for example LocalStack Bedrock/Ollama-backed model IDs.
+   *
+   * When provided, this value is used as-is for runtime invocation.
+   */
+  readonly customModelId?: string;
+
+  /**
      * Enable cross-region inference for Bedrock models to improve availability and performance.
      * When enabled, uses inference profiles instead of direct model invocation.
      * @default false
@@ -41,13 +51,25 @@ export interface BedrockModelProps {
 
 export class BedrockModelUtils {
   public static deriveActualModelId(props?: BedrockModelProps): string {
-    const { fmModelId, crossRegionPrefix } = BedrockModelUtils.deriveDefaults(props);
-    return props?.useCrossRegionInference ? `${crossRegionPrefix}.${fmModelId.modelId}` : fmModelId.modelId;
+    const { modelId, crossRegionPrefix, usingCustomModelId } = BedrockModelUtils.deriveDefaults(props);
+    if (usingCustomModelId) {
+      return modelId;
+    }
+    return props?.useCrossRegionInference ? `${crossRegionPrefix}.${modelId}` : modelId;
   }
 
   public static generateModelIAMPermissions(scope: Construct, props?: BedrockModelProps): PolicyStatement {
     const { account, region } = Stack.of(scope);
-    const { fmModelId, crossRegionPrefix } = BedrockModelUtils.deriveDefaults(props);
+    const { modelId, crossRegionPrefix, usingCustomModelId } = BedrockModelUtils.deriveDefaults(props);
+
+    const resources = [
+      `arn:aws:bedrock:*::foundation-model/${modelId}`,
+    ];
+
+    // Preserve current behavior for AWS foundation models with optional inference profile access.
+    if (!usingCustomModelId) {
+      resources.push(`arn:aws:bedrock:${region}:${account}:inference-profile/${crossRegionPrefix}.${modelId}`);
+    }
 
     return new PolicyStatement({
       effect: Effect.ALLOW,
@@ -55,19 +77,19 @@ export class BedrockModelUtils {
         'bedrock:InvokeModel',
         'bedrock:InvokeModelWithResponseStream',
       ],
-      resources: [
-        `arn:aws:bedrock:*::foundation-model/${fmModelId.modelId}`,
-        `arn:aws:bedrock:${region}:${account}:inference-profile/${crossRegionPrefix}.${fmModelId.modelId}`,
-      ],
+      resources,
     });
   }
 
   private static deriveDefaults(props?: BedrockModelProps): Record<string, any> {
     const fmModelId = props?.fmModelId || FoundationModelIdentifier.ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0;
+    const usingCustomModelId = !!props?.customModelId;
+    const modelId = props?.customModelId || fmModelId.modelId;
     const crossRegionPrefix = props?.crossRegionInferencePrefix || BedrockCrossRegionInferencePrefix.US;
 
     return {
-      fmModelId,
+      modelId,
+      usingCustomModelId,
       crossRegionPrefix,
     };
   }

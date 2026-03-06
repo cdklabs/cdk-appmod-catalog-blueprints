@@ -1,0 +1,5 @@
+boto3>=1.26.0
+aws-lambda-powertools
+urllib3>=1.26.0,<2.0.0
+aws-xray-sdk
+PyPDF2>=3.0.0
