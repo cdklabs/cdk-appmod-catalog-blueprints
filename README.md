@@ -75,22 +75,14 @@ npm install @cdklabs/cdk-appmod-catalog-blueprints
 ```
 
 ```typescript
-import { InteractiveAgent, AgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
-// Build a chatbot
-const chatbot = new InteractiveAgent(this, 'MyChatbot', {
+new InteractiveAgent(this, 'MyChatbot', {
   agentName: 'support-bot',
   agentDefinition: {
     bedrockModel: { useCrossRegionInference: true },
-    systemPrompt: myPrompt,
-  },
-});
-
-// Build a document processor
-const processor = new AgenticDocumentProcessing(this, 'Processor', {
-  processingAgentParameters: {
-    agentName: 'doc-processor',
-    agentDefinition: { systemPrompt, tools },
+    systemPrompt: new Asset(this, 'Prompt', { path: './prompt.txt' }),
   },
 });
 ```
