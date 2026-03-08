@@ -699,6 +699,27 @@ Run `cdk deploy`.
 - [ ] All commands tested and working
 - [ ] CloudFormation outputs for important resources
 - [ ] Cleanup instructions verified
+- [ ] **Documentation updated** (see below)
+
+## Documentation Updates (REQUIRED)
+
+When adding a new example, you MUST update these files:
+
+1. **`examples/README.md`** — Add to the appropriate category table (AI Chatbots & Assistants, Intelligent Document Processing)
+2. **`README.md`** (root) — Add to "What You Can Build" section with hyperlinked constructs
+3. **`use-cases/README.md`** — Add to "Ready-to-Deploy Solutions" table
+4. **Related construct README** — Add to "Example Implementations" section in the README of the construct(s) your example uses
+
+**Table format with hyperlinked constructs:**
+```markdown
+| [**Solution Name**](./path/to/example/) | Brief description | [ConstructName](./use-cases/path/), [AnotherConstruct](./use-cases/path/) |
+```
+
+**Construct documentation paths:**
+- InteractiveAgent, BatchAgent, BaseAgent → `./use-cases/framework/agents/`
+- BedrockKnowledgeBase → `./use-cases/framework/agents/knowledge-base/`
+- AgenticDocumentProcessing, BedrockDocumentProcessing, BaseDocumentProcessing → `./use-cases/document-processing/`
+- Frontend → `./use-cases/webapp/`
 
 ## Summary: Examples vs Constructs
 

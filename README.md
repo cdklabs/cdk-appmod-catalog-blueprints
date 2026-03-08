@@ -1,130 +1,232 @@
 # AppMod Catalog Blueprints
 
-[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
-[![Website](https://img.shields.io/badge/website-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
-[![Package](https://img.shields.io/badge/package-construct--hub-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
+> **Build customizable, well-architected applications on AWS in minutes, not months.**
 
-Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of use case-driven infrastructure solution blueprints built using AWS well-architected best practices. Designed as composable multi-layered building blocks using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (CDK) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints offer use case-driven solutions with multiple implementation pathways and industry-specific implementations to accelerate serverless development and modernization on AWS.
+[![GitHub](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
+[![npm version](https://img.shields.io/npm/v/@cdklabs/cdk-appmod-catalog-blueprints)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
+[![npm downloads](https://img.shields.io/npm/dt/@cdklabs/cdk-appmod-catalog-blueprints?label=npm%20downloads)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
+[![Construct Hub](https://img.shields.io/badge/construct--hub-cdklabs-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
 
-**Key Benefits:**
-- **Use case-driven solutions**: Purpose-built blueprints for common business scenarios like document processing, web applications, and AI workflows, with industry-specific implementations like insurance claims processing
-- **Multi-layered approach**: Infrastructure Foundation → General Use Cases → Industry Examples, allowing you to start with proven patterns and customize as needed.
+Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of **use case-driven infrastructure blueprints** and **industry-aligned solutions** built on AWS Well-Architected best practices. Designed as composable, multi-layered [AWS CDK](https://aws.amazon.com/cdk/) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints accelerate serverless development and modernization with multiple implementation pathways — from ready-to-deploy solutions to fully customizable building blocks.
+
+**Why This Library?**
+- **Use case-driven**: Purpose-built for real business problems — AI workflows, document processing, event-driven architectures, web applications
+- **Multi-layered approach**: Infrastructure Foundation → General Use Cases → Industry Solutions — start with proven patterns, customize as needed
 - **Composable architecture**: Mix and match independent components with standardized interfaces
-- **Enterprise-ready**: Built-in security, compliance, and AWS Well-Architected best practices
-- **Multi-language support**: Available in TypeScript, Python, Java, and .NET via [JSII](https://aws.github.io/jsii/)
+- **Enterprise-ready security**: Built-in compliance, encryption, least-privilege IAM, and CDK Nag validation
+- **Multi-language**: TypeScript, Python, Java, .NET via [JSII](https://aws.github.io/jsii/)
 
-## How to Use This Library
+---
 
-Get started by exploring the [use case constructs](use-cases) and deployable [examples](examples). Learn more from [documentation](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/) and [Construct Hub](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints).
+## Deploy in 3 Commands
+
+Pick any solution from [the catalog below](#what-you-can-build) and deploy:
+
+```bash
+git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
+cd cdk-appmod-catalog-blueprints/examples/chatbot/customer-service-chatbot  # or any other example
+npm install && npm run deploy
+```
+
+**That's it.** In this example, you now have a well-architected AI chatbot with streaming, authentication, and a React frontend. Swap the path for any other solution — fraud detection, document processing, RAG support, and more.
+
+---
+
+## Two Ways to Use This Library
 
 | Approach | Best For | Get Started |
 |----------|----------|-------------|
-| **🚀 Rapid Deployment** | Quick evaluation, immediate solutions, proof-of-concepts | Use [examples](./examples/) - deploy complete solutions in minutes with sensible defaults and AWS Well-Architected best practices |
-| **🔧 Custom Development** | Specific requirements, enterprise integration, tailored solutions | Use [individual constructs](./use-cases/) - override defaults, inject custom logic, configure for your environment |
+| **🚀 Deploy a Solution** | Quick evaluation, immediate value, proof-of-concepts | Pick from [ready-to-deploy solutions](#what-you-can-build) below — deploy in minutes with sensible defaults |
+| **🔧 Build Custom** | Specific requirements, enterprise integration, tailored applications | Use [individual constructs](#building-blocks) — import into your CDK project, override defaults, inject custom logic |
 
-## Use Case Building Blocks
+---
 
-### Core Use Cases
+## What You Can Build
 
-| Use Case | Description | Quick Deploy Examples |
-|----------|-------------|----------------------|
-| **[Document Processing](./use-cases/document-processing/)** | Intelligent document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](./examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](./examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
-| **[Web Application](./use-cases/webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](./examples/document-processing/doc-processing-fullstack-webapp/) |
+### AI Chatbots & Assistants
 
-### Foundation and Utilities
+| Solution | What It Does | Constructs Used |
+|----------|--------------|-----------------|
+| [**Customer Service Chatbot**](./examples/chatbot/customer-service-chatbot/) | Real-time chatbot with streaming and session management | [InteractiveAgent](./use-cases/framework/agents/), [Frontend](./use-cases/webapp/) |
+| [**Retail Banking Chatbot**](./examples/chatbot/retail-banking-chatbot/) | Banking chatbot with RAG knowledge base and transaction lookup | [InteractiveAgent](./use-cases/framework/agents/), [BedrockKnowledgeBase](./use-cases/framework/agents/knowledge-base/), [Frontend](./use-cases/webapp/) |
+| [**Retail Banking Chatbot (AgentCore)**](./examples/chatbot/retail-banking-chatbot-agentcore/) | High-availability banking bot on AgentCore Runtime | [InteractiveAgent](./use-cases/framework/agents/), [BedrockKnowledgeBase](./use-cases/framework/agents/knowledge-base/) |
+| [**RAG Customer Support**](./examples/rag-customer-support/) | Knowledge-powered Q&A for e-commerce support | [BatchAgent](./use-cases/framework/agents/), [BedrockKnowledgeBase](./use-cases/framework/agents/knowledge-base/) |
 
-| Component | Description |
-|-----------|-------------|
-| **[Agentic AI Framework](./use-cases/framework/agents/)** | Composable enterprise framework for building intelligent AI agents that can be mixed and matched across diverse use cases - from document processing to conversational AI |
-| **[Infrastructure Foundation](./use-cases/framework/foundation/)** | Core infrastructure components including VPC networking, access logging, and EventBridge integration |
-| **[Observability & Monitoring](./use-cases/utilities/#observability)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
-| **[Data Masking](./use-cases/utilities/#data-masking)** | Lambda layer for data masking and PII protection in serverless applications |
+### Intelligent Document Processing
 
-## Getting Started
+| Solution | What It Does | Constructs Used |
+|----------|--------------|-----------------|
+| [**Insurance Claims Portal**](./examples/document-processing/doc-processing-fullstack-webapp/) | End-to-end claims processing with web UI | [AgenticDocumentProcessing](./use-cases/document-processing/), [Frontend](./use-cases/webapp/) |
+| [**Fraud Detection**](./examples/document-processing/fraud-detection/) | AI-powered document fraud analysis with risk scoring | [AgenticDocumentProcessing](./use-cases/document-processing/) |
+| [**Document Summarization**](./examples/document-processing/summarization-pipeline/) | Multi-format summarization with semantic search | [BedrockDocumentProcessing](./use-cases/document-processing/) |
+| [**Agentic Document Processing**](./examples/document-processing/agentic-document-processing/) | Advanced document processing with AI reasoning | [AgenticDocumentProcessing](./use-cases/document-processing/) |
+| [**Bedrock Document Processing**](./examples/document-processing/bedrock-document-processing/) | Document classification and extraction pipeline | [BedrockDocumentProcessing](./use-cases/document-processing/) |
+| [**Minimal Document Processing**](./examples/document-processing/minimal-bedrock-doc-processing/) | Zero-config document processing starter | [BedrockDocumentProcessing](./use-cases/document-processing/) |
 
-### Environment Setup
+---
+
+## Building Blocks
+
+Use individual constructs to build custom applications:
+
 ```bash
-# Configure AWS credentials and region
-aws configure
-# OR set AWS profile: export AWS_PROFILE=your-profile-name
-
-# Bootstrap your AWS environment (one-time setup)
-npx cdk bootstrap
+npm install @cdklabs/cdk-appmod-catalog-blueprints
 ```
 
-### Quick Deploy (Complete Solutions)
-Deploy working examples in minutes for immediate value:
+```typescript
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 
-```bash
-# Clone the repository
-git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
-
-# Deploy complete insurance claims processing solution
-cd examples/document-processing/doc-processing-fullstack-webapp
-npm install && npm run deploy
-# Full AI-powered solution with web interface deployed
-
-# Or deploy basic document processing
-cd examples/document-processing/bedrock-document-processing
-npm install && npm run deploy
-```
-
-### Using Individual Constructs
-Add to your existing CDK projects for custom solutions:
-
-```bash
-# Install the library
-npm install @cdklabs/appmod-catalog-blueprints
-
-# Use in your CDK code
-import { AgenticDocumentProcessing, WebApp } from '@cdklabs/appmod-catalog-blueprints';
-
-const docProcessor = new AgenticDocumentProcessing(this, 'Processor', {
+new InteractiveAgent(this, 'MyChatbot', {
+  agentName: 'support-bot',
   agentDefinition: {
     bedrockModel: { useCrossRegionInference: true },
-    systemPrompt: myPrompt,
-    tools: [myTools]
-  }
+    systemPrompt: new Asset(this, 'Prompt', { path: './prompt.txt' }),
+  },
 });
 ```
 
-## Key Design Principles
+### Available Constructs
 
-AppMod Catalog Blueprints is built on Object-Oriented Programming (OOP) principles, providing a structured approach to infrastructure development through core design concepts:
+| Construct | What It Does |
+|-----------|--------------|
+| [**InteractiveAgent**](./use-cases/framework/agents/) | Real-time chatbots with SSE streaming, sessions, and auth |
+| [**BatchAgent**](./use-cases/framework/agents/) | Async AI processing for document analysis |
+| [**BaseAgent**](./use-cases/framework/agents/) | Abstract base for custom agent implementations |
+| [**AgenticDocumentProcessing**](./use-cases/document-processing/) | Document workflows with AI agents and tools |
+| [**BedrockDocumentProcessing**](./use-cases/document-processing/) | Document classification and extraction |
+| [**BaseDocumentProcessing**](./use-cases/document-processing/) | Abstract base for custom document processing |
+| [**BedrockKnowledgeBase**](./use-cases/framework/agents/knowledge-base/) | RAG retrieval with access control |
+| [**Frontend**](./use-cases/webapp/) | Static web hosting with CloudFront CDN |
+
+### Foundation & Utilities
+
+| Component | What It Does |
+|-----------|--------------|
+| [**Network**](./use-cases/framework/foundation/) | VPC with subnets and endpoints |
+| [**Observability**](./use-cases/utilities/) | Logging, tracing, monitoring with Lambda Powertools |
+| [**DataMasking**](./use-cases/utilities/) | PII protection Lambda layer |
+
+---
+
+## Architecture
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Your Application                              │
+├─────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ Interactive │  │   Batch     │  │  Document   │  │   Frontend  │ │
+│  │   Agent     │  │   Agent     │  │ Processing  │  │   (React)   │ │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘ │
+├─────────┼────────────────┼────────────────┼────────────────┼────────┤
+│         │                │                │                │        │
+│  ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐ │
+│  │  Bedrock    │  │    Step     │  │   Lambda    │  │ CloudFront  │ │
+│  │  + Cognito  │  │  Functions  │  │   + S3      │  │   + S3      │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
+├─────────────────────────────────────────────────────────────────────┤
+│                    Foundation (Network, Observability)               │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Multi-Layered Design
+
+The library uses a multi-layered architecture that bridges business requirements and technical implementation:
+
+| Layer | What It Is | Purpose |
+|-------|------------|---------|
+| **Infrastructure Foundation** | Abstract base classes (`BaseAgent`, `BaseDocumentProcessing`) | Standardized interfaces and contracts — extend for custom implementations |
+| **General Use Case Implementation** | Concrete classes (`InteractiveAgent`, `BedrockDocumentProcessing`) | Configurable implementations for common patterns — use directly or extend |
+| **Industry-Aligned Solutions** | Deployable examples (`examples/`) | Pre-configured for specific domains (insurance, banking, e-commerce) — deploy as-is or use as reference |
 
 ### Composable Architecture
 
-Build complex enterprise systems by combining independent, reusable components with standardized interfaces.
+Build complex systems by combining independent, reusable components:
 
-- **Independent components** with clear interfaces and loose coupling for maximum flexibility
-- **Mix and match building blocks** to create custom solutions across different contexts and use cases  
-- **Scalable composition** that maintains consistency while enabling incremental adoption and gradual modernization
+- **Independent components** with clear interfaces and loose coupling
+- **Mix and match** constructs across different contexts and use cases
+- **Pluggable strategies** for networking, observability, and event handling
+- **Scalable composition** — incremental adoption and gradual modernization
 
-### Multi-Layered Building Blocks Architecture
+---
 
-Our blueprints use a multi-layered architecture that bridges the gap between business requirements and technical implementation:
+## Getting Started
 
-| Layer | Implementation Type | Purpose | Key Features |
-|-------|-------------------|---------|--------------|
-| **Infrastructure Foundation** | Abstract base classes | Shared infrastructure components and common services | • Standardized interfaces and contracts<br/>• Extensible foundation for custom implementations |
-| **General Use Case Implementation** | Concrete implementation classes | Implementations for common patterns across industries | • Configurable parameters for different environments<br/>• Abstract method implementations with general-purpose solutions |
-| **Industry-Aligned Implementation** | Configured implementation examples | Pre-configured solutions for specific business domains | • Industry-specific validation rules and workflows<br/>• Built-in compliance requirements and domain expertise |
+### Prerequisites
 
-### Security & Compliance
+```bash
+# Configure AWS credentials
+aws configure
+# OR: export AWS_PROFILE=your-profile-name
 
-All components include enterprise-grade security by default:
-- **CDK Nag Integration**: Automated security compliance checking
-- **AWS Well-Architected**: Security, reliability, and performance best practices
-- **Encryption & IAM**: At-rest/in-transit encryption with least-privilege access
-- **Compliance Reports**: Generate reports with `npm test -- --testPathPattern="nag.test.ts"`
+# Bootstrap CDK (one-time per account/region)
+npx cdk bootstrap
+```
+
+### Option 1: Deploy a Solution
+
+```bash
+git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
+cd cdk-appmod-catalog-blueprints/examples/chatbot/customer-service-chatbot
+npm install && npm run deploy
+```
+
+### Option 2: Use Constructs in Your Project
+
+```bash
+npm install @cdklabs/cdk-appmod-catalog-blueprints
+```
+
+```typescript
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+new InteractiveAgent(this, 'MyChatbot', {
+  agentName: 'my-bot',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt: new Asset(this, 'Prompt', { path: './prompt.txt' }),
+  },
+});
+```
+
+---
+
+## Security & Compliance
+
+All constructs include enterprise-grade security by default:
+
+| Feature | What You Get |
+|---------|--------------|
+| **CDK Nag Integration** | Automated security compliance checking |
+| **AWS Well-Architected** | Security, reliability, and performance best practices |
+| **Encryption** | KMS at rest, TLS in transit — always on |
+| **IAM** | Least-privilege, resource-scoped permissions |
+| **Compliance Reports** | Generate with `npm test -- --testPathPattern="nag.test.ts"` |
+
+---
+
+## Documentation
+
+- [**Website**](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/) — Full documentation and guides
+- [**Construct Hub**](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/) — API reference
+- [**Examples**](./examples/) — Complete deployable solutions
+- [**Building Blocks**](./use-cases/) — Individual construct documentation
+
+---
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/CONTRIBUTING.md) for detailed guidelines on how to contribute to this project.
+We welcome contributions! See [CONTRIBUTING.md](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/CONTRIBUTING.md) for guidelines.
 
 ## Disclaimer
-These application solutions are not supported products in their own right, but examples to help our customers use our products from their applications. As our customer, any applications you integrate these examples in should be thoroughly tested, secured, and optimized according to your business's security standards before deploying to production or handling production workloads.
+
+These solutions are examples to help you build applications, not supported products. Any applications you build should be thoroughly tested, secured, and optimized according to your security standards before production use.
 
 ## License
 
-Apache License 2.0 - see [LICENSE](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/LICENSE) file for details.
+Apache License 2.0 — see [LICENSE](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/LICENSE) for details.

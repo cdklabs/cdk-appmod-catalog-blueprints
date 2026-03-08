@@ -441,6 +441,14 @@ logGroup.addMetricFilter('ErrorCount', {
 - Use metric filters instead of custom metrics
 - Enable data protection to reduce log volume
 
+## Example Implementations
+
+All examples in this library demonstrate observability patterns. Key examples include:
+
+- [Customer Service Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/customer-service-chatbot) - Full observability with Lambda Powertools and X-Ray
+- [Retail Banking Chatbot (AgentCore)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot-agentcore) - AgentCore observability with ADOT instrumentation
+- [Bedrock Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/bedrock-document-processing) - Step Functions and Bedrock observability
+
 ## References
 
 - [AWS X-Ray Documentation](https://docs.aws.amazon.com/xray/)
