@@ -1,5 +1,10 @@
 # Retail Banking Chatbot
 
+[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/chatbot/retail-banking-chatbot/README)
+[![Construct](https://img.shields.io/badge/construct-InteractiveAgent-blueviolet)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/framework/agents/)
+[![Construct](https://img.shields.io/badge/construct-BedrockKnowledgeBase-blueviolet)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/framework/agents/knowledge-base/README)
+
 A retail banking assistant for **AWSome Bank**, powered by Amazon Bedrock with RAG-based knowledge retrieval and real-time transaction lookup. Demonstrates the InteractiveAgent construct with Knowledge Base integration, custom tools, and Cognito authentication.
 
 ## What This Example Demonstrates

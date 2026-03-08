@@ -1458,6 +1458,15 @@ See `testing-guide.md` for comprehensive testing patterns, but key points:
 - [ ] Exported in `index.ts`
 - [ ] No exposed implementation details
 - [ ] Follows repository coding standards
+- [ ] **Documentation updated** (see below)
+
+## Documentation Updates (REQUIRED)
+
+When adding a new construct, you MUST update these files:
+
+1. **Construct's own README** — Create or update with usage examples, config options, and "Example Implementations" section
+2. **Parent module README** — Reference the new construct in the parent directory's README
+3. **Root README** — If new use case category, add to the table in `README.md`
 
 ## Summary: OOP Principles in Action
 

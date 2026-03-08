@@ -142,6 +142,11 @@ Infrastructure Foundation components are designed to work seamlessly with other 
 - **Observability**: Integrates with monitoring and logging solutions
 - **Agentic AI**: Supports secure networking for AI workloads
 
+## Example Implementations
+
+- [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp) - Uses Network and AccessLog for enterprise architecture
+- [Bedrock Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/bedrock-document-processing) - EventBridge integration for document events
+
 ## Contributing
 
 See the main [CONTRIBUTING.md](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/CONTRIBUTING.md) for guidelines on contributing to this project.

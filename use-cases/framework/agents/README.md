@@ -427,7 +427,9 @@ data: {}
 ```
 
 ### Example Implementations
-- [Customer Support Chatbot](../../../examples/chatbot/customer-service-chatbot/) — Full-stack chatbot with React frontend, Cognito auth, and SSE streaming
+- [Customer Service Chatbot](../../../examples/chatbot/customer-service-chatbot/) — Full-stack chatbot with React frontend, Cognito auth, and SSE streaming
+- [Retail Banking Chatbot](../../../examples/chatbot/retail-banking-chatbot/) — Banking assistant with RAG and transaction lookup
+- [Retail Banking Chatbot (AgentCore)](../../../examples/chatbot/retail-banking-chatbot-agentcore/) — Banking assistant on AgentCore Runtime with containerized agent
 
 
 ## Knowledge Base Integration
@@ -779,8 +781,19 @@ Network Security
 - Security group management for controlled access
 
 ## Example Implementations
+
+### BatchAgent Examples
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing)
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
+- [Fraud Detection](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/fraud-detection)
+
+### InteractiveAgent Examples
+- [Customer Service Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/customer-service-chatbot)
+- [Retail Banking Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot)
+- [Retail Banking Chatbot (AgentCore)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot-agentcore)
+
+### RAG Examples
+- [RAG Customer Support](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/rag-customer-support)
 
 ## Advanced Patterns
 **Multi-Agent Orchestration**

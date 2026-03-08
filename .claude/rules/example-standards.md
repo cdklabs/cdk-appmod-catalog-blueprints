@@ -72,6 +72,28 @@ All commands in the README must be accurate, tested, and copy/paste runnable.
 - **Observability enabled:** pass `Observability` construct for logging/tracing
 - **Custom enrichment:** add post-processing steps to document processing workflows
 
+## Documentation Updates (REQUIRED)
+
+When adding a new example, you MUST update the following documentation files:
+
+1. **`examples/README.md`** — Add to the appropriate category table (AI Chatbots & Assistants, Intelligent Document Processing)
+2. **`README.md`** (root) — Add to the same category table under "What You Can Build"
+3. **`use-cases/README.md`** — Add to "Ready-to-Deploy Solutions" table
+4. **Related construct README** — Add to "Example Implementations" section in the README of the construct(s) the example uses
+
+**Table format (3 columns):**
+```markdown
+| [**Solution Name**](./path/to/example/) | Brief description | [ConstructName](./path/to/construct/), [AnotherConstruct](./path/to/construct/) |
+```
+
+**Naming conventions:**
+- Use consistent names across all READMEs (match the example's own README title)
+- "Constructs Used" column: hyperlink each construct to its documentation
+  - InteractiveAgent, BatchAgent, BaseAgent → `./use-cases/framework/agents/`
+  - BedrockKnowledgeBase → `./use-cases/framework/agents/knowledge-base/`
+  - AgenticDocumentProcessing, BedrockDocumentProcessing, BaseDocumentProcessing → `./use-cases/document-processing/`
+  - Frontend → `./use-cases/webapp/`
+
 ## Common Mistakes to Avoid
 
 - Do not create new reusable constructs inside examples — put them in `use-cases/`
@@ -80,3 +102,4 @@ All commands in the README must be accurate, tested, and copy/paste runnable.
 - Do not forget sample files for document processing examples
 - Do not write incomplete READMEs — all sections above are required
 - Do not leave stale deployment instructions after refactoring
+- Do not forget to update documentation files when adding new examples

@@ -32,7 +32,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/',
           include: ['**/README.md'],
-          exclude: ['**/node_modules/**', '**/website/**', '**/.git/**', '**/cdk.out/**'],
+          exclude: ['**/node_modules/**', '**/website/**', '**/.git/**', '**/cdk.out/**', '**/resources/**'],
           routeBasePath: 'docs',
           sidebarItemsGenerator: async function ({
             defaultSidebarItemsGenerator,

@@ -102,3 +102,9 @@ new Frontend(this, 'MyCustomApp', {
 - **errorResponses**: Custom error page handling
 - **removalPolicy**: Resource cleanup behavior
 - **observability**: Enable monitoring and logging
+
+## Example Implementations
+
+- [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp) - Complete web application with document processing backend
+- [Customer Service Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/customer-service-chatbot) - React frontend with CloudFront hosting
+- [Retail Banking Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot) - Banking assistant with React frontend
