@@ -3,12 +3,15 @@
 > **Build customizable, well-architected applications on AWS in minutes, not months.**
 
 [![GitHub](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
-[![npm version](https://img.shields.io/npm/v/@cdklabs/cdk-appmod-catalog-blueprints)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
-[![npm downloads](https://img.shields.io/npm/dt/@cdklabs/cdk-appmod-catalog-blueprints?label=npm%20downloads)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
-[![PyPI version](https://img.shields.io/pypi/v/appmod-catalog-blueprints)](https://pypi.org/project/appmod-catalog-blueprints/)
-[![PyPI downloads](https://img.shields.io/pepy/dt/appmod-catalog-blueprints?label=pypi%20downloads)](https://pepy.tech/project/appmod-catalog-blueprints)
 [![Construct Hub](https://img.shields.io/badge/construct--hub-cdklabs-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
 [![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
+[![npm version](https://img.shields.io/npm/v/@cdklabs/cdk-appmod-catalog-blueprints?label=npm)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
+[![npm downloads](https://img.shields.io/npm/dt/@cdklabs/cdk-appmod-catalog-blueprints?label=npm%20downloads)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
+[![PyPI version](https://img.shields.io/pypi/v/appmod-catalog-blueprints?label=pypi)](https://pypi.org/project/appmod-catalog-blueprints/)
+[![PyPI downloads](https://img.shields.io/pepy/dt/appmod-catalog-blueprints?label=pypi%20downloads)](https://pepy.tech/project/appmod-catalog-blueprints)
+[![NuGet version](https://img.shields.io/nuget/v/CdklabsAppmodCatalogBlueprints?label=nuget)](https://www.nuget.org/packages/CdklabsAppmodCatalogBlueprints)
+[![NuGet downloads](https://img.shields.io/nuget/dt/CdklabsAppmodCatalogBlueprints?label=nuget%20downloads)](https://www.nuget.org/packages/CdklabsAppmodCatalogBlueprints)
+[![Maven version](https://img.shields.io/maven-central/v/io.github.cdklabs/appmod-catalog-blueprints?label=maven)](https://central.sonatype.com/artifact/io.github.cdklabs/appmod-catalog-blueprints)
 
 Application Modernization (AppMod) Catalog Blueprints is a comprehensive library of **use case-driven infrastructure blueprints** and **industry-aligned solutions** built on AWS Well-Architected best practices. Designed as composable, multi-layered [AWS CDK](https://aws.amazon.com/cdk/) [L3 constructs](https://docs.aws.amazon.com/cdk/v2/guide/constructs.html), these blueprints accelerate serverless development and modernization with multiple implementation pathways — from ready-to-deploy solutions to fully customizable building blocks.
 
