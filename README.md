@@ -5,6 +5,8 @@
 [![GitHub](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
 [![npm version](https://img.shields.io/npm/v/@cdklabs/cdk-appmod-catalog-blueprints)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
 [![npm downloads](https://img.shields.io/npm/dt/@cdklabs/cdk-appmod-catalog-blueprints?label=npm%20downloads)](https://www.npmjs.com/package/@cdklabs/cdk-appmod-catalog-blueprints)
+[![PyPI version](https://img.shields.io/pypi/v/appmod-catalog-blueprints)](https://pypi.org/project/appmod-catalog-blueprints/)
+[![PyPI downloads](https://img.shields.io/pepy/dt/appmod-catalog-blueprints?label=pypi%20downloads)](https://pepy.tech/project/appmod-catalog-blueprints)
 [![Construct Hub](https://img.shields.io/badge/construct--hub-cdklabs-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
 [![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
 
