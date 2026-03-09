@@ -520,6 +520,29 @@ fi
 echo "Virtual environment ready. Run 'pytest' to execute tests."
 ```
 
+### Running Python Package Tests (MCP Server, etc.)
+
+For standalone Python packages in this repository (e.g., `mcp-appmod-catalog-blueprints/`), always activate the project's virtual environment before running tests:
+
+```bash
+# Activate the project's venv
+source mcp-appmod-catalog-blueprints/.venv/bin/activate
+
+# Run all tests
+python -m pytest tests/ -v
+
+# Run a specific test file
+python -m pytest tests/test_generator.py -v
+
+# Run with coverage
+python -m pytest tests/ --cov=mcp_server_constructs --cov-report=html
+
+# Deactivate when done
+deactivate
+```
+
+When executing Python tests from shell commands, always prefix with `source <project>/.venv/bin/activate &&` to ensure the correct interpreter and installed dependencies are used. Do not use bare `python3 -m pytest` without activating the venv first, as system Python will not have the project's dependencies installed.
+
 ### Python Lambda Tests
 
 ```python

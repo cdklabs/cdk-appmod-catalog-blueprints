@@ -93,6 +93,10 @@ project.postCompileTask.exec('cp -R use-cases/framework/agents/resources lib/fra
   name: 'Copy custom resource needed by Agentic Framework',
 });
 
+project.postCompileTask.exec('cp .jsii mcp-appmod-catalog-blueprints/src/mcp_server_constructs/data/jsii-metadata', {
+  name: 'Bundle JSII metadata for MCP server',
+});
+
 project.eslint?.addRules({
   'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
 });

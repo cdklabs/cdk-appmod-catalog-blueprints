@@ -1,0 +1,31 @@
+{# Java compose template: multiple constructs wired together with Builder pattern #}
+{% for imp in imports %}
+import {{ imp.module }}.{{ imp.names | join(", ") }};
+{% endfor %}
+{% for block in blocks %}
+
+{% if block.comment %}
+// {{ block.comment }}
+{% endif %}
+{{ block.construct_name }} {{ block.id }} = {{ block.construct_name }}.Builder.create(this, "{{ block.construct_id }}")
+{% for prop in block.props %}
+{% if prop.is_placeholder %}
+    // TODO: Required — {{ prop.comment }}
+    .{{ prop.name }}("{{ prop.placeholder }}")
+{% elif prop.has_warning %}
+    .{{ prop.name }}({{ prop.value }}) // WARNING: expected {{ prop.expected_type }}, got {{ prop.actual_type }}
+{% elif prop.is_wired %}
+    // Wired from {{ prop.source_construct }}
+    .{{ prop.name }}({{ prop.value }})
+{% elif prop.is_security_default %}
+    // 🔒 {{ prop.comment }}
+    .{{ prop.name }}({{ prop.value }})
+{% elif prop.comment %}
+    // {{ prop.comment }}
+    .{{ prop.name }}({{ prop.value }})
+{% else %}
+    .{{ prop.name }}({{ prop.value }})
+{% endif %}
+{% endfor %}
+    .build();
+{% endfor %}

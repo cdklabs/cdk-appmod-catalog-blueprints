@@ -4,6 +4,10 @@ inclusion: always
 
 # Coding Standards and Best Practices
 
+## File Writing Rules
+
+- NEVER USE TERMINAL TO WRITE FILES. Always use the IDE file writing tools (fsWrite, fsAppend, strReplace, editCode) instead of shell commands like echo, cat, printf, tee, or piping to files.
+
 ## TypeScript Standards
 
 ### File Naming
