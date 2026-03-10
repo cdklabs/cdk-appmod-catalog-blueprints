@@ -258,12 +258,12 @@ The output creates `Network` first (since `BedrockDocumentProcessing` depends on
 
 ## Supported Languages
 
-| Language | Prop Casing | Quotes | Indent | Instantiation Style |
-|----------|-------------|--------|--------|---------------------|
-| TypeScript | camelCase | Single `'` | 2 spaces | `new Foo(scope, 'Id', {...})` |
-| Python | snake_case | Double `"` | 4 spaces | `Foo(scope, "Id", ...)` |
-| Java | camelCase | Double `"` | 4 spaces | `Foo.Builder.create(scope, "Id")...build()` |
-| .NET | PascalCase | Double `"` | 4 spaces | `new Foo(scope, "Id", new FooProps {...})` |
+| Language | Package Name | Prop Casing | Quotes | Indent | Instantiation Style |
+|----------|-------------|-------------|--------|--------|---------------------|
+| TypeScript | `@cdklabs/cdk-appmod-catalog-blueprints` | camelCase | Single `'` | 2 spaces | `new Foo(scope, 'Id', {...})` |
+| Python | `appmod-catalog-blueprints` | snake_case | Double `"` | 4 spaces | `Foo(scope, "Id", ...)` |
+| Java | `io.github.cdklabs:appmod-catalog-blueprints` | camelCase | Double `"` | 4 spaces | `Foo.Builder.create(scope, "Id")...build()` |
+| .NET | `Cdklabs.AppmodCatalogBlueprints` | PascalCase | Double `"` | 4 spaces | `new Foo(scope, "Id", new FooProps {...})` |
 
 ## Development Setup
 

@@ -405,7 +405,7 @@ class TestScaffoldPython:
     def test_python_import_style(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
         output = gen.scaffold("BedrockDocumentProcessing", language="python")
-        assert "from @cdklabs/cdk-appmod-catalog-blueprints import BedrockDocumentProcessing" in output
+        assert "from appmod_catalog_blueprints import BedrockDocumentProcessing" in output
 
     def test_python_double_quotes(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
@@ -447,7 +447,7 @@ class TestScaffoldJava:
     def test_java_import_style(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
         output = gen.scaffold("BedrockDocumentProcessing", language="java")
-        assert "import @cdklabs/cdk-appmod-catalog-blueprints." in output
+        assert "import io.github.cdklabs.appmod_catalog_blueprints." in output
 
     def test_java_camel_case_props(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
@@ -476,7 +476,7 @@ class TestScaffoldDotNet:
     def test_dotnet_using_import(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
         output = gen.scaffold("BedrockDocumentProcessing", language="dotnet")
-        assert "using @cdklabs/cdk-appmod-catalog-blueprints;" in output
+        assert "using Cdklabs.AppmodCatalogBlueprints;" in output
 
     def test_dotnet_pascal_case_props(self, doc_processing_registry):
         gen = CodeGenerator(doc_processing_registry)
@@ -718,7 +718,7 @@ class TestCompose:
             output = gen.compose(["BedrockDocumentProcessing"], language="python")
 
         # Python style: from-import, snake_case
-        assert "from @cdklabs/cdk-appmod-catalog-blueprints import" in output
+        assert "from appmod_catalog_blueprints import" in output
         assert "classification_prompt" in output
 
     def test_compose_with_prop_overrides(self, doc_processing_registry):
