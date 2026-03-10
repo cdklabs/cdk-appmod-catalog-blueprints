@@ -411,3 +411,72 @@ class TestBundledManifest:
         prop_names = [p.name for p in props]
         # classificationPrompt is a known required prop
         assert "classificationPrompt" in prop_names
+
+
+# ── Alias resolution ─────────────────────────────────────────────
+
+
+class TestResolveConstructType:
+    """Tests for ConstructRegistry.resolve_construct_type."""
+
+    def test_exact_match(self, registry):
+        assert registry.resolve_construct_type(
+            "document-processing", "TestConstruct"
+        ) == "TestConstruct"
+
+    def test_case_insensitive_match(self, registry):
+        assert registry.resolve_construct_type(
+            "document-processing", "testconstruct"
+        ) == "TestConstruct"
+
+    def test_no_match_returns_none(self, registry):
+        assert registry.resolve_construct_type(
+            "document-processing", "CompletelyWrong"
+        ) is None
+
+    def test_unknown_family_raises(self, registry):
+        with pytest.raises(UnknownFamilyError):
+            registry.resolve_construct_type("nope", "anything")
+
+    def test_alias_webapp_resolves(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        assert reg.resolve_construct_type("webapp", "WebApp") == "Frontend"
+
+    def test_alias_vpc_resolves(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        assert reg.resolve_construct_type("foundation", "vpc") == "Network"
+
+    def test_alias_chatbot_resolves(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        assert reg.resolve_construct_type(
+            "agents", "chatbot"
+        ) == "InteractiveAgent"
+
+    def test_alias_kb_resolves(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        assert reg.resolve_construct_type(
+            "agents", "kb"
+        ) == "BedrockKnowledgeBase"
+
+    def test_alias_wrong_family_returns_none(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        # "webapp" alias → Frontend, but Frontend is not in agents family
+        assert reg.resolve_construct_type("agents", "WebApp") is None
+
+    def test_non_scaffoldable_adapter_resolves(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        assert reg.resolve_construct_type(
+            "agents", "AgentCoreRuntimeHostingAdapter"
+        ) == "InteractiveAgent"
+
+    def test_substring_unique_match(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        # "Bedrock" uniquely matches BedrockKnowledgeBase in agents
+        assert reg.resolve_construct_type(
+            "agents", "Bedrock"
+        ) == "BedrockKnowledgeBase"
+
+    def test_substring_ambiguous_returns_none(self, bundled_jsii_path):
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        # "Base" matches both BaseAgent and BaseKnowledgeBase
+        assert reg.resolve_construct_type("agents", "Base") is None

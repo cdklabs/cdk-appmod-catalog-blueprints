@@ -44,6 +44,83 @@ _FAMILY_MAP: list[tuple[str, str, str]] = [
 ]
 
 
+# Static aliases: common alternative names → canonical construct name.
+# Keys MUST be lowercase.  Values are the exact class name in the registry.
+_CONSTRUCT_ALIASES: dict[str, str] = {
+    # Webapp / Frontend
+    "webapp": "Frontend",
+    "web-app": "Frontend",
+    "web_app": "Frontend",
+    "website": "Frontend",
+    "static-site": "Frontend",
+    "staticsite": "Frontend",
+    "cloudfront": "Frontend",
+    "spa": "Frontend",
+    "frontendconstruct": "Frontend",
+    # Agents
+    "agent": "BatchAgent",
+    "batch": "BatchAgent",
+    "async-agent": "BatchAgent",
+    "asyncagent": "BatchAgent",
+    "interactive": "InteractiveAgent",
+    "chatbot": "InteractiveAgent",
+    "chat-agent": "InteractiveAgent",
+    "chatagent": "InteractiveAgent",
+    "streaming-agent": "InteractiveAgent",
+    "streamingagent": "InteractiveAgent",
+    "realtimeagent": "InteractiveAgent",
+    "realtime-agent": "InteractiveAgent",
+    # Knowledge bases
+    "knowledgebase": "BedrockKnowledgeBase",
+    "knowledge-base": "BedrockKnowledgeBase",
+    "knowledge_base": "BedrockKnowledgeBase",
+    "kb": "BedrockKnowledgeBase",
+    "rag": "BedrockKnowledgeBase",
+    "vectorstore": "BedrockKnowledgeBase",
+    "vector-store": "BedrockKnowledgeBase",
+    # Document processing
+    "docprocessing": "BedrockDocumentProcessing",
+    "doc-processing": "BedrockDocumentProcessing",
+    "document-processing": "BedrockDocumentProcessing",
+    "documentprocessing": "BedrockDocumentProcessing",
+    "idp": "BedrockDocumentProcessing",
+    "agentic": "AgenticDocumentProcessing",
+    "agenticdocprocessing": "AgenticDocumentProcessing",
+    "agentic-doc-processing": "AgenticDocumentProcessing",
+    # Foundation
+    "vpc": "Network",
+    "networking": "Network",
+    "eventbridge": "EventbridgeBroker",
+    "event-bridge": "EventbridgeBroker",
+    "eventbus": "EventbridgeBroker",
+    "event-bus": "EventbridgeBroker",
+    "broker": "EventbridgeBroker",
+    "logging": "AccessLog",
+    "access-log": "AccessLog",
+    "access-logging": "AccessLog",
+    "accesslogging": "AccessLog",
+    # Utilities
+    "observability": "CloudWatchTransactionSearch",
+    "monitoring": "CloudWatchTransactionSearch",
+    "cloudwatch": "CloudWatchTransactionSearch",
+    "dataloader": "DataLoader",
+    "data-loader": "DataLoader",
+    "data_loader": "DataLoader",
+    # Non-scaffoldable classes — point callers to the right construct
+    "agentcoreruntimehostingadapter": "InteractiveAgent",
+    "agentcore": "InteractiveAgent",
+    "agentcoreruntime": "InteractiveAgent",
+    "lambdahostingadapter": "InteractiveAgent",
+    "hostingadapter": "InteractiveAgent",
+    "cognitoauthenticator": "InteractiveAgent",
+    "noauthenticator": "InteractiveAgent",
+    "s3sessionstore": "InteractiveAgent",
+    "websocketcommunicationadapter": "InteractiveAgent",
+    "queueds3adapter": "BedrockDocumentProcessing",
+    "s3adapter": "BedrockDocumentProcessing",
+}
+
+
 def _default_jsii_path() -> str:
     """Return the path to the bundled .jsii manifest."""
     return str(Path(__file__).parent / "data" / "jsii-metadata")
@@ -392,3 +469,48 @@ class ConstructRegistry:
         if fam is None:
             raise UnknownFamilyError(family, list(self._families.keys()))
         return list(fam.constructs)
+
+    def resolve_construct_type(
+        self, family: str, user_input: str
+    ) -> str | None:
+        """Resolve a user-provided construct type to the canonical name.
+
+        Applies the following strategies in order:
+        1. Exact match against valid types in the family.
+        2. Case-insensitive match (e.g. ``"frontend"`` → ``"Frontend"``).
+        3. Static alias lookup (e.g. ``"WebApp"`` → ``"Frontend"``).
+        4. Substring match — if exactly one valid type contains the input
+           as a case-insensitive substring (e.g. ``"Bedrock"`` →
+           ``"BedrockDocumentProcessing"`` when only one match exists).
+
+        Returns the canonical construct name, or ``None`` if no match.
+
+        Raises:
+            DegradedModeError: If the registry is not loaded.
+            UnknownFamilyError: If the family is not found.
+        """
+        valid_types = self.get_construct_types(family)
+
+        # 1. Exact match
+        if user_input in valid_types:
+            return user_input
+
+        # 2. Case-insensitive match
+        lower_map = {v.lower(): v for v in valid_types}
+        matched = lower_map.get(user_input.lower())
+        if matched:
+            return matched
+
+        # 3. Static alias lookup (case-insensitive)
+        alias_target = _CONSTRUCT_ALIASES.get(user_input.lower())
+        if alias_target and alias_target in valid_types:
+            return alias_target
+
+        # 4. Substring match (unique only)
+        needle = user_input.lower()
+        substring_hits = [v for v in valid_types if needle in v.lower()]
+        if len(substring_hits) == 1:
+            return substring_hits[0]
+
+        return None
+

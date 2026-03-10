@@ -383,11 +383,18 @@ def create_server(
                 )
 
             if construct_type not in valid_types:
-                return _text_result(
-                    f"Unknown constructType '{construct_type}' for tool '{name}'. "
-                    f"Valid types: {', '.join(sorted(valid_types))}",
-                    is_error=True,
+                resolved = registry.resolve_construct_type(
+                    family, construct_type
                 )
+                if resolved:
+                    construct_type = resolved
+                else:
+                    return _text_result(
+                        f"Unknown constructType '{construct_type}' for tool "
+                        f"'{name}'. "
+                        f"Valid types: {', '.join(sorted(valid_types))}",
+                        is_error=True,
+                    )
 
             language = arguments.get("language", "typescript")
             props_overrides = arguments.get("props")

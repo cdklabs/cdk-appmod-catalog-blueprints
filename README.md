@@ -24,13 +24,14 @@ Application Modernization (AppMod) Catalog Blueprints is a comprehensive library
 
 ---
 
-## Deploy in 3 Commands
-
 ## MCP Server for AI-Assisted Development
 
 Use the AppMod Catalog Blueprints directly from your AI coding assistant. The [MCP Server](./mcp-appmod-catalog-blueprints/) exposes construct scaffolding, composition, and example discovery via the [Model Context Protocol](https://modelcontextprotocol.io/), so tools like Kiro, Claude Code, and Codex can generate CDK code with the right props, defaults, and dependency wiring.
 
 See the [MCP Server README](./mcp-appmod-catalog-blueprints/README.md) for setup instructions.
+
+
+## Deploy in 3 Commands
 
 ## How to Use This Library
 Pick any solution from [the catalog below](#what-you-can-build) and deploy:
