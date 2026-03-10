@@ -26,6 +26,13 @@ Constructs are reusable library components. Optimize for extensibility, API stab
 - Adding tight coupling to concrete resources.
 - Shipping without CDK Nag validation.
 
+## Documentation Updates (REQUIRED)
+
+When adding a new construct, update:
+1. Construct's own README — usage, config options, example implementations
+2. Parent module README — reference the new construct
+3. Root README — if new use case category, add to the table
+
 ## Deep Dive
 
 - `.kiro/steering/construct-development-guide.md`

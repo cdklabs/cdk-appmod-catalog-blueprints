@@ -1,4 +1,4 @@
-# Customer Support Chatbot Example
+# Customer Service Chatbot
 
 [![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/customer-service-chatbot)
 [![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/chatbot/customer-service-chatbot/)

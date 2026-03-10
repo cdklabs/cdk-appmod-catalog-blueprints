@@ -95,6 +95,7 @@ npx projen                               # Regenerate project config
 - No failing tests in touched scope before PR
 - New behavior needs positive and negative-path coverage
 - Run `npm run test:cdk-nag:all` when changing constructs or security posture
+- **Documentation updates required** when adding new constructs or examples (see rules files)
 
 ## Rules
 

@@ -399,6 +399,11 @@ When `enableObservability` is true, the retrieval tool provides:
 | guardrailId | string | Required | Guardrail ID |
 | guardrailVersion | string | 'DRAFT' | Guardrail version |
 
+## Example Implementations
+
+- [RAG Customer Support](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/rag-customer-support) - Customer support agent with Bedrock Knowledge Bases and S3 Vectors
+- [Retail Banking Chatbot](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/chatbot/retail-banking-chatbot) - Banking assistant with RAG-based knowledge retrieval
+
 ## Related Documentation
 
 - [Agentic AI Framework](../README.md)

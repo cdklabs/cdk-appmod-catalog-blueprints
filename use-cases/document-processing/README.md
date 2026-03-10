@@ -173,6 +173,7 @@ You can customize the following:
 
 ### Example Implementations
 - [Bedrock Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/bedrock-document-processing)
+- [Minimal Bedrock Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/minimal-bedrock-doc-processing)
 
 ## [`AgenticDocumentProcessing`](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/blob/main/use-cases/document-processing/agentic-document-processing.ts) Construct
 
@@ -205,10 +206,9 @@ interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps 
 
 ### Example Implementations
 - [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing)
-
-### Example Implementations
-- [Agentic Document Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/agentic-document-processing) 
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
+- [Fraud Detection](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/fraud-detection)
+- [Document Summarization Pipeline](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/summarization-pipeline)
 
 ## PDF Chunking for Large Documents
 

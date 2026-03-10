@@ -18,4 +18,6 @@
 - `npm run eslint` passes.
 - Relevant test suite passes (`npm test` or targeted suites).
 - Example/docs updates included when user-facing behavior changed.
+- For new examples: `examples/README.md`, root `README.md`, `use-cases/README.md`, and related construct README updated.
+- For new constructs: construct README, parent module README, and root README (if new category) updated.
 - Handoff summary includes risks and follow-ups.

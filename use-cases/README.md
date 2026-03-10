@@ -1,60 +1,144 @@
-# Use Case Building Blocks
+# Building Blocks
 
-[![Code](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/use-cases)
-[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/use-cases/)
-[![Examples](https://img.shields.io/badge/examples-deploy-orange)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/docs/examples/)
+> **CDK constructs for building custom applications.**
 
-Use-case driven composable infrastructure constructs that accelerate serverless development and modernization on AWS. Each use case provides multiple implementation pathways with industry-specific examples.
+[![GitHub](https://img.shields.io/badge/code-GitHub-green)](https://github.com/cdklabs/cdk-appmod-catalog-blueprints)
+[![Construct Hub](https://img.shields.io/badge/construct--hub-API-orange)](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/)
+[![Documentation](https://img.shields.io/badge/docs-cdklabs.github.io-blue)](https://cdklabs.github.io/cdk-appmod-catalog-blueprints/)
 
-## Core Use Cases
+Reusable AWS CDK L3 constructs. Import and customize to build exactly what you need.
 
-| Use Case | Description | Quick Deploy Examples |
-|----------|-------------|----------------------|
-| **[Document Processing](./document-processing/)** | Intelligent document processing workflows with classification, extraction, and agentic capabilities | • [Bedrock Document Processing](../examples/document-processing/bedrock-document-processing/)<br/>• [Agentic Document Processing](../examples/document-processing/agentic-document-processing/)<br/>• [Full-Stack Insurance Claims Processing Web Application](../examples/document-processing/doc-processing-fullstack-webapp/) |
-| **[Web Application](./webapp/)** | Static web application hosting with global CDN, security headers, and SPA support | • [Full-Stack Insurance Claims Processing Web Application](../examples/document-processing/doc-processing-fullstack-webapp/) |
+## Installation
 
-### Foundation and Utilities
-
-| Component | Description |
-|-----------|-------------|
-| **[Agentic AI Framework](./framework/agents/)** | Composable enterprise framework for building intelligent AI agents that can be mixed and matched across diverse use cases - from document processing to conversational AI |
-| **[Infrastructure Foundation](./framework/foundation/)** | Core infrastructure components including VPC networking, access logging, and EventBridge integration |
-| **[Observability & Monitoring](./utilities/#observability)** | Comprehensive monitoring, logging, and alerting with automatic property injection and Lambda Powertools integration |
-| **[Data Masking](./utilities/#data-masking)** | Lambda layer for data masking and PII protection in serverless applications |
-
-## Using the Constructs
-
-### When to Use Constructs As-Is
-- **Ready-made implementations**: Use concrete constructs (BedrockDocumentProcessing, Frontend, etc.) for standard business scenarios
-- **Foundation utilities**: VPC, observability, data management components work out-of-the-box
-- **Configuration-driven**: Most constructs offer extensive configuration options without code changes
-
-### When to Extend Base Classes
-Extend abstract base classes when you need custom business logic that isn't covered by existing implementations:
-
-```typescript
-// Example: Custom implementation extending a base class
-class MyCustomUseCase extends BaseUseCase {
-  protected stepOne() {
-    // Your custom logic (e.g., external API integration)
-    return new LambdaInvoke(this, 'CustomStep', {
-      lambdaFunction: myCustomFunction,
-      resultPath: '$.stepResult'
-    });
-  }
-  
-  protected stepTwo() {
-    // Your custom processing logic
-    return new StepFunctionsStartExecution(this, 'CustomWorkflow', {
-      stateMachine: myCustomStateMachine,
-      resultPath: '$.workflowResult'
-    });
-  }
-}
+```bash
+npm install @cdklabs/cdk-appmod-catalog-blueprints
 ```
 
-**Common extension scenarios**:
-- Integration with proprietary systems or third-party services
-- Industry-specific business logic (healthcare, finance, manufacturing)
-- Custom data processing or transformation workflows
-- Specialized security or compliance requirements
+---
+
+## Available Constructs
+
+### AI Agents
+
+| Construct | What It Does |
+|-----------|--------------|
+| [**InteractiveAgent**](./framework/agents/) | Real-time chatbots with SSE streaming, sessions, and auth |
+| [**BatchAgent**](./framework/agents/) | Async AI processing for document analysis |
+| [**BaseAgent**](./framework/agents/) | Abstract base for custom agent implementations |
+| [**BedrockKnowledgeBase**](./framework/agents/knowledge-base/) | RAG retrieval with access control |
+
+```typescript
+import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+new InteractiveAgent(this, 'Chatbot', {
+  agentName: 'support-bot',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt: new Asset(this, 'Prompt', { path: './prompt.txt' }),
+  },
+});
+```
+
+### Document Processing
+
+| Construct | What It Does |
+|-----------|--------------|
+| [**AgenticDocumentProcessing**](./document-processing/) | Document workflows with AI agents and tools |
+| [**BedrockDocumentProcessing**](./document-processing/) | Document classification and extraction |
+| [**BaseDocumentProcessing**](./document-processing/) | Abstract base for custom implementations |
+
+```typescript
+import { AgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+new AgenticDocumentProcessing(this, 'Processor', {
+  processingAgentParameters: {
+    agentName: 'doc-processor',
+    agentDefinition: {
+      bedrockModel: { useCrossRegionInference: true },
+      systemPrompt: new Asset(this, 'Prompt', { path: './prompt.txt' }),
+    },
+    prompt: 'Analyze and extract data from the document',
+    expectJson: true,
+  },
+});
+```
+
+### Web Application
+
+| Construct | What It Does |
+|-----------|--------------|
+| [**Frontend**](./webapp/) | CloudFront + S3 web hosting for React apps, SPAs, static sites |
+
+```typescript
+import { Frontend } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+new Frontend(this, 'App', {
+  sourcePath: './frontend',
+  buildCommands: ['npm install', 'npm run build'],
+});
+```
+
+### Foundation & Utilities
+
+| Construct | What It Does |
+|-----------|--------------|
+| [**Network**](./framework/foundation/) | VPC with subnets and endpoints |
+| [**AccessLog**](./framework/foundation/) | Centralized access logging |
+| [**EventBridgeBroker**](./framework/foundation/) | Event routing for decoupled architectures |
+| [**Observability**](./utilities/) | Logging, tracing, monitoring with Lambda Powertools |
+| [**DataMasking**](./utilities/) | PII protection Lambda layer |
+| [**DataLoader**](./utilities/) | Database initialization |
+
+---
+
+## Architecture
+
+All constructs follow a multi-layered design:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Your Application Code                         │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │ InteractiveAgent│  │ AgenticDocument │  │    Frontend     │  │
+│  │   (concrete)    │  │   Processing    │  │   (concrete)    │  │
+│  └────────┬────────┘  └────────┬────────┘  └─────────────────┘  │
+│           │                    │                                 │
+│  ┌────────▼────────┐  ┌────────▼────────┐                       │
+│  │    BaseAgent    │  │ BedrockDocument │  Foundation Layer     │
+│  │   (abstract)    │  │   Processing    │  (Network, Observ.)   │
+│  └─────────────────┘  └────────┬────────┘                       │
+│                       ┌────────▼────────┐                       │
+│                       │ BaseDocument    │                       │
+│                       │   Processing    │                       │
+│                       └─────────────────┘                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Extend base classes** for custom behavior. **Use concrete classes** for standard use cases.
+
+---
+
+## Ready-to-Deploy Solutions
+
+See complete examples in action: [examples/](../examples/)
+
+| Solution | Constructs Used |
+|----------|-----------------|
+| [Customer Service Chatbot](../examples/chatbot/customer-service-chatbot/) | InteractiveAgent, Frontend |
+| [Retail Banking Chatbot](../examples/chatbot/retail-banking-chatbot/) | InteractiveAgent, BedrockKnowledgeBase, Frontend |
+| [Insurance Claims Portal](../examples/document-processing/doc-processing-fullstack-webapp/) | AgenticDocumentProcessing, Frontend |
+| [Fraud Detection](../examples/document-processing/fraud-detection/) | AgenticDocumentProcessing |
+
+---
+
+## Security
+
+All constructs include enterprise security by default:
+
+- **KMS encryption** for data at rest
+- **TLS** for data in transit
+- **Least-privilege IAM** with resource-scoped permissions
+- **CDK Nag compliance** for security best practices

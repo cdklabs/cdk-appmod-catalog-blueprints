@@ -32,6 +32,23 @@
 - Use composition for pluggable strategies (network, observability, event broker)
 - Export new constructs from the barrel `index.ts`
 
+### Documentation Updates for New Constructs (REQUIRED)
+
+When adding a new construct, you MUST update documentation:
+
+1. **Construct's own README** — Create or update `README.md` in the construct's directory with:
+   - Overview and key features
+   - Usage examples
+   - Configuration options table
+   - Example Implementations section (link to examples using this construct)
+
+2. **Parent module README** — Update the parent directory's README to reference the new construct:
+   - `use-cases/README.md` for new use cases
+   - `use-cases/framework/README.md` for new framework components
+   - `use-cases/utilities/README.md` for new utilities
+
+3. **Root README** — If the construct represents a new use case category, add it to the table in `README.md`
+
 ### Error Handling
 - Lambda functions: validate input, return structured `{statusCode, body}` responses
 - Step Functions: use `.addCatch()` with explicit error paths
