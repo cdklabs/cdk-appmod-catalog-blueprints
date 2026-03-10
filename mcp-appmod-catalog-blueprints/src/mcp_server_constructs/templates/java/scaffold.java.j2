@@ -1,0 +1,30 @@
+{# Java scaffold template: Builder pattern instantiation with camelCase props #}
+{% for imp in imports %}
+import {{ imp.module }}.{{ imp.names | join(", ") }};
+{% endfor %}
+
+{{ construct_name }} {{ id }} = {{ construct_name }}.Builder.create(this, "{{ construct_id }}")
+{% for prop in props %}
+{% if prop.is_placeholder %}
+    // TODO: Required — {{ prop.comment }}
+    .{{ prop.name }}("{{ prop.placeholder }}")
+{% elif prop.has_warning %}
+    .{{ prop.name }}({{ prop.value }}) // WARNING: expected {{ prop.expected_type }}, got {{ prop.actual_type }}
+{% elif prop.is_security_default %}
+    // 🔒 {{ prop.comment }}
+    .{{ prop.name }}({{ prop.value }})
+{% elif prop.comment %}
+    // {{ prop.comment }}
+    .{{ prop.name }}({{ prop.value }})
+{% else %}
+    .{{ prop.name }}({{ prop.value }})
+{% endif %}
+{% endfor %}
+    .build();
+{% if has_observability %}
+
+// --- Observability (uncomment to enable) ---
+// ServerlessObservability observability = ServerlessObservability.Builder.create(this, "Observability")
+//     .lambdaFunctions(List.of({{ id }}))
+//     .build();
+{% endif %}

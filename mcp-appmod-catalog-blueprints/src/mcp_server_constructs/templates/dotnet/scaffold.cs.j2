@@ -1,0 +1,32 @@
+{# .NET scaffold template: PascalCase props with new FooProps { ... } style #}
+{% for imp in imports %}
+using {{ imp.module }};
+{% endfor %}
+
+var {{ id }} = new {{ construct_name }}(this, "{{ construct_id }}", new {{ construct_name }}Props
+{
+{% for prop in props %}
+{% if prop.is_placeholder %}
+    // TODO: Required — {{ prop.comment }}
+    {{ prop.name }} = "{{ prop.placeholder }}",
+{% elif prop.has_warning %}
+    {{ prop.name }} = {{ prop.value }}, // WARNING: expected {{ prop.expected_type }}, got {{ prop.actual_type }}
+{% elif prop.is_security_default %}
+    // 🔒 {{ prop.comment }}
+    {{ prop.name }} = {{ prop.value }},
+{% elif prop.comment %}
+    // {{ prop.comment }}
+    {{ prop.name }} = {{ prop.value }},
+{% else %}
+    {{ prop.name }} = {{ prop.value }},
+{% endif %}
+{% endfor %}
+});
+{% if has_observability %}
+
+// --- Observability (uncomment to enable) ---
+// var observability = new ServerlessObservability(this, "Observability", new ServerlessObservabilityProps
+// {
+//     LambdaFunctions = new[] { {{ id }} },
+// });
+{% endif %}
