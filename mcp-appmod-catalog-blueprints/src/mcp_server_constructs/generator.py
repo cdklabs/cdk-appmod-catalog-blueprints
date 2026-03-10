@@ -26,6 +26,14 @@ from mcp_server_constructs.registry import ConstructRegistry
 
 _LIBRARY_MODULE = '@cdklabs/cdk-appmod-catalog-blueprints'
 
+# Per-language package/module names for import statements
+_LIBRARY_MODULE_BY_LANG: dict[Language, str] = {
+    Language.TYPESCRIPT: '@cdklabs/cdk-appmod-catalog-blueprints',
+    Language.PYTHON: 'appmod_catalog_blueprints',
+    Language.JAVA: 'io.github.cdklabs.appmod_catalog_blueprints',
+    Language.DOTNET: 'Cdklabs.AppmodCatalogBlueprints',
+}
+
 # Template subdirectory per language
 _TEMPLATE_DIR: dict[Language, str] = {
     Language.TYPESCRIPT: 'typescript',
@@ -241,9 +249,10 @@ class CodeGenerator:
             info.props, defaults_map, overrides, lang, convert_name,
         )
 
-        # Build imports
+        # Build imports using language-specific module name
+        module_name = _LIBRARY_MODULE_BY_LANG.get(lang, _LIBRARY_MODULE)
         imports = [_ImportEntry(
-            module=_LIBRARY_MODULE,
+            module=module_name,
             names=[construct_name],
         )]
 
@@ -300,9 +309,10 @@ class CodeGenerator:
         ordered = resolver.resolve_order(constructs)
         wiring = resolver.build_wiring(ordered)
 
-        # Collect all construct names for a single import
+        # Collect all construct names for a single import using language-specific module name
+        module_name = _LIBRARY_MODULE_BY_LANG.get(lang, _LIBRARY_MODULE)
         all_names = list(ordered)
-        imports = [_ImportEntry(module=_LIBRARY_MODULE, names=all_names)]
+        imports = [_ImportEntry(module=module_name, names=all_names)]
 
         # Build blocks in dependency order
         blocks: list[_ComposeBlock] = []
