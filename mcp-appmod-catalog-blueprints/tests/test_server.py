@@ -237,6 +237,79 @@ class TestScaffoldInvalid:
         assert "Network" in text
         assert "BatchAgent" in text
 
+    def test_case_insensitive_construct_type_resolves(self, server):
+        result = _run(_call_tool(server, "scaffold_webapp", {
+            "constructType": "frontend",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "Frontend" in text
+
+    def test_case_insensitive_agents_resolves(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "batchagent",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "BatchAgent" in text
+
+    def test_alias_webapp_resolves_to_frontend(self, server):
+        result = _run(_call_tool(server, "scaffold_webapp", {
+            "constructType": "WebApp",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "Frontend" in text
+
+    def test_alias_chatbot_resolves_to_interactive_agent(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "chatbot",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "InteractiveAgent" in text
+
+    def test_alias_vpc_resolves_to_network(self, server):
+        result = _run(_call_tool(server, "scaffold_foundation", {
+            "constructType": "vpc",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "Network" in text
+
+    def test_alias_kb_resolves_to_bedrock_knowledge_base(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "kb",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "BedrockKnowledgeBase" in text
+
+    def test_alias_wrong_family_still_fails(self, server):
+        # "webapp" alias maps to Frontend, but Frontend is not in agents family
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "WebApp",
+        }))
+        assert result.isError is True
+
+    def test_substring_match_unique(self, server):
+        # "Bedrock" uniquely matches "BedrockKnowledgeBase" in agents family
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "Bedrock",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "BedrockKnowledgeBase" in text
+
+    def test_non_scaffoldable_adapter_resolves_to_parent(self, server):
+        # AgentCoreRuntimeHostingAdapter is not a Construct, alias → InteractiveAgent
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "AgentCoreRuntimeHostingAdapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "InteractiveAgent" in text
+
     def test_missing_construct_type_returns_error(self, server):
         result = _run(_call_tool(server, "scaffold_foundation", {}))
         assert result.isError is True

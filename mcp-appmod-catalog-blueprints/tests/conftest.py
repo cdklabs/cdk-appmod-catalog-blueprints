@@ -86,7 +86,7 @@ def bundled_jsii_path():
         / "src"
         / "mcp_server_constructs"
         / "data"
-        / ".jsii"
+        / "jsii-metadata"
     )
 
 
