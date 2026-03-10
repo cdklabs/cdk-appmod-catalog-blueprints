@@ -25,11 +25,13 @@ When the local `examples/` directory is not available (e.g., when installed via 
 
 ### Updating
 
-`uvx` caches the installed package. To pick up the latest changes (new constructs, examples, bug fixes), force a reinstall:
+`uvx` caches the installed package. To pick up the latest changes (new constructs, examples, bug fixes), clear the cache and restart your MCP client:
 
 ```bash
-uvx --reinstall --from "git+https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git@main#subdirectory=mcp-appmod-catalog-blueprints" mcp-appmod-catalog-blueprints
+uv cache prune --force
 ```
+
+The next time your MCP client starts the server, `uvx` will pull the latest version from GitHub automatically.
 
 ## MCP Client Configuration
 
@@ -329,7 +331,7 @@ Reinstall with: uvx --reinstall mcp-appmod-catalog-blueprints
 ```
 
 To fix:
-1. Reinstall: `uvx --reinstall mcp-appmod-catalog-blueprints`
+1. Clear the cache and restart your MCP client: `uv cache prune`
 2. If developing locally, ensure the `jsii-metadata` file exists at `src/mcp_server_constructs/data/jsii-metadata`
 
 ### Invalid constructType
