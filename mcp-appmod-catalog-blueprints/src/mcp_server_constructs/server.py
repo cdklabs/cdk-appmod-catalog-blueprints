@@ -134,6 +134,148 @@ _LIST_EXAMPLES_INPUT_SCHEMA: dict = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+# Usage guidance for non-scaffoldable classes that alias to a parent construct.
+# Keys are lowercase. When the user requests one of these and the alias resolves
+# to a different construct, the guidance is prepended to the scaffold output so
+# the LLM (or developer) understands the relationship.
+_ALIAS_USAGE_GUIDANCE: dict[str, str] = {
+    # InteractiveAgent hosting adapters
+    "agentcoreruntimehostingadapter": (
+        "NOTE: AgentCoreRuntimeHostingAdapter is not a standalone construct.\n"
+        "It is passed as the `hostingAdapter` prop of InteractiveAgent.\n"
+        "\n"
+        "Usage:\n"
+        "  new InteractiveAgent(this, 'Agent', {\n"
+        "    agentName: 'MyAgent',\n"
+        "    agentDefinition: { bedrockModel: {}, systemPrompt },\n"
+        "    hostingAdapter: new AgentCoreRuntimeHostingAdapter({\n"
+        "      networkMode: 'PUBLIC',  // or 'VPC'\n"
+        "      // containerImageUri: '...',  // optional custom image\n"
+        "      // endpointName: '...',       // optional endpoint name\n"
+        "    }),\n"
+        "  });\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "agentcore": (
+        "NOTE: AgentCoreRuntimeHostingAdapter is not a standalone construct.\n"
+        "It is passed as the `hostingAdapter` prop of InteractiveAgent.\n"
+        "See AgentCoreRuntimeHostingAdapter guidance above.\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "agentcoreruntime": (
+        "NOTE: AgentCoreRuntimeHostingAdapter is not a standalone construct.\n"
+        "It is passed as the `hostingAdapter` prop of InteractiveAgent.\n"
+        "See AgentCoreRuntimeHostingAdapter guidance above.\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "lambdahostingadapter": (
+        "NOTE: LambdaHostingAdapter is the default hosting adapter for InteractiveAgent.\n"
+        "You do NOT need to specify it explicitly — it is used automatically when\n"
+        "no `hostingAdapter` prop is provided.\n"
+        "\n"
+        "To customize it:\n"
+        "  new InteractiveAgent(this, 'Agent', {\n"
+        "    agentName: 'MyAgent',\n"
+        "    agentDefinition: { bedrockModel: {}, systemPrompt },\n"
+        "    hostingAdapter: new LambdaHostingAdapter({\n"
+        "      memorySize: 1024,\n"
+        "    }),\n"
+        "  });\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "hostingadapter": (
+        "NOTE: IHostingAdapter is an interface, not a construct.\n"
+        "Choose a hosting adapter to pass as the `hostingAdapter` prop of InteractiveAgent:\n"
+        "  - LambdaHostingAdapter (default) — Lambda + API Gateway\n"
+        "  - AgentCoreRuntimeHostingAdapter — AgentCore Runtime (microVM)\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "cognitoauthenticator": (
+        "NOTE: CognitoAuthenticator is not a standalone construct.\n"
+        "It is the default authenticator used by InteractiveAgent with LambdaHostingAdapter.\n"
+        "You do NOT need to specify it explicitly.\n"
+        "\n"
+        "For AgentCoreRuntimeHostingAdapter, use `customJwtAuthorizer` instead:\n"
+        "  hostingAdapter: new AgentCoreRuntimeHostingAdapter({\n"
+        "    customJwtAuthorizer: {\n"
+        "      issuerUrl: userPool.userPoolProviderUrl,\n"
+        "      audiences: [userPoolClient.userPoolClientId],\n"
+        "    },\n"
+        "  })\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "noauthenticator": (
+        "NOTE: NoAuthenticator is not a standalone construct.\n"
+        "It disables authentication on InteractiveAgent (for development only).\n"
+        "\n"
+        "Usage:\n"
+        "  new InteractiveAgent(this, 'Agent', {\n"
+        "    agentName: 'MyAgent',\n"
+        "    agentDefinition: { bedrockModel: {}, systemPrompt },\n"
+        "    authenticator: new NoAuthenticator(),\n"
+        "  });\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "s3sessionstore": (
+        "NOTE: S3SessionStore is not a standalone construct.\n"
+        "It is passed as the `sessionStore` prop of InteractiveAgent.\n"
+        "\n"
+        "Usage:\n"
+        "  new InteractiveAgent(this, 'Agent', {\n"
+        "    agentName: 'MyAgent',\n"
+        "    agentDefinition: { bedrockModel: {}, systemPrompt },\n"
+        "    sessionStore: new S3SessionStore({ ... }),\n"
+        "  });\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    "websocketcommunicationadapter": (
+        "NOTE: WebSocketCommunicationAdapter is not a standalone construct.\n"
+        "It is the default communication adapter used by InteractiveAgent\n"
+        "with LambdaHostingAdapter. You do NOT need to specify it explicitly.\n"
+        "\n"
+        "Below is the full InteractiveAgent scaffold for reference:\n"
+        "---\n"
+    ),
+    # Document processing adapters
+    "queueds3adapter": (
+        "NOTE: QueuedS3Adapter is not a standalone construct.\n"
+        "It is the default ingress adapter for BedrockDocumentProcessing.\n"
+        "You do NOT need to specify it explicitly — it is created automatically.\n"
+        "\n"
+        "To customize it, pass adapter options via the `adapter` prop:\n"
+        "  new BedrockDocumentProcessing(this, 'DocProcessing', {\n"
+        "    classificationPrompt: '...',\n"
+        "    adapter: new QueuedS3Adapter({ ... }),\n"
+        "  });\n"
+        "\n"
+        "Below is the full BedrockDocumentProcessing scaffold for reference:\n"
+        "---\n"
+    ),
+    "s3adapter": (
+        "NOTE: QueuedS3Adapter is the default ingress adapter for BedrockDocumentProcessing.\n"
+        "You do NOT need to specify it explicitly — it is created automatically.\n"
+        "\n"
+        "Below is the full BedrockDocumentProcessing scaffold for reference:\n"
+        "---\n"
+    ),
+}
+
 _DEGRADED_ERROR = types.CallToolResult(
     content=[
         types.TextContent(
@@ -383,6 +525,7 @@ def create_server(
                 )
 
             if construct_type not in valid_types:
+                original_input = construct_type
                 resolved = registry.resolve_construct_type(
                     family, construct_type
                 )
@@ -395,6 +538,8 @@ def create_server(
                         f"Valid types: {', '.join(sorted(valid_types))}",
                         is_error=True,
                     )
+            else:
+                original_input = construct_type
 
             language = arguments.get("language", "typescript")
             props_overrides = arguments.get("props")
@@ -405,6 +550,13 @@ def create_server(
                     language=language,
                     props_overrides=props_overrides,
                 )
+
+                # Prepend usage guidance when the user asked for a
+                # non-scaffoldable class that was aliased to a parent
+                guidance_key = original_input.lower()
+                if guidance_key in _ALIAS_USAGE_GUIDANCE:
+                    snippet = _ALIAS_USAGE_GUIDANCE[guidance_key] + snippet
+
                 return _text_result(snippet)
             except Exception as exc:
                 logger.exception("Scaffold failed for %s", construct_type)

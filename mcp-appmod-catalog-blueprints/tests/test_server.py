@@ -564,3 +564,101 @@ class TestDegradedMode:
             }))
             assert result.isError is True, f"{tool_name} should return error in degraded mode"
             assert "JSII metadata unavailable" in result.content[0].text
+
+
+
+# ── Alias usage guidance ─────────────────────────────────────────
+
+
+class TestAliasUsageGuidance:
+    """Verify that non-scaffoldable aliases prepend usage guidance."""
+
+    def test_agentcore_adapter_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "AgentCoreRuntimeHostingAdapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: AgentCoreRuntimeHostingAdapter is not a standalone construct" in text
+        assert "hostingAdapter" in text
+        # Scaffold code should follow the guidance
+        assert "InteractiveAgent" in text
+
+    def test_agentcore_shorthand_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "agentcore",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE:" in text
+        assert "InteractiveAgent" in text
+
+    def test_lambda_hosting_adapter_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "LambdaHostingAdapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "default hosting adapter" in text
+        assert "InteractiveAgent" in text
+
+    def test_no_authenticator_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "NoAuthenticator",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: NoAuthenticator is not a standalone construct" in text
+        assert "development only" in text
+
+    def test_queued_s3_adapter_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_document_processing", {
+            "constructType": "QueuedS3Adapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: QueuedS3Adapter is not a standalone construct" in text
+        assert "BedrockDocumentProcessing" in text
+
+    def test_cognito_authenticator_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "CognitoAuthenticator",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: CognitoAuthenticator is not a standalone construct" in text
+        assert "customJwtAuthorizer" in text
+
+    def test_exact_match_no_guidance(self, server):
+        """Direct construct names should NOT get guidance prepended."""
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "InteractiveAgent",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE:" not in text.split("\n")[0]
+
+    def test_s3_session_store_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "S3SessionStore",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: S3SessionStore is not a standalone construct" in text
+        assert "sessionStore" in text
+
+    def test_hosting_adapter_interface_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "HostingAdapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "IHostingAdapter is an interface" in text
+
+    def test_websocket_adapter_shows_guidance(self, server):
+        result = _run(_call_tool(server, "scaffold_agents", {
+            "constructType": "WebSocketCommunicationAdapter",
+        }))
+        assert result.isError is False
+        text = result.content[0].text
+        assert "NOTE: WebSocketCommunicationAdapter is not a standalone construct" in text
