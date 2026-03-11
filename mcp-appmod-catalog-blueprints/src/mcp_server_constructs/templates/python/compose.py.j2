@@ -1,4 +1,7 @@
 {# Python compose template: multiple constructs wired together #}
+{% if dependency_hint %}
+# Install: {{ dependency_hint }}
+{% endif %}
 {% for imp in imports %}
 from {{ imp.module }} import {{ imp.names | join(", ") }}
 {% endfor %}
