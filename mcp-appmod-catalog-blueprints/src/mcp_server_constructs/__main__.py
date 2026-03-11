@@ -2,6 +2,9 @@
 
 Starts the MCP server with stdio transport when run as a module
 or via the `mcp-appmod-catalog-blueprints` console script.
+
+Also supports building the examples index via:
+    python -m mcp_server_constructs build-examples-index
 """
 
 import argparse
@@ -14,6 +17,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="MCP server for AppMod Catalog Blueprints CDK constructs",
     )
+    subparsers = parser.add_subparsers(dest="command")
+
+    # --- Default: run the server ---
     parser.add_argument(
         "--examples-path",
         default=None,
@@ -33,7 +39,31 @@ def main() -> None:
         default=None,
         help="GitHub branch to fetch examples from. Default: main",
     )
+
+    # --- Subcommand: build-examples-index ---
+    build_parser = subparsers.add_parser(
+        "build-examples-index",
+        help="Build the bundled examples-index.json from the local examples/ directory.",
+    )
+    build_parser.add_argument(
+        "--examples-path",
+        default=None,
+        help="Path to the examples/ directory. Auto-detected if omitted.",
+    )
+    build_parser.add_argument(
+        "--output",
+        default=None,
+        help="Output path for the JSON file. Defaults to data/examples-index.json.",
+    )
+
     args = parser.parse_args()
+
+    if args.command == "build-examples-index":
+        from mcp_server_constructs.build_examples_index import main as build_main
+        # Re-parse with just the build subcommand args
+        sys.argv = ["build-examples-index"] + sys.argv[2:]
+        build_main()
+        return
 
     from mcp_server_constructs.server import create_server
 

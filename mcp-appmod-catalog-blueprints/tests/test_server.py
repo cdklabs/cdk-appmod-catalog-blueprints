@@ -66,6 +66,9 @@ def degraded_server(tmp_path):
     with patch(
         "mcp_server_constructs.registry._default_jsii_path",
         return_value=str(tmp_path / "nonexistent.jsii"),
+    ), patch(
+        "mcp_server_constructs.registry.ConstructRegistry._fetch_remote_jsii",
+        return_value=None,
     ):
         return create_server()
 

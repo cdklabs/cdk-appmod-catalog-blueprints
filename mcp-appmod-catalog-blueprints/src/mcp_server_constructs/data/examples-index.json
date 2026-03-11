@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "examples": {
+    "chatbot/customer-service-chatbot": {
+      "category": "chatbot",
+      "name": "customer-service-chatbot",
+      "readme_path": "examples/chatbot/customer-service-chatbot/README.md",
+      "stack_files": [
+        "examples/chatbot/customer-service-chatbot/infrastructure/app-backend-only.ts",
+        "examples/chatbot/customer-service-chatbot/infrastructure/app.ts",
+        "examples/chatbot/customer-service-chatbot/infrastructure/chatbot-stack-backend-only.ts",
+        "examples/chatbot/customer-service-chatbot/infrastructure/chatbot-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": false
+    },
+    "chatbot/retail-banking-chatbot": {
+      "category": "chatbot",
+      "name": "retail-banking-chatbot",
+      "readme_path": "examples/chatbot/retail-banking-chatbot/README.md",
+      "stack_files": [
+        "examples/chatbot/retail-banking-chatbot/infrastructure/app.ts",
+        "examples/chatbot/retail-banking-chatbot/infrastructure/retail-banking-chatbot-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": false
+    },
+    "chatbot/retail-banking-chatbot-agentcore": {
+      "category": "chatbot",
+      "name": "retail-banking-chatbot-agentcore",
+      "readme_path": "examples/chatbot/retail-banking-chatbot-agentcore/README.md",
+      "stack_files": [
+        "examples/chatbot/retail-banking-chatbot-agentcore/infrastructure/app.ts",
+        "examples/chatbot/retail-banking-chatbot-agentcore/infrastructure/retail-banking-chatbot-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": false
+    },
+    "chatbot/stockmarket-analysis": {
+      "category": "chatbot",
+      "name": "stockmarket-analysis",
+      "readme_path": null,
+      "stack_files": [],
+      "has_agent_resources": false,
+      "has_sample_files": false
+    },
+    "document-processing/agentic-document-processing": {
+      "category": "document-processing",
+      "name": "agentic-document-processing",
+      "readme_path": "examples/document-processing/agentic-document-processing/README.md",
+      "stack_files": [
+        "examples/document-processing/agentic-document-processing/agentic-document-processing-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": true
+    },
+    "document-processing/bedrock-document-processing": {
+      "category": "document-processing",
+      "name": "bedrock-document-processing",
+      "readme_path": "examples/document-processing/bedrock-document-processing/README.md",
+      "stack_files": [
+        "examples/document-processing/bedrock-document-processing/bedrock-document-processing-stack.ts"
+      ],
+      "has_agent_resources": false,
+      "has_sample_files": true
+    },
+    "document-processing/doc-processing-fullstack-webapp": {
+      "category": "document-processing",
+      "name": "doc-processing-fullstack-webapp",
+      "readme_path": "examples/document-processing/doc-processing-fullstack-webapp/README.md",
+      "stack_files": [
+        "examples/document-processing/doc-processing-fullstack-webapp/api-stack.ts",
+        "examples/document-processing/doc-processing-fullstack-webapp/frontend-stack.ts"
+      ],
+      "has_agent_resources": false,
+      "has_sample_files": false
+    },
+    "document-processing/fraud-detection": {
+      "category": "document-processing",
+      "name": "fraud-detection",
+      "readme_path": "examples/document-processing/fraud-detection/README.md",
+      "stack_files": [
+        "examples/document-processing/fraud-detection/fraud-detection-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": true
+    },
+    "document-processing/minimal-bedrock-doc-processing": {
+      "category": "document-processing",
+      "name": "minimal-bedrock-doc-processing",
+      "readme_path": "examples/document-processing/minimal-bedrock-doc-processing/README.md",
+      "stack_files": [
+        "examples/document-processing/minimal-bedrock-doc-processing/minimal-bedrock-doc-processing-stack.ts"
+      ],
+      "has_agent_resources": false,
+      "has_sample_files": true
+    },
+    "document-processing/summarization-pipeline": {
+      "category": "document-processing",
+      "name": "summarization-pipeline",
+      "readme_path": "examples/document-processing/summarization-pipeline/README.md",
+      "stack_files": [
+        "examples/document-processing/summarization-pipeline/lib/document-summarization-stack.ts"
+      ],
+      "has_agent_resources": true,
+      "has_sample_files": false
+    },
+    "rag-customer-support/resources": {
+      "category": "rag-customer-support",
+      "name": "resources",
+      "readme_path": null,
+      "stack_files": [],
+      "has_agent_resources": false,
+      "has_sample_files": false
+    },
+    "rag-customer-support/sample-docs": {
+      "category": "rag-customer-support",
+      "name": "sample-docs",
+      "readme_path": null,
+      "stack_files": [],
+      "has_agent_resources": false,
+      "has_sample_files": false
+    },
+    "rag-customer-support/sample-questions": {
+      "category": "rag-customer-support",
+      "name": "sample-questions",
+      "readme_path": null,
+      "stack_files": [],
+      "has_agent_resources": false,
+      "has_sample_files": false
+    }
+  }
+}

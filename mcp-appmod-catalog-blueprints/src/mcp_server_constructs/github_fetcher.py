@@ -1,17 +1,19 @@
 """Fetch examples from GitHub when the local examples/ directory is unavailable.
 
-Uses the GitHub Trees API to discover example directories, then fetches
-READMEs and stack files via raw content URLs. Results are cached in memory
-for the lifetime of the server process.
+Uses a committed examples-index.json fetched from raw GitHub for structure
+discovery (single lightweight HTTP call), then fetches READMEs and stack
+files via raw content URLs on demand. Falls back to the GitHub Trees API
+if the index file is not found in the repository.
+
+Results are cached in memory for the lifetime of the server process.
 """
 
 from __future__ import annotations
 
+import json
 import logging
-import re
 import urllib.request
 import urllib.error
-import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -20,19 +22,20 @@ logger = logging.getLogger(__name__)
 _DEFAULT_REPO = "cdklabs/cdk-appmod-catalog-blueprints"
 _DEFAULT_BRANCH = "main"
 _EXAMPLES_PREFIX = "examples/"
+_INDEX_PATH = "mcp-appmod-catalog-blueprints/src/mcp_server_constructs/data/examples-index.json"
 
-# Directories to skip when scanning the tree
+# Directories to skip when scanning the tree (only used in API fallback)
 _SKIP_DIRS = {
     "node_modules", ".venv", "cdk.out", "dist", "build",
     "__pycache__", ".pytest_cache", "frontend",
 }
 
-# File patterns we care about
+# File patterns we care about (only used in API fallback)
 _README_NAME = "README.md"
 _TS_EXTENSION = ".ts"
 _SKIP_TS_FILES = {"app.ts"}
 
-# Subdirectories to check for stack files
+# Subdirectories to check for stack files (only used in API fallback)
 _STACK_SUBDIRS = {"lib", "infrastructure"}
 
 _REQUEST_TIMEOUT = 15  # seconds
@@ -74,6 +77,27 @@ def _is_in_skip_dir(path: str) -> bool:
     return any(part in _SKIP_DIRS for part in parts)
 
 
+def _parse_remote_index(raw_json: str) -> dict[str, dict[str, Any]] | None:
+    """Parse the examples-index.json content fetched from GitHub.
+
+    Returns the examples dict, or None if the content is invalid.
+    """
+    try:
+        data = json.loads(raw_json)
+    except (json.JSONDecodeError, ValueError):
+        return None
+
+    version = data.get("version", 0)
+    if version != 1:
+        logger.warning("Unsupported examples index version %s; ignoring.", version)
+        return None
+
+    examples = data.get("examples")
+    if examples and isinstance(examples, dict):
+        return examples
+    return None
+
+
 def _parse_example_structure(
     tree_entries: list[GitHubTreeEntry],
 ) -> dict[str, dict[str, Any]]:
@@ -81,6 +105,8 @@ def _parse_example_structure(
 
     Returns a dict keyed by "category/example-name" with metadata about
     which files exist (READMEs, stack files, resources/, sample-files/).
+
+    This is the fallback path used only when the remote index is unavailable.
     """
     examples: dict[str, dict[str, Any]] = {}
 
@@ -152,17 +178,21 @@ def _parse_example_structure(
 class GitHubExampleFetcher:
     """Fetches example metadata and content from GitHub.
 
-    Uses the Trees API for directory discovery (single API call) and
-    raw content URLs for file fetching. All results are cached in memory.
+    For structure discovery, fetches the committed examples-index.json
+    from raw GitHub (single HTTP call). Falls back to the Trees API
+    if the index file is not found. File content (READMEs, stack files)
+    is always fetched via raw GitHub URLs and cached in memory.
     """
 
     def __init__(
         self,
         repo: str = _DEFAULT_REPO,
         branch: str = _DEFAULT_BRANCH,
+        index_path: str = _INDEX_PATH,
     ):
         self._repo = repo
         self._branch = branch
+        self._index_path = index_path
         self._tree_url = (
             f"https://api.github.com/repos/{repo}/git/trees/{branch}?recursive=1"
         )
@@ -170,6 +200,32 @@ class GitHubExampleFetcher:
             f"https://raw.githubusercontent.com/{repo}/{branch}"
         )
         self._file_cache: dict[str, str] = {}
+
+    def _fetch_remote_index(self) -> dict[str, dict[str, Any]] | None:
+        """Fetch and parse examples-index.json from raw GitHub.
+
+        Returns the examples dict, or None if the file is missing or invalid.
+        """
+        url = f"{self._raw_base}/{self._index_path}"
+        try:
+            raw = _github_raw_get(url)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 404:
+                logger.info("Remote examples-index.json not found at %s.", url)
+            else:
+                logger.warning("Failed to fetch remote examples index: %s", exc)
+            return None
+        except urllib.error.URLError as exc:
+            logger.warning("Failed to fetch remote examples index: %s", exc)
+            return None
+
+        result = _parse_remote_index(raw)
+        if result is not None:
+            logger.info(
+                "Loaded %d examples from remote index (%s@%s).",
+                len(result), self._repo, self._branch,
+            )
+        return result
 
     def fetch_tree(self) -> list[GitHubTreeEntry]:
         """Fetch the full repository tree from GitHub.
@@ -209,12 +265,24 @@ class GitHubExampleFetcher:
         return content
 
     def discover_examples(self) -> dict[str, dict[str, Any]]:
-        """Discover all examples by fetching the repo tree.
+        """Discover all examples, preferring the remote index.
+
+        Tries fetching examples-index.json from raw GitHub first (single
+        HTTP call). If unavailable, falls back to the Trees API.
 
         Returns the parsed example structure map.
 
         Raises:
-            urllib.error.URLError: If the GitHub API request fails.
+            urllib.error.URLError: If both the index fetch and Trees API fail.
         """
+        # Try remote index first (single file fetch)
+        result = self._fetch_remote_index()
+        if result is not None:
+            return result
+
+        # Fall back to Trees API
+        logger.info(
+            "Remote examples index unavailable; falling back to GitHub Trees API."
+        )
         entries = self.fetch_tree()
         return _parse_example_structure(entries)

@@ -54,6 +54,7 @@ new AccessLog(scope: Construct, id: string, props?: AccessLogProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.getLogPath">getLogPath</a></code> | Get the S3 bucket path for a specific service's access logs. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.getLogUri">getLogUri</a></code> | Get the S3 URI for a specific service's access logs. |
 
@@ -66,6 +67,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `getLogPath` <a name="getLogPath" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.getLogPath"></a>
 
@@ -123,7 +145,7 @@ Optional resource name for further organization.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
 
 ```typescript
 import { AccessLog } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -132,6 +154,20 @@ AccessLog.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct.parameter.x"></a>
 
@@ -244,6 +280,7 @@ Configuration properties for the document processing pipeline.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.metrics">metrics</a></code> | *No description.* |
 
 ---
@@ -255,6 +292,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `metrics` <a name="metrics" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.metrics"></a>
 
@@ -270,7 +328,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { AgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -279,6 +337,20 @@ AgenticDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -468,6 +540,7 @@ new BaseAgent(scope: Construct, id: string, props: BaseAgentProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -479,6 +552,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -487,7 +581,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
 
 ```typescript
 import { BaseAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -496,6 +590,20 @@ BaseAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct.parameter.x"></a>
 
@@ -646,6 +754,7 @@ Configuration properties for the document processing pipeline.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.metrics">metrics</a></code> | *No description.* |
 
 ---
@@ -657,6 +766,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `metrics` <a name="metrics" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.metrics"></a>
 
@@ -672,7 +802,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BaseDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -681,6 +811,20 @@ BaseDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -856,6 +1000,7 @@ Configuration properties for the knowledge base.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this knowledge base. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the retrieval tool asset for this knowledge base type. |
@@ -870,6 +1015,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `exportConfiguration` <a name="exportConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.exportConfiguration"></a>
 
@@ -927,7 +1093,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BaseKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -936,6 +1102,20 @@ BaseKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1039,6 +1219,7 @@ new BatchAgent(scope: Construct, id: string, props: BatchAgentProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -1050,6 +1231,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -1058,7 +1260,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
 
 ```typescript
 import { BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1067,6 +1269,20 @@ BatchAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct.parameter.x"></a>
 
@@ -1223,6 +1439,7 @@ Configuration properties for the Bedrock document processing pipeline.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.metrics">metrics</a></code> | *No description.* |
 
 ---
@@ -1234,6 +1451,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `metrics` <a name="metrics" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.metrics"></a>
 
@@ -1249,7 +1487,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1258,6 +1496,20 @@ BedrockDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -1440,6 +1692,7 @@ Configuration properties for the Bedrock Knowledge Base.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.exportConfiguration">exportConfiguration</a></code> | Export configuration for runtime use by the retrieval tool. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.generateIamPermissions">generateIamPermissions</a></code> | Generate IAM policy statements required for accessing this Bedrock Knowledge Base. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.retrievalToolAsset">retrievalToolAsset</a></code> | Provide the Bedrock-specific retrieval tool asset. |
@@ -1454,6 +1707,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `exportConfiguration` <a name="exportConfiguration" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.exportConfiguration"></a>
 
@@ -1522,7 +1796,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BedrockKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1531,6 +1805,20 @@ BedrockKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1691,6 +1979,7 @@ new CloudWatchTransactionSearch(scope: Construct, id: string, props?: CloudWatch
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -1702,6 +1991,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -1710,7 +2020,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
 
 ```typescript
 import { CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1719,6 +2029,20 @@ CloudWatchTransactionSearch.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct.parameter.x"></a>
 
@@ -1807,6 +2131,7 @@ new DataLoader(scope: Construct, id: string, props: DataLoaderProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.grantExecutionTriggerPermissions">grantExecutionTriggerPermissions</a></code> | Grants additional IAM permissions to the execution trigger Lambda function. |
 
 ---
@@ -1818,6 +2143,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `grantExecutionTriggerPermissions` <a name="grantExecutionTriggerPermissions" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.grantExecutionTriggerPermissions"></a>
 
@@ -1843,7 +2189,7 @@ The IAM policy statement to add.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
 
 ```typescript
 import { DataLoader } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1852,6 +2198,20 @@ DataLoader.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct.parameter.x"></a>
 
@@ -2001,6 +2361,7 @@ new EventbridgeBroker(scope: Construct, id: string, props: EventbridgeBrokerProp
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.sendViaSfnChain">sendViaSfnChain</a></code> | *No description.* |
 
 ---
@@ -2012,6 +2373,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `sendViaSfnChain` <a name="sendViaSfnChain" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.sendViaSfnChain"></a>
 
@@ -2039,7 +2421,7 @@ public sendViaSfnChain(detailType: string, eventDetail: any): EventBridgePutEven
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
 
 ```typescript
 import { EventbridgeBroker } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2048,6 +2430,20 @@ EventbridgeBroker.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct.parameter.x"></a>
 
@@ -2158,6 +2554,7 @@ The frontend properties.
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Frontend.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Frontend.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Frontend.bucketName">bucketName</a></code> | Gets the S3 bucket name. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Frontend.distributionDomainName">distributionDomainName</a></code> | Gets the CloudFront distribution domain name. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Frontend.url">url</a></code> | Gets the URL of the frontend application. |
@@ -2171,6 +2568,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `bucketName` <a name="bucketName" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.bucketName"></a>
 
@@ -2204,7 +2622,7 @@ Gets the URL of the frontend application.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
 
 ```typescript
 import { Frontend } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2213,6 +2631,20 @@ Frontend.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct.parameter.x"></a>
 
@@ -2399,6 +2831,7 @@ new InteractiveAgent(scope: Construct, id: string, props: InteractiveAgentProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.with">with</a></code> | Applies one or more mixins to this construct. |
 
 ---
 
@@ -2410,6 +2843,27 @@ public toString(): string
 
 Returns a string representation of this construct.
 
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
+
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
 | **Name** | **Description** |
@@ -2418,7 +2872,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct"></a>
 
 ```typescript
 import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2427,6 +2881,20 @@ InteractiveAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct.parameter.x"></a>
 
@@ -2623,6 +3091,7 @@ new Network(scope: Construct, id: string, props?: NetworkProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.with">with</a></code> | Applies one or more mixins to this construct. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.applicationSubnetSelection">applicationSubnetSelection</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network.createServiceEndpoint">createServiceEndpoint</a></code> | *No description.* |
 
@@ -2635,6 +3104,27 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `with` <a name="with" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.with"></a>
+
+```typescript
+public with(mixins: ...IMixin[]): IConstruct
+```
+
+Applies one or more mixins to this construct.
+
+Mixins are applied in order. The list of constructs is captured at the
+start of the call, so constructs added by a mixin will not be visited.
+Use multiple `with()` calls if subsequent mixins should apply to added
+constructs.
+
+###### `mixins`<sup>Required</sup> <a name="mixins" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.with.parameter.mixins"></a>
+
+- *Type:* ...constructs.IMixin[]
+
+The mixins to apply.
+
+---
 
 ##### `applicationSubnetSelection` <a name="applicationSubnetSelection" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.applicationSubnetSelection"></a>
 
@@ -2675,7 +3165,7 @@ public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, p
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
 
 ```typescript
 import { Network } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2684,6 +3174,20 @@ Network.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct.parameter.x"></a>
 
