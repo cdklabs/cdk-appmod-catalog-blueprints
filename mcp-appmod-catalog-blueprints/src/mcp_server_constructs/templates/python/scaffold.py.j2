@@ -1,4 +1,7 @@
 {# Python scaffold template: single construct instantiation with snake_case props #}
+{% if dependency_hint %}
+# Install: {{ dependency_hint }}
+{% endif %}
 {% for imp in imports %}
 from {{ imp.module }} import {{ imp.names | join(", ") }}
 {% endfor %}

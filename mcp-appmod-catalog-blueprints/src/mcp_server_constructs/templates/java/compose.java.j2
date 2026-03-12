@@ -1,4 +1,10 @@
 {# Java compose template: multiple constructs wired together with Builder pattern #}
+{% if dependency_hint %}
+// Install:
+{% for line in dependency_hint.split('\n') %}
+// {{ line }}
+{% endfor %}
+{% endif %}
 {% for imp in imports %}
 import {{ imp.module }}.{{ imp.names | join(", ") }};
 {% endfor %}

@@ -34,6 +34,19 @@ _LIBRARY_MODULE_BY_LANG: dict[Language, str] = {
     Language.DOTNET: 'Cdklabs.AppmodCatalogBlueprints',
 }
 
+# Per-language dependency install instructions
+_DEPENDENCY_INSTALL: dict[Language, str] = {
+    Language.TYPESCRIPT: 'npm install @cdklabs/cdk-appmod-catalog-blueprints',
+    Language.PYTHON: 'pip install appmod-catalog-blueprints',
+    Language.JAVA: (
+        '<dependency>\n'
+        '  <groupId>io.github.cdklabs</groupId>\n'
+        '  <artifactId>appmod-catalog-blueprints</artifactId>\n'
+        '</dependency>'
+    ),
+    Language.DOTNET: 'dotnet add package CdklabsAppmodCatalogBlueprints',
+}
+
 # Template subdirectory per language
 _TEMPLATE_DIR: dict[Language, str] = {
     Language.TYPESCRIPT: 'typescript',
@@ -275,6 +288,7 @@ class CodeGenerator:
             id=var_id,
             props=template_props,
             has_observability=has_observability,
+            dependency_hint=_DEPENDENCY_INSTALL.get(lang, ''),
         )
 
     def compose(
@@ -351,7 +365,11 @@ class CodeGenerator:
         # Render template
         template_path = f"{_TEMPLATE_DIR[lang]}/{_COMPOSE_TEMPLATE[lang]}"
         template = self._env.get_template(template_path)
-        return template.render(imports=imports, blocks=blocks)
+        return template.render(
+            imports=imports,
+            blocks=blocks,
+            dependency_hint=_DEPENDENCY_INSTALL.get(lang, ''),
+        )
 
     def _build_props(
         self,

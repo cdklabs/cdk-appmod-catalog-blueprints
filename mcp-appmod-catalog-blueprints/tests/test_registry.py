@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -95,37 +96,55 @@ class TestLoading:
         assert registry.is_loaded is True
 
     def test_missing_file_enters_degraded_mode(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nonexistent.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nonexistent.jsii"),
+            enable_remote_fetch=False,
+        )
         assert reg.is_loaded is False
 
     def test_corrupt_json_enters_degraded_mode(self, tmp_path):
         bad = tmp_path / "bad.jsii"
         bad.write_text("not json {{{")
-        reg = ConstructRegistry(jsii_path=str(bad))
+        reg = ConstructRegistry(jsii_path=str(bad), enable_remote_fetch=False)
         assert reg.is_loaded is False
 
     def test_degraded_mode_get_construct_raises(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nope.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nope.jsii"),
+            enable_remote_fetch=False,
+        )
         with pytest.raises(DegradedModeError):
             reg.get_construct("Anything")
 
     def test_degraded_mode_list_families_raises(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nope.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nope.jsii"),
+            enable_remote_fetch=False,
+        )
         with pytest.raises(DegradedModeError):
             reg.list_families()
 
     def test_degraded_mode_get_catalog_raises(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nope.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nope.jsii"),
+            enable_remote_fetch=False,
+        )
         with pytest.raises(DegradedModeError):
             reg.get_catalog()
 
     def test_degraded_mode_get_props_raises(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nope.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nope.jsii"),
+            enable_remote_fetch=False,
+        )
         with pytest.raises(DegradedModeError):
             reg.get_props("Anything")
 
     def test_degraded_mode_get_construct_types_raises(self, tmp_path):
-        reg = ConstructRegistry(jsii_path=str(tmp_path / "nope.jsii"))
+        reg = ConstructRegistry(
+            jsii_path=str(tmp_path / "nope.jsii"),
+            enable_remote_fetch=False,
+        )
         with pytest.raises(DegradedModeError):
             reg.get_construct_types("anything")
 
@@ -387,25 +406,25 @@ class TestConstructRefs:
 
 class TestBundledManifest:
     def test_loads_real_manifest(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.is_loaded is True
 
     def test_has_known_constructs(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         # These constructs should exist in the real library
         for name in ["BedrockDocumentProcessing", "Network", "Frontend"]:
             info = reg.get_construct(name)
             assert info.name == name
 
     def test_has_multiple_families(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         families = reg.list_families()
         family_names = [f.name for f in families]
         assert "document-processing" in family_names
         assert "foundation" in family_names
 
     def test_known_construct_has_props(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         props = reg.get_props("BedrockDocumentProcessing")
         assert len(props) > 0
         prop_names = [p.name for p in props]
@@ -439,44 +458,122 @@ class TestResolveConstructType:
             registry.resolve_construct_type("nope", "anything")
 
     def test_alias_webapp_resolves(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.resolve_construct_type("webapp", "WebApp") == "Frontend"
 
     def test_alias_vpc_resolves(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.resolve_construct_type("foundation", "vpc") == "Network"
 
     def test_alias_chatbot_resolves(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.resolve_construct_type(
             "agents", "chatbot"
         ) == "InteractiveAgent"
 
     def test_alias_kb_resolves(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.resolve_construct_type(
             "agents", "kb"
         ) == "BedrockKnowledgeBase"
 
     def test_alias_wrong_family_returns_none(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         # "webapp" alias → Frontend, but Frontend is not in agents family
         assert reg.resolve_construct_type("agents", "WebApp") is None
 
     def test_non_scaffoldable_adapter_resolves(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         assert reg.resolve_construct_type(
             "agents", "AgentCoreRuntimeHostingAdapter"
         ) == "InteractiveAgent"
 
     def test_substring_unique_match(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         # "Bedrock" uniquely matches BedrockKnowledgeBase in agents
         assert reg.resolve_construct_type(
             "agents", "Bedrock"
         ) == "BedrockKnowledgeBase"
 
     def test_substring_ambiguous_returns_none(self, bundled_jsii_path):
-        reg = ConstructRegistry(jsii_path=bundled_jsii_path)
+        reg = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         # "Base" matches both BaseAgent and BaseKnowledgeBase
         assert reg.resolve_construct_type("agents", "Base") is None
+
+
+# ── Remote fetch ─────────────────────────────────────────────────
+
+
+class TestRemoteFetch:
+    """Tests for the remote-first JSII manifest fetching behaviour."""
+
+    def test_remote_success_loads_registry(self, minimal_jsii):
+        """When remote fetch succeeds, the registry loads from remote data."""
+        with patch.object(
+            ConstructRegistry, "_fetch_remote_jsii", return_value=minimal_jsii,
+        ):
+            reg = ConstructRegistry(enable_remote_fetch=True)
+        assert reg.is_loaded is True
+        info = reg.get_construct("TestConstruct")
+        assert info.name == "TestConstruct"
+
+    def test_remote_failure_falls_back_to_local(self, bundled_jsii_path):
+        """When remote fetch fails, the registry falls back to the local file."""
+        with patch.object(
+            ConstructRegistry, "_fetch_remote_jsii", return_value=None,
+        ):
+            reg = ConstructRegistry(
+                jsii_path=bundled_jsii_path, enable_remote_fetch=True,
+            )
+        assert reg.is_loaded is True
+        # Should have loaded from the bundled file
+        info = reg.get_construct("BedrockDocumentProcessing")
+        assert info.name == "BedrockDocumentProcessing"
+
+    def test_both_fail_enters_degraded_mode(self, tmp_path):
+        """When both remote and local fail, the registry enters degraded mode."""
+        with patch.object(
+            ConstructRegistry, "_fetch_remote_jsii", return_value=None,
+        ):
+            reg = ConstructRegistry(
+                jsii_path=str(tmp_path / "nonexistent.jsii"),
+                enable_remote_fetch=True,
+            )
+        assert reg.is_loaded is False
+        with pytest.raises(DegradedModeError):
+            reg.get_construct("Anything")
+
+    def test_remote_disabled_skips_fetch(self, bundled_jsii_path):
+        """When enable_remote_fetch=False, remote fetch is not attempted."""
+        with patch.object(
+            ConstructRegistry, "_fetch_remote_jsii",
+        ) as mock_fetch:
+            reg = ConstructRegistry(
+                jsii_path=bundled_jsii_path, enable_remote_fetch=False,
+            )
+        mock_fetch.assert_not_called()
+        assert reg.is_loaded is True
+
+    def test_fetch_remote_jsii_returns_parsed_dict(self, minimal_jsii):
+        """_fetch_remote_jsii returns a parsed dict when the fetch succeeds."""
+        raw_json = json.dumps(minimal_jsii)
+        with patch(
+            "mcp_server_constructs.github_fetcher._github_raw_get",
+            return_value=raw_json,
+        ):
+            result = ConstructRegistry._fetch_remote_jsii(
+                "owner/repo", "main", "path/to/jsii-metadata",
+            )
+        assert result is not None
+        assert result["name"] == minimal_jsii["name"]
+
+    def test_fetch_remote_jsii_returns_none_on_error(self):
+        """_fetch_remote_jsii returns None when the fetch raises."""
+        with patch(
+            "mcp_server_constructs.github_fetcher._github_raw_get",
+            side_effect=Exception("network error"),
+        ):
+            result = ConstructRegistry._fetch_remote_jsii(
+                "owner/repo", "main", "path/to/jsii-metadata",
+            )
+        assert result is None

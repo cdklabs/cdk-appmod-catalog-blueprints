@@ -475,20 +475,20 @@ class TestBundledResolverIntegration:
     """Integration tests using the real bundled .jsii manifest."""
 
     def test_bedrock_depends_on_network(self, bundled_jsii_path):
-        registry = ConstructRegistry(jsii_path=bundled_jsii_path)
+        registry = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         resolver = DependencyResolver(registry)
         deps = resolver.get_dependencies("BedrockDocumentProcessing")
         # BedrockDocumentProcessing should reference Network via props
         assert "Network" in deps
 
     def test_resolve_order_with_real_constructs(self, bundled_jsii_path):
-        registry = ConstructRegistry(jsii_path=bundled_jsii_path)
+        registry = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         resolver = DependencyResolver(registry)
         order = resolver.resolve_order(["BedrockDocumentProcessing", "Network"])
         assert order.index("Network") < order.index("BedrockDocumentProcessing")
 
     def test_build_wiring_with_real_constructs(self, bundled_jsii_path):
-        registry = ConstructRegistry(jsii_path=bundled_jsii_path)
+        registry = ConstructRegistry(jsii_path=bundled_jsii_path, enable_remote_fetch=False)
         resolver = DependencyResolver(registry)
         order = resolver.resolve_order(["BedrockDocumentProcessing", "Network"])
         wiring = resolver.build_wiring(order)

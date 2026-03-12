@@ -1,8 +1,9 @@
 """ConstructRegistry: JSII manifest loading, parsing, and indexed access.
 
-Loads the bundled .jsii manifest (or a custom path), parses construct
-classes and their props interfaces, groups constructs into families,
-and provides indexed lookups by name and family.
+Loads the JSII manifest by first attempting to fetch it from raw GitHub
+(always fresh), then falling back to the bundled local file. Parses
+construct classes and their props interfaces, groups constructs into
+families, and provides indexed lookups by name and family.
 """
 
 from __future__ import annotations
@@ -24,6 +25,10 @@ from mcp_server_constructs.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+_DEFAULT_REPO = "cdklabs/cdk-appmod-catalog-blueprints"
+_DEFAULT_BRANCH = "main"
+_JSII_METADATA_PATH = "mcp-appmod-catalog-blueprints/src/mcp_server_constructs/data/jsii-metadata"
 
 # Library assembly prefix for FQN matching
 _ASSEMBLY = "@cdklabs/cdk-appmod-catalog-blueprints"
@@ -277,11 +282,26 @@ class ConstructRegistry:
     ``is_loaded`` is ``False`` and all queries raise ``DegradedModeError``.
     """
 
-    def __init__(self, jsii_path: str | None = None):
+    def __init__(
+        self,
+        jsii_path: str | None = None,
+        *,
+        github_repo: str = _DEFAULT_REPO,
+        github_branch: str = _DEFAULT_BRANCH,
+        jsii_metadata_path: str = _JSII_METADATA_PATH,
+        enable_remote_fetch: bool = True,
+    ):
         """Load and index the JSII manifest.
 
+        Tries fetching from raw GitHub first (freshest data), then falls
+        back to the local bundled file.
+
         Args:
-            jsii_path: Path to .jsii file. Defaults to bundled manifest.
+            jsii_path: Path to local .jsii file. Defaults to bundled manifest.
+            github_repo: GitHub repo in "owner/name" format for remote fetch.
+            github_branch: Branch to fetch from.
+            jsii_metadata_path: Repo-relative path to the jsii-metadata file.
+            enable_remote_fetch: Whether to try fetching from GitHub first.
         """
         self._loaded = False
         self._constructs: dict[str, ConstructInfo] = {}
@@ -289,15 +309,50 @@ class ConstructRegistry:
         self._library_version = ""
         self._library_name = ""
 
-        path = jsii_path or _default_jsii_path()
-        try:
-            with open(path) as f:
-                data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError, OSError) as exc:
-            logger.warning("Failed to load JSII manifest at %s: %s", path, exc)
-            return
+        data = None
+
+        # Try remote fetch first
+        if enable_remote_fetch:
+            data = self._fetch_remote_jsii(github_repo, github_branch, jsii_metadata_path)
+
+        # Fall back to local file
+        if data is None:
+            path = jsii_path or _default_jsii_path()
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                logger.info("Loaded JSII manifest from local file: %s", path)
+            except (FileNotFoundError, json.JSONDecodeError, OSError) as exc:
+                logger.warning("Failed to load JSII manifest at %s: %s", path, exc)
+                return
 
         self._load_from_dict(data)
+
+    @staticmethod
+    def _fetch_remote_jsii(
+        repo: str, branch: str, metadata_path: str,
+    ) -> dict | None:
+        """Fetch the JSII manifest from raw GitHub.
+
+        Returns the parsed dict, or None if the fetch fails.
+        """
+        from mcp_server_constructs.github_fetcher import _github_raw_get
+
+        url = f"https://raw.githubusercontent.com/{repo}/{branch}/{metadata_path}"
+        try:
+            raw = _github_raw_get(url)
+            data = json.loads(raw)
+            logger.info(
+                "Loaded JSII manifest from GitHub (%s@%s).", repo, branch,
+            )
+            return data
+        except Exception as exc:
+            logger.info(
+                "Failed to fetch JSII manifest from GitHub: %s; "
+                "falling back to local file.",
+                exc,
+            )
+            return None
 
     @classmethod
     def from_dict(cls, data: dict) -> "ConstructRegistry":
