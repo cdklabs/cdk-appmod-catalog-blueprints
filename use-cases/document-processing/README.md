@@ -14,6 +14,8 @@ You can leverage the following constructs:
 - **BaseDocumentProcessing**: Abstract foundation requiring custom step implementations
 - **BedrockDocumentProcessing**: Ready-to-use genAI document processing implementation with Amazon Bedrock 
 - **AgenticDocumentProcessing**: Advanced agentic capabilities powered by the [Agents Framework](../framework/agents/) with BatchAgent integration
+- **LocalStackBedrockDocumentProcessing**: LocalStack-enabled BedrockDocumentProcessing variant
+- **LocalStackAgenticDocumentProcessing**: LocalStack-enabled AgenticDocumentProcessing variant
 
 All implementations share common infrastructure: Step Functions workflow, DynamoDB metadata storage, EventBridge integration, and built-in observability.
 
@@ -209,6 +211,34 @@ interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps 
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
 - [Fraud Detection](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/fraud-detection)
 - [Document Summarization Pipeline](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/summarization-pipeline)
+
+### LocalStack Usage
+
+Use LocalStack variants to route runtime SDK calls to LocalStack endpoints without replacing existing constructs:
+
+```typescript
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+  LocalStackBedrockDocumentProcessing,
+  LocalStackAgenticDocumentProcessing
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+process.env.OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? DEFAULT_LOCALSTACK_OLLAMA_BASE_URL;
+
+new LocalStackBedrockDocumentProcessing(this, 'LocalDocProcessor', {
+  localStack: {
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
+  },
+  classificationBedrockModel: {
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+  },
+  processingBedrockModel: {
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+  }
+});
+```
 
 ## PDF Chunking for Large Documents
 

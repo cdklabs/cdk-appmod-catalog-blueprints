@@ -16,6 +16,7 @@ You can leverage the following constructs:
 - **BaseAgent**: Abstract foundation requiring custom agent implementations
 - **BatchAgent**: Ready-to-use agent for batch processing with Bedrock integration
 - **InteractiveAgent**: Real-time conversational AI with SSE streaming, session management, and Cognito authentication
+- **LocalStackBatchAgent**: Batch agent variant that routes runtime SDK calls to LocalStack endpoints
 
 All implementations share common infrastructure from `BaseAgent` and integrate with the [Strands agent framework](https://github.com/awslabs/strands-agents) for tool execution and model interaction.
 
@@ -167,6 +168,35 @@ const agent = new BatchAgent(this, 'DocumentAnalysisAgent', {
   `,
   expectJson: true,
   enableObservability: true
+});
+```
+
+### LocalStack Usage
+
+Use `LocalStackBatchAgent` when running with LocalStack:
+
+```typescript
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+  LocalStackBatchAgent
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+process.env.OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? DEFAULT_LOCALSTACK_OLLAMA_BASE_URL;
+
+new LocalStackBatchAgent(this, 'LocalAgent', {
+  agentName: 'LocalAgent',
+  prompt: 'Analyze the input document.',
+  agentDefinition: {
+    bedrockModel: {
+      customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+    },
+    systemPrompt: myPromptAsset
+  },
+  localStack: {
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
+  }
 });
 ```
 

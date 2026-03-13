@@ -123,7 +123,7 @@ Optional resource name for further organization.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct"></a>
 
 ```typescript
 import { AccessLog } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -132,6 +132,20 @@ AccessLog.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AccessLog.isConstruct.parameter.x"></a>
 
@@ -270,7 +284,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { AgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -279,6 +293,20 @@ AgenticDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -487,7 +515,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct"></a>
 
 ```typescript
 import { BaseAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -496,6 +524,20 @@ BaseAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseAgent.isConstruct.parameter.x"></a>
 
@@ -672,7 +714,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BaseDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -681,6 +723,20 @@ BaseDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -927,7 +983,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BaseKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -936,6 +992,20 @@ BaseKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BaseKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1058,7 +1128,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct"></a>
 
 ```typescript
 import { BatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1067,6 +1137,20 @@ BatchAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BatchAgent.isConstruct.parameter.x"></a>
 
@@ -1249,7 +1333,7 @@ public metrics(): IMetric[]
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct"></a>
 
 ```typescript
 import { BedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1258,6 +1342,20 @@ BedrockDocumentProcessing.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing.isConstruct.parameter.x"></a>
 
@@ -1522,7 +1620,7 @@ dependencies required by their retrieval tool.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct"></a>
 
 ```typescript
 import { BedrockKnowledgeBase } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1531,6 +1629,20 @@ BedrockKnowledgeBase.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockKnowledgeBase.isConstruct.parameter.x"></a>
 
@@ -1710,7 +1822,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct"></a>
 
 ```typescript
 import { CloudWatchTransactionSearch } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1719,6 +1831,20 @@ CloudWatchTransactionSearch.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.CloudWatchTransactionSearch.isConstruct.parameter.x"></a>
 
@@ -1843,7 +1969,7 @@ The IAM policy statement to add.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct"></a>
 
 ```typescript
 import { DataLoader } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -1852,6 +1978,20 @@ DataLoader.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.DataLoader.isConstruct.parameter.x"></a>
 
@@ -2039,7 +2179,7 @@ public sendViaSfnChain(detailType: string, eventDetail: any): EventBridgePutEven
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct"></a>
 
 ```typescript
 import { EventbridgeBroker } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2048,6 +2188,20 @@ EventbridgeBroker.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker.isConstruct.parameter.x"></a>
 
@@ -2204,7 +2358,7 @@ Gets the URL of the frontend application.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct"></a>
 
 ```typescript
 import { Frontend } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2213,6 +2367,20 @@ Frontend.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Frontend.isConstruct.parameter.x"></a>
 
@@ -2418,7 +2586,7 @@ Returns a string representation of this construct.
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct"></a>
 
 ```typescript
 import { InteractiveAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2427,6 +2595,20 @@ InteractiveAgent.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.isConstruct.parameter.x"></a>
 
@@ -2582,6 +2764,597 @@ public readonly sessionStore: ISessionStore;
 ---
 
 
+### LocalStackAgenticDocumentProcessing <a name="LocalStackAgenticDocumentProcessing" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer"></a>
+
+```typescript
+import { LocalStackAgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LocalStackAgenticDocumentProcessing(scope: Construct, id: string, props: LocalStackAgenticDocumentProcessingProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps">LocalStackAgenticDocumentProcessingProps</a></code> | Configuration properties for the document processing pipeline. |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps">LocalStackAgenticDocumentProcessingProps</a>
+
+Configuration properties for the document processing pipeline.
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.metrics">metrics</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `metrics` <a name="metrics" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.metrics"></a>
+
+```typescript
+public metrics(): IMetric[]
+```
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.isConstruct"></a>
+
+```typescript
+import { LocalStackAgenticDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LocalStackAgenticDocumentProcessing.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Ingress adapter, responsible for triggering workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | log group data protection configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.StateMachine</code> | The Step Functions state machine that orchestrates the document processing workflow. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `documentProcessingTable`<sup>Required</sup> <a name="documentProcessingTable" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.documentProcessingTable"></a>
+
+```typescript
+public readonly documentProcessingTable: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+DynamoDB table for storing document processing metadata and workflow state.
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+KMS key.
+
+---
+
+##### `ingressAdapter`<sup>Required</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Ingress adapter, responsible for triggering workflow.
+
+---
+
+##### `logGroupDataProtection`<sup>Required</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+
+log group data protection configuration.
+
+---
+
+##### `metricNamespace`<sup>Required</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Required</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+
+Business metric service name.
+
+This is part of the initial service dimension
+
+---
+
+##### `stateMachine`<sup>Required</sup> <a name="stateMachine" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing.property.stateMachine"></a>
+
+```typescript
+public readonly stateMachine: StateMachine;
+```
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.StateMachine
+
+The Step Functions state machine that orchestrates the document processing workflow.
+
+---
+
+
+### LocalStackBatchAgent <a name="LocalStackBatchAgent" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer"></a>
+
+```typescript
+import { LocalStackBatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LocalStackBatchAgent(scope: Construct, id: string, props: LocalStackBatchAgentProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps">LocalStackBatchAgentProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps">LocalStackBatchAgentProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.isConstruct"></a>
+
+```typescript
+import { LocalStackBatchAgent } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LocalStackBatchAgent.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.agentRole">agentRole</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.agentFunction">agentFunction</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The Lambda function for the agent (when using Lambda hosting). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.bedrockModel">bedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `agentRole`<sup>Required</sup> <a name="agentRole" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.agentRole"></a>
+
+```typescript
+public readonly agentRole: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+---
+
+##### `agentFunction`<sup>Optional</sup> <a name="agentFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.agentFunction"></a>
+
+```typescript
+public readonly agentFunction: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The Lambda function for the agent (when using Lambda hosting).
+
+May be undefined for non-Lambda hosting backends (e.g. AgentCore Runtime).
+
+---
+
+##### `bedrockModel`<sup>Optional</sup> <a name="bedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgent.property.bedrockModel"></a>
+
+```typescript
+public readonly bedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+---
+
+
+### LocalStackBedrockDocumentProcessing <a name="LocalStackBedrockDocumentProcessing" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer"></a>
+
+```typescript
+import { LocalStackBedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LocalStackBedrockDocumentProcessing(scope: Construct, id: string, props: LocalStackBedrockDocumentProcessingProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps">LocalStackBedrockDocumentProcessingProps</a></code> | Configuration properties for the document processing pipeline. |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps">LocalStackBedrockDocumentProcessingProps</a>
+
+Configuration properties for the document processing pipeline.
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.metrics">metrics</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `metrics` <a name="metrics" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.metrics"></a>
+
+```typescript
+public metrics(): IMetric[]
+```
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.isConstruct"></a>
+
+```typescript
+import { LocalStackBedrockDocumentProcessing } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LocalStackBedrockDocumentProcessing.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Ingress adapter, responsible for triggering workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | log group data protection configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.stateMachine">stateMachine</a></code> | <code>aws-cdk-lib.aws_stepfunctions.StateMachine</code> | The Step Functions state machine that orchestrates the document processing workflow. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `documentProcessingTable`<sup>Required</sup> <a name="documentProcessingTable" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.documentProcessingTable"></a>
+
+```typescript
+public readonly documentProcessingTable: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+DynamoDB table for storing document processing metadata and workflow state.
+
+---
+
+##### `encryptionKey`<sup>Required</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+KMS key.
+
+---
+
+##### `ingressAdapter`<sup>Required</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+
+Ingress adapter, responsible for triggering workflow.
+
+---
+
+##### `logGroupDataProtection`<sup>Required</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+
+log group data protection configuration.
+
+---
+
+##### `metricNamespace`<sup>Required</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Required</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+
+Business metric service name.
+
+This is part of the initial service dimension
+
+---
+
+##### `stateMachine`<sup>Required</sup> <a name="stateMachine" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing.property.stateMachine"></a>
+
+```typescript
+public readonly stateMachine: StateMachine;
+```
+
+- *Type:* aws-cdk-lib.aws_stepfunctions.StateMachine
+
+The Step Functions state machine that orchestrates the document processing workflow.
+
+---
+
+
 ### Network <a name="Network" id="@cdklabs/cdk-appmod-catalog-blueprints.Network"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.Initializer"></a>
@@ -2675,7 +3448,7 @@ public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, p
 
 ---
 
-##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
+##### `isConstruct` <a name="isConstruct" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct"></a>
 
 ```typescript
 import { Network } from '@cdklabs/cdk-appmod-catalog-blueprints'
@@ -2684,6 +3457,20 @@ Network.isConstruct(x: any)
 ```
 
 Checks if `x` is a construct.
+
+Use this method instead of `instanceof` to properly detect `Construct`
+instances, even when the construct library is symlinked.
+
+Explanation: in JavaScript, multiple copies of the `constructs` library on
+disk are seen as independent, completely different libraries. As a
+consequence, the class `Construct` in each copy of the `constructs` library
+is seen as a different class, and an instance of one class will not test as
+`instanceof` the other class. `npm install` will not create installations
+like this, but users may manually symlink construct libraries together or
+use a monorepo tool: in those cases, multiple copies of the `constructs`
+library can be accidentally installed, and `instanceof` will behave
+unpredictably. It is safest to avoid using `instanceof`, and using
+this type-testing method instead.
 
 ###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.isConstruct.parameter.x"></a>
 
@@ -5458,6 +6245,7 @@ const bedrockModelProps: BedrockModelProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.crossRegionInferencePrefix">crossRegionInferencePrefix</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockCrossRegionInferencePrefix">BedrockCrossRegionInferencePrefix</a></code> | Prefix for cross-region inference configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.customModelId">customModelId</a></code> | <code>string</code> | Direct model ID override. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.fmModelId">fmModelId</a></code> | <code>aws-cdk-lib.aws_bedrock.FoundationModelIdentifier</code> | Foundation model to use. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.useCrossRegionInference">useCrossRegionInference</a></code> | <code>boolean</code> | Enable cross-region inference for Bedrock models to improve availability and performance. |
 
@@ -5475,6 +6263,23 @@ public readonly crossRegionInferencePrefix: BedrockCrossRegionInferencePrefix;
 Prefix for cross-region inference configuration.
 
 Only used when useCrossRegionInference is true.
+
+---
+
+##### `customModelId`<sup>Optional</sup> <a name="customModelId" id="@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps.property.customModelId"></a>
+
+```typescript
+public readonly customModelId: string;
+```
+
+- *Type:* string
+
+Direct model ID override.
+
+Use this when invoking a model ID not available in `FoundationModelIdentifier`,
+for example LocalStack Bedrock/Ollama-backed model IDs.
+
+When provided, this value is used as-is for runtime invocation.
 
 ---
 
@@ -8513,6 +9318,1211 @@ The unique function name that was generated.
 
 ---
 
+### LocalStackAgenticDocumentProcessingProps <a name="LocalStackAgenticDocumentProcessingProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.Initializer"></a>
+
+```typescript
+import { LocalStackAgenticDocumentProcessingProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const localStackAgenticDocumentProcessingProps: LocalStackAgenticDocumentProcessingProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable logging and tracing for all supporting resource. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key to be used. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.eventbridgeBroker">eventbridgeBroker</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a></code> | Optional EventBridge broker for publishing custom events during processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Adapter that defines how the document processing workflow is triggered. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.aggregationPrompt">aggregationPrompt</a></code> | <code>string</code> | Custom prompt template for aggregating results from multiple chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.chunkingConfig">chunkingConfig</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a></code> | Configuration for PDF chunking behavior. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enableChunking">enableChunking</a></code> | <code>boolean</code> | Enable PDF chunking for large documents. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingPrompt">processingPrompt</a></code> | <code>string</code> | Custom prompt template for document extraction. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.stepTimeouts">stepTimeouts</a></code> | <code>aws-cdk-lib.Duration</code> | Timeout for individual Step Functions tasks (classification, extraction, etc.). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingAgentParameters">processingAgentParameters</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a></code> | This parameter takes precedence over the `processingBedrockModel` parameter. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.localStack">localStack</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a></code> | LocalStack endpoint routing configuration for Lambda runtime SDK calls. |
+
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `documentProcessingTable`<sup>Optional</sup> <a name="documentProcessingTable" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.documentProcessingTable"></a>
+
+```typescript
+public readonly documentProcessingTable: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+DynamoDB table for storing document processing metadata and workflow state.
+
+If not provided, a new table will be created with DocumentId as partition key.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable logging and tracing for all supporting resource.
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* A new key would be created
+
+KMS key to be used.
+
+---
+
+##### `eventbridgeBroker`<sup>Optional</sup> <a name="eventbridgeBroker" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.eventbridgeBroker"></a>
+
+```typescript
+public readonly eventbridgeBroker: EventbridgeBroker;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a>
+
+Optional EventBridge broker for publishing custom events during processing.
+
+If not provided, no custom events will be sent out.
+
+---
+
+##### `ingressAdapter`<sup>Optional</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+- *Default:* QueuedS3Adapter
+
+Adapter that defines how the document processing workflow is triggered.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* resources will run outside of a VPC
+
+Resources that can run inside a VPC will follow the provided network configuration.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for created resources (bucket, table, queue).
+
+---
+
+##### `workflowTimeout`<sup>Optional</sup> <a name="workflowTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.workflowTimeout"></a>
+
+```typescript
+public readonly workflowTimeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(30)
+
+Maximum execution time for the Step Functions workflow.
+
+---
+
+##### `aggregationPrompt`<sup>Optional</sup> <a name="aggregationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.aggregationPrompt"></a>
+
+```typescript
+public readonly aggregationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_AGGREGATION_PROMPT
+
+Custom prompt template for aggregating results from multiple chunks.
+
+Used when chunking is enabled to merge processing results from all chunks
+into a single coherent result.
+
+The prompt receives the concatenated processing results from all chunks
+and should instruct the model to synthesize them into a unified output.
+
+---
+
+##### `chunkingConfig`<sup>Optional</sup> <a name="chunkingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.chunkingConfig"></a>
+
+```typescript
+public readonly chunkingConfig: ChunkingConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a>
+- *Default:* undefined (uses default configuration when enableChunking is true)
+
+Configuration for PDF chunking behavior.
+
+Only applies when `enableChunking` is true. Allows customization of:
+- **Chunking strategy**: How documents are split (fixed-pages, token-based, or hybrid)
+- **Thresholds**: When to trigger chunking based on page count or token count
+- **Chunk size and overlap**: Control chunk boundaries and context preservation
+- **Processing mode**: Parallel (faster) or sequential (cost-optimized)
+- **Aggregation strategy**: How to combine results from multiple chunks
+
+## Default Configuration
+
+If not provided, uses sensible defaults optimized for most use cases:
+- Strategy: `'hybrid'` (recommended - balances token and page limits)
+- Page threshold: 100 pages
+- Token threshold: 150,000 tokens
+- Processing mode: `'parallel'`
+- Max concurrency: 10
+- Aggregation strategy: `'majority-vote'`
+
+## Strategy Comparison
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| `hybrid` | Most documents | Balances token/page limits | Slightly more complex |
+| `token-based` | Variable density | Respects model limits | Slower analysis |
+| `fixed-pages` | Uniform density | Simple, fast | May exceed token limits |
+
+> [{@link ChunkingConfig } for detailed configuration options]({@link ChunkingConfig } for detailed configuration options)
+
+---
+
+##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.classificationBedrockModel"></a>
+
+```typescript
+public readonly classificationBedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+Bedrock foundation model for document classification step.
+
+---
+
+##### `classificationPrompt`<sup>Optional</sup> <a name="classificationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.classificationPrompt"></a>
+
+```typescript
+public readonly classificationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_CLASSIFICATION_PROMPT
+
+Custom prompt template for document classification.
+
+Must include placeholder for document content.
+
+---
+
+##### `enableChunking`<sup>Optional</sup> <a name="enableChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enableChunking"></a>
+
+```typescript
+public readonly enableChunking: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable PDF chunking for large documents.
+
+When enabled, documents exceeding configured thresholds will be automatically
+split into chunks, processed in parallel or sequentially, and results aggregated.
+
+This feature is useful for:
+- Processing large PDFs (>100 pages)
+- Handling documents that exceed Bedrock token limits (~200K tokens)
+- Improving processing reliability for complex documents
+- Processing documents with variable content density
+
+The chunking workflow:
+1. Analyzes PDF to determine page count and estimate token count
+2. Decides if chunking is needed based on configured thresholds
+3. If chunking is needed, splits PDF into chunks and uploads to S3
+4. Processes each chunk through classification and extraction
+5. Aggregates results using majority voting for classification
+6. Deduplicates entities across chunks
+7. Cleans up temporary chunk files from S3
+
+---
+
+##### `enrichmentLambdaFunction`<sup>Optional</sup> <a name="enrichmentLambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.enrichmentLambdaFunction"></a>
+
+```typescript
+public readonly enrichmentLambdaFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+Optional Lambda function for document enrichment step.
+
+If provided, will be invoked after extraction with workflow state.
+
+---
+
+##### `postProcessingLambdaFunction`<sup>Optional</sup> <a name="postProcessingLambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.postProcessingLambdaFunction"></a>
+
+```typescript
+public readonly postProcessingLambdaFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+Optional Lambda function for post-processing step.
+
+If provided, will be invoked after enrichment with workflow state.
+
+---
+
+##### `processingBedrockModel`<sup>Optional</sup> <a name="processingBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingBedrockModel"></a>
+
+```typescript
+public readonly processingBedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+Bedrock foundation model for document extraction step.
+
+---
+
+##### `processingPrompt`<sup>Optional</sup> <a name="processingPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingPrompt"></a>
+
+```typescript
+public readonly processingPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_EXTRACTION_PROMPT
+
+Custom prompt template for document extraction.
+
+Must include placeholder for document content and classification result.
+
+---
+
+##### `stepTimeouts`<sup>Optional</sup> <a name="stepTimeouts" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.stepTimeouts"></a>
+
+```typescript
+public readonly stepTimeouts: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(5)
+
+Timeout for individual Step Functions tasks (classification, extraction, etc.).
+
+---
+
+##### `processingAgentParameters`<sup>Required</sup> <a name="processingAgentParameters" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.processingAgentParameters"></a>
+
+```typescript
+public readonly processingAgentParameters: BatchAgentProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BatchAgentProps">BatchAgentProps</a>
+
+This parameter takes precedence over the `processingBedrockModel` parameter.
+
+---
+
+##### `localStack`<sup>Optional</sup> <a name="localStack" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessingProps.property.localStack"></a>
+
+```typescript
+public readonly localStack: LocalStackEndpointOverrides;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a>
+- *Default:* { enabled: true }
+
+LocalStack endpoint routing configuration for Lambda runtime SDK calls.
+
+---
+
+### LocalStackBatchAgentProps <a name="LocalStackBatchAgentProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.Initializer"></a>
+
+```typescript
+import { LocalStackBatchAgentProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const localStackBatchAgentProps: LocalStackBatchAgentProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentDefinition">agentDefinition</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a></code> | Agent related parameters. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentName">agentName</a></code> | <code>string</code> | Name of the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentArchitecture">agentArchitecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | The architecture used by the Lambda function where the agent is hosted. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable observability for the agent. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | Encryption key to encrypt agent environment variables. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | If the Agent would be running inside a VPC. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for resources created by this construct. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.servicePrincipal">servicePrincipal</a></code> | <code>aws-cdk-lib.aws_iam.ServicePrincipal</code> | The IAM service principal for the agent role's trust policy. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.prompt">prompt</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.expectJson">expectJson</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.invokeType">invokeType</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType">InvokeType</a></code> | Agent invocation type. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.localStack">localStack</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a></code> | LocalStack endpoint routing configuration for Lambda runtime SDK calls. |
+
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `agentDefinition`<sup>Required</sup> <a name="agentDefinition" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentDefinition"></a>
+
+```typescript
+public readonly agentDefinition: AgentDefinitionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentDefinitionProps">AgentDefinitionProps</a>
+
+Agent related parameters.
+
+---
+
+##### `agentName`<sup>Required</sup> <a name="agentName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentName"></a>
+
+```typescript
+public readonly agentName: string;
+```
+
+- *Type:* string
+
+Name of the agent.
+
+---
+
+##### `agentArchitecture`<sup>Optional</sup> <a name="agentArchitecture" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.agentArchitecture"></a>
+
+```typescript
+public readonly agentArchitecture: Architecture;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Architecture
+- *Default:* Architecture.ARM_64
+
+The architecture used by the Lambda function where the agent is hosted.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable observability for the agent.
+
+When enabled, configures both Lambda Powertools and AWS Bedrock AgentCore observability:
+- **Lambda Powertools**: Provides function-level observability including structured logging,
+  distributed tracing with X-Ray, and custom metrics
+- **AgentCore Observability**: Provides agent-specific observability including agent invocations,
+  reasoning steps, tool usage, token consumption, and agent latency
+
+Both systems publish to Amazon CloudWatch and use the same service name and namespace
+for correlation. This provides complete visibility at both function and agent levels.
+
+**Environment Variables Set** (AgentCore):
+- `AGENT_OBSERVABILITY_ENABLED`: Enables AgentCore observability
+- `OTEL_RESOURCE_ATTRIBUTES`: Service identification for OpenTelemetry
+- `OTEL_EXPORTER_OTLP_LOGS_HEADERS`: Agent identification headers
+- `AWS_LAMBDA_EXEC_WRAPPER`: ADOT wrapper for automatic instrumentation
+
+**IAM Permissions Granted** (AgentCore):
+- CloudWatch Logs: `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
+- X-Ray: `xray:PutTraceSegments`, `xray:PutTelemetryRecords`
+
+**Additional Requirements**:
+- BatchAgent automatically adds ADOT (AWS Distro for OpenTelemetry) Lambda Layer
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* new KMS Key would be created
+
+Encryption key to encrypt agent environment variables.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* Agent would not be in a VPC
+
+If the Agent would be running inside a VPC.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for resources created by this construct.
+
+---
+
+##### `servicePrincipal`<sup>Optional</sup> <a name="servicePrincipal" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.servicePrincipal"></a>
+
+```typescript
+public readonly servicePrincipal: ServicePrincipal;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.ServicePrincipal
+- *Default:* ServicePrincipal('lambda.amazonaws.com')
+
+The IAM service principal for the agent role's trust policy.
+
+This is typically set by the hosting adapter (e.g., `lambda.amazonaws.com`
+for Lambda hosting, `bedrock-agentcore.amazonaws.com` for AgentCore).
+
+---
+
+##### `prompt`<sup>Required</sup> <a name="prompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.prompt"></a>
+
+```typescript
+public readonly prompt: string;
+```
+
+- *Type:* string
+
+---
+
+##### `expectJson`<sup>Optional</sup> <a name="expectJson" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.expectJson"></a>
+
+```typescript
+public readonly expectJson: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `invokeType`<sup>Optional</sup> <a name="invokeType" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.invokeType"></a>
+
+```typescript
+public readonly invokeType: InvokeType;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.InvokeType">InvokeType</a>
+- *Default:* InvokeType.BATCH
+
+Agent invocation type.
+
+Defines how the agent is invoked and what processing mode to use.
+
+---
+
+##### `localStack`<sup>Optional</sup> <a name="localStack" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBatchAgentProps.property.localStack"></a>
+
+```typescript
+public readonly localStack: LocalStackEndpointOverrides;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a>
+- *Default:* { enabled: true }
+
+LocalStack endpoint routing configuration for Lambda runtime SDK calls.
+
+---
+
+### LocalStackBedrockDocumentProcessingProps <a name="LocalStackBedrockDocumentProcessingProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.Initializer"></a>
+
+```typescript
+import { LocalStackBedrockDocumentProcessingProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const localStackBedrockDocumentProcessingProps: LocalStackBedrockDocumentProcessingProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.logGroupDataProtection">logGroupDataProtection</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a></code> | Data protection related configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.metricNamespace">metricNamespace</a></code> | <code>string</code> | Business metric namespace. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.metricServiceName">metricServiceName</a></code> | <code>string</code> | Business metric service name dimension. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.documentProcessingTable">documentProcessingTable</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | DynamoDB table for storing document processing metadata and workflow state. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enableObservability">enableObservability</a></code> | <code>boolean</code> | Enable logging and tracing for all supporting resource. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | KMS key to be used. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.eventbridgeBroker">eventbridgeBroker</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a></code> | Optional EventBridge broker for publishing custom events during processing. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.ingressAdapter">ingressAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a></code> | Adapter that defines how the document processing workflow is triggered. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.network">network</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a></code> | Resources that can run inside a VPC will follow the provided network configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for created resources (bucket, table, queue). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.workflowTimeout">workflowTimeout</a></code> | <code>aws-cdk-lib.Duration</code> | Maximum execution time for the Step Functions workflow. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.aggregationPrompt">aggregationPrompt</a></code> | <code>string</code> | Custom prompt template for aggregating results from multiple chunks. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.chunkingConfig">chunkingConfig</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a></code> | Configuration for PDF chunking behavior. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.classificationBedrockModel">classificationBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document classification step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.classificationPrompt">classificationPrompt</a></code> | <code>string</code> | Custom prompt template for document classification. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enableChunking">enableChunking</a></code> | <code>boolean</code> | Enable PDF chunking for large documents. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enrichmentLambdaFunction">enrichmentLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for document enrichment step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.postProcessingLambdaFunction">postProcessingLambdaFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | Optional Lambda function for post-processing step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.processingBedrockModel">processingBedrockModel</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a></code> | Bedrock foundation model for document extraction step. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.processingPrompt">processingPrompt</a></code> | <code>string</code> | Custom prompt template for document extraction. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.stepTimeouts">stepTimeouts</a></code> | <code>aws-cdk-lib.Duration</code> | Timeout for individual Step Functions tasks (classification, extraction, etc.). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.localStack">localStack</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a></code> | LocalStack endpoint routing configuration for Lambda runtime SDK calls. |
+
+---
+
+##### `logGroupDataProtection`<sup>Optional</sup> <a name="logGroupDataProtection" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.logGroupDataProtection"></a>
+
+```typescript
+public readonly logGroupDataProtection: LogGroupDataProtectionProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps">LogGroupDataProtectionProps</a>
+- *Default:* a new KMS key would be generated
+
+Data protection related configuration.
+
+---
+
+##### `metricNamespace`<sup>Optional</sup> <a name="metricNamespace" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.metricNamespace"></a>
+
+```typescript
+public readonly metricNamespace: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric namespace.
+
+---
+
+##### `metricServiceName`<sup>Optional</sup> <a name="metricServiceName" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.metricServiceName"></a>
+
+```typescript
+public readonly metricServiceName: string;
+```
+
+- *Type:* string
+- *Default:* would be defined per use case
+
+Business metric service name dimension.
+
+---
+
+##### `documentProcessingTable`<sup>Optional</sup> <a name="documentProcessingTable" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.documentProcessingTable"></a>
+
+```typescript
+public readonly documentProcessingTable: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+DynamoDB table for storing document processing metadata and workflow state.
+
+If not provided, a new table will be created with DocumentId as partition key.
+
+---
+
+##### `enableObservability`<sup>Optional</sup> <a name="enableObservability" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enableObservability"></a>
+
+```typescript
+public readonly enableObservability: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable logging and tracing for all supporting resource.
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+- *Default:* A new key would be created
+
+KMS key to be used.
+
+---
+
+##### `eventbridgeBroker`<sup>Optional</sup> <a name="eventbridgeBroker" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.eventbridgeBroker"></a>
+
+```typescript
+public readonly eventbridgeBroker: EventbridgeBroker;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.EventbridgeBroker">EventbridgeBroker</a>
+
+Optional EventBridge broker for publishing custom events during processing.
+
+If not provided, no custom events will be sent out.
+
+---
+
+##### `ingressAdapter`<sup>Optional</sup> <a name="ingressAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.ingressAdapter"></a>
+
+```typescript
+public readonly ingressAdapter: IAdapter;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAdapter">IAdapter</a>
+- *Default:* QueuedS3Adapter
+
+Adapter that defines how the document processing workflow is triggered.
+
+---
+
+##### `network`<sup>Optional</sup> <a name="network" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.network"></a>
+
+```typescript
+public readonly network: Network;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.Network">Network</a>
+- *Default:* resources will run outside of a VPC
+
+Resources that can run inside a VPC will follow the provided network configuration.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for created resources (bucket, table, queue).
+
+---
+
+##### `workflowTimeout`<sup>Optional</sup> <a name="workflowTimeout" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.workflowTimeout"></a>
+
+```typescript
+public readonly workflowTimeout: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(30)
+
+Maximum execution time for the Step Functions workflow.
+
+---
+
+##### `aggregationPrompt`<sup>Optional</sup> <a name="aggregationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.aggregationPrompt"></a>
+
+```typescript
+public readonly aggregationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_AGGREGATION_PROMPT
+
+Custom prompt template for aggregating results from multiple chunks.
+
+Used when chunking is enabled to merge processing results from all chunks
+into a single coherent result.
+
+The prompt receives the concatenated processing results from all chunks
+and should instruct the model to synthesize them into a unified output.
+
+---
+
+##### `chunkingConfig`<sup>Optional</sup> <a name="chunkingConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.chunkingConfig"></a>
+
+```typescript
+public readonly chunkingConfig: ChunkingConfig;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ChunkingConfig">ChunkingConfig</a>
+- *Default:* undefined (uses default configuration when enableChunking is true)
+
+Configuration for PDF chunking behavior.
+
+Only applies when `enableChunking` is true. Allows customization of:
+- **Chunking strategy**: How documents are split (fixed-pages, token-based, or hybrid)
+- **Thresholds**: When to trigger chunking based on page count or token count
+- **Chunk size and overlap**: Control chunk boundaries and context preservation
+- **Processing mode**: Parallel (faster) or sequential (cost-optimized)
+- **Aggregation strategy**: How to combine results from multiple chunks
+
+## Default Configuration
+
+If not provided, uses sensible defaults optimized for most use cases:
+- Strategy: `'hybrid'` (recommended - balances token and page limits)
+- Page threshold: 100 pages
+- Token threshold: 150,000 tokens
+- Processing mode: `'parallel'`
+- Max concurrency: 10
+- Aggregation strategy: `'majority-vote'`
+
+## Strategy Comparison
+
+| Strategy | Best For | Pros | Cons |
+|----------|----------|------|------|
+| `hybrid` | Most documents | Balances token/page limits | Slightly more complex |
+| `token-based` | Variable density | Respects model limits | Slower analysis |
+| `fixed-pages` | Uniform density | Simple, fast | May exceed token limits |
+
+> [{@link ChunkingConfig } for detailed configuration options]({@link ChunkingConfig } for detailed configuration options)
+
+---
+
+##### `classificationBedrockModel`<sup>Optional</sup> <a name="classificationBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.classificationBedrockModel"></a>
+
+```typescript
+public readonly classificationBedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+Bedrock foundation model for document classification step.
+
+---
+
+##### `classificationPrompt`<sup>Optional</sup> <a name="classificationPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.classificationPrompt"></a>
+
+```typescript
+public readonly classificationPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_CLASSIFICATION_PROMPT
+
+Custom prompt template for document classification.
+
+Must include placeholder for document content.
+
+---
+
+##### `enableChunking`<sup>Optional</sup> <a name="enableChunking" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enableChunking"></a>
+
+```typescript
+public readonly enableChunking: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable PDF chunking for large documents.
+
+When enabled, documents exceeding configured thresholds will be automatically
+split into chunks, processed in parallel or sequentially, and results aggregated.
+
+This feature is useful for:
+- Processing large PDFs (>100 pages)
+- Handling documents that exceed Bedrock token limits (~200K tokens)
+- Improving processing reliability for complex documents
+- Processing documents with variable content density
+
+The chunking workflow:
+1. Analyzes PDF to determine page count and estimate token count
+2. Decides if chunking is needed based on configured thresholds
+3. If chunking is needed, splits PDF into chunks and uploads to S3
+4. Processes each chunk through classification and extraction
+5. Aggregates results using majority voting for classification
+6. Deduplicates entities across chunks
+7. Cleans up temporary chunk files from S3
+
+---
+
+##### `enrichmentLambdaFunction`<sup>Optional</sup> <a name="enrichmentLambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.enrichmentLambdaFunction"></a>
+
+```typescript
+public readonly enrichmentLambdaFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+Optional Lambda function for document enrichment step.
+
+If provided, will be invoked after extraction with workflow state.
+
+---
+
+##### `postProcessingLambdaFunction`<sup>Optional</sup> <a name="postProcessingLambdaFunction" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.postProcessingLambdaFunction"></a>
+
+```typescript
+public readonly postProcessingLambdaFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+Optional Lambda function for post-processing step.
+
+If provided, will be invoked after enrichment with workflow state.
+
+---
+
+##### `processingBedrockModel`<sup>Optional</sup> <a name="processingBedrockModel" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.processingBedrockModel"></a>
+
+```typescript
+public readonly processingBedrockModel: BedrockModelProps;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockModelProps">BedrockModelProps</a>
+
+Bedrock foundation model for document extraction step.
+
+---
+
+##### `processingPrompt`<sup>Optional</sup> <a name="processingPrompt" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.processingPrompt"></a>
+
+```typescript
+public readonly processingPrompt: string;
+```
+
+- *Type:* string
+- *Default:* DEFAULT_EXTRACTION_PROMPT
+
+Custom prompt template for document extraction.
+
+Must include placeholder for document content and classification result.
+
+---
+
+##### `stepTimeouts`<sup>Optional</sup> <a name="stepTimeouts" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.stepTimeouts"></a>
+
+```typescript
+public readonly stepTimeouts: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(5)
+
+Timeout for individual Step Functions tasks (classification, extraction, etc.).
+
+---
+
+##### `localStack`<sup>Optional</sup> <a name="localStack" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessingProps.property.localStack"></a>
+
+```typescript
+public readonly localStack: LocalStackEndpointOverrides;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides">LocalStackEndpointOverrides</a>
+- *Default:* { enabled: true }
+
+LocalStack endpoint routing configuration for Lambda runtime SDK calls.
+
+---
+
+### LocalStackEndpointOverrides <a name="LocalStackEndpointOverrides" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.Initializer"></a>
+
+```typescript
+import { LocalStackEndpointOverrides } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const localStackEndpointOverrides: LocalStackEndpointOverrides = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.bedrockAgentRuntimeEndpointUrl">bedrockAgentRuntimeEndpointUrl</a></code> | <code>string</code> | Optional service-specific Bedrock Agent Runtime endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.bedrockRuntimeEndpointUrl">bedrockRuntimeEndpointUrl</a></code> | <code>string</code> | Optional service-specific Bedrock Runtime endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.endpointUrl">endpointUrl</a></code> | <code>string</code> | Default endpoint used when service-specific endpoints are not provided. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.s3EndpointUrl">s3EndpointUrl</a></code> | <code>string</code> | Optional service-specific S3 endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.stepFunctionsEndpointUrl">stepFunctionsEndpointUrl</a></code> | <code>string</code> | Optional service-specific Step Functions endpoint override. |
+
+---
+
+##### `bedrockAgentRuntimeEndpointUrl`<sup>Optional</sup> <a name="bedrockAgentRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.bedrockAgentRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockAgentRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Bedrock Agent Runtime endpoint override.
+
+---
+
+##### `bedrockRuntimeEndpointUrl`<sup>Optional</sup> <a name="bedrockRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.bedrockRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Bedrock Runtime endpoint override.
+
+---
+
+##### `endpointUrl`<sup>Optional</sup> <a name="endpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.endpointUrl"></a>
+
+```typescript
+public readonly endpointUrl: string;
+```
+
+- *Type:* string
+- *Default:* http://localhost.localstack.cloud:4566
+
+Default endpoint used when service-specific endpoints are not provided.
+
+---
+
+##### `s3EndpointUrl`<sup>Optional</sup> <a name="s3EndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.s3EndpointUrl"></a>
+
+```typescript
+public readonly s3EndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific S3 endpoint override.
+
+---
+
+##### `stepFunctionsEndpointUrl`<sup>Optional</sup> <a name="stepFunctionsEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackEndpointOverrides.property.stepFunctionsEndpointUrl"></a>
+
+```typescript
+public readonly stepFunctionsEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Step Functions endpoint override.
+
+---
+
+### LocalStackIntegrationConfig <a name="LocalStackIntegrationConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.Initializer"></a>
+
+```typescript
+import { LocalStackIntegrationConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const localStackIntegrationConfig: LocalStackIntegrationConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.bedrockAgentRuntimeEndpointUrl">bedrockAgentRuntimeEndpointUrl</a></code> | <code>string</code> | Optional service-specific Bedrock Agent Runtime endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.bedrockRuntimeEndpointUrl">bedrockRuntimeEndpointUrl</a></code> | <code>string</code> | Optional service-specific Bedrock Runtime endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.enabled">enabled</a></code> | <code>boolean</code> | Enable LocalStack endpoint routing for runtime AWS SDK calls. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.endpointUrl">endpointUrl</a></code> | <code>string</code> | Default endpoint used when service-specific endpoints are not provided. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.s3EndpointUrl">s3EndpointUrl</a></code> | <code>string</code> | Optional service-specific S3 endpoint override. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.stepFunctionsEndpointUrl">stepFunctionsEndpointUrl</a></code> | <code>string</code> | Optional service-specific Step Functions endpoint override. |
+
+---
+
+##### `bedrockAgentRuntimeEndpointUrl`<sup>Optional</sup> <a name="bedrockAgentRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.bedrockAgentRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockAgentRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Bedrock Agent Runtime endpoint override.
+
+---
+
+##### `bedrockRuntimeEndpointUrl`<sup>Optional</sup> <a name="bedrockRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.bedrockRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Bedrock Runtime endpoint override.
+
+---
+
+##### `enabled`<sup>Optional</sup> <a name="enabled" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.enabled"></a>
+
+```typescript
+public readonly enabled: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Enable LocalStack endpoint routing for runtime AWS SDK calls.
+
+---
+
+##### `endpointUrl`<sup>Optional</sup> <a name="endpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.endpointUrl"></a>
+
+```typescript
+public readonly endpointUrl: string;
+```
+
+- *Type:* string
+- *Default:* http://localhost.localstack.cloud:4566
+
+Default endpoint used when service-specific endpoints are not provided.
+
+---
+
+##### `s3EndpointUrl`<sup>Optional</sup> <a name="s3EndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.s3EndpointUrl"></a>
+
+```typescript
+public readonly s3EndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific S3 endpoint override.
+
+---
+
+##### `stepFunctionsEndpointUrl`<sup>Optional</sup> <a name="stepFunctionsEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig.property.stepFunctionsEndpointUrl"></a>
+
+```typescript
+public readonly stepFunctionsEndpointUrl: string;
+```
+
+- *Type:* string
+
+Optional service-specific Step Functions endpoint override.
+
+---
+
 ### LogGroupDataProtectionProps <a name="LogGroupDataProtectionProps" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionProps"></a>
 
 Props to enable various data protection configuration for CloudWatch Log Groups.
@@ -8918,6 +10928,89 @@ public readonly rawPrefix: string;
 S3 prefix where the raw files would be stored.
 
 This serves as the trigger point for processing
+
+---
+
+### ResolvedLocalStackIntegrationConfig <a name="ResolvedLocalStackIntegrationConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.Initializer"></a>
+
+```typescript
+import { ResolvedLocalStackIntegrationConfig } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const resolvedLocalStackIntegrationConfig: ResolvedLocalStackIntegrationConfig = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.bedrockAgentRuntimeEndpointUrl">bedrockAgentRuntimeEndpointUrl</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.bedrockRuntimeEndpointUrl">bedrockRuntimeEndpointUrl</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.enabled">enabled</a></code> | <code>boolean</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.endpointUrl">endpointUrl</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.s3EndpointUrl">s3EndpointUrl</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.stepFunctionsEndpointUrl">stepFunctionsEndpointUrl</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `bedrockAgentRuntimeEndpointUrl`<sup>Required</sup> <a name="bedrockAgentRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.bedrockAgentRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockAgentRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+---
+
+##### `bedrockRuntimeEndpointUrl`<sup>Required</sup> <a name="bedrockRuntimeEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.bedrockRuntimeEndpointUrl"></a>
+
+```typescript
+public readonly bedrockRuntimeEndpointUrl: string;
+```
+
+- *Type:* string
+
+---
+
+##### `enabled`<sup>Required</sup> <a name="enabled" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.enabled"></a>
+
+```typescript
+public readonly enabled: boolean;
+```
+
+- *Type:* boolean
+
+---
+
+##### `endpointUrl`<sup>Required</sup> <a name="endpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.endpointUrl"></a>
+
+```typescript
+public readonly endpointUrl: string;
+```
+
+- *Type:* string
+
+---
+
+##### `s3EndpointUrl`<sup>Required</sup> <a name="s3EndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.s3EndpointUrl"></a>
+
+```typescript
+public readonly s3EndpointUrl: string;
+```
+
+- *Type:* string
+
+---
+
+##### `stepFunctionsEndpointUrl`<sup>Required</sup> <a name="stepFunctionsEndpointUrl" id="@cdklabs/cdk-appmod-catalog-blueprints.ResolvedLocalStackIntegrationConfig.property.stepFunctionsEndpointUrl"></a>
+
+```typescript
+public readonly stepFunctionsEndpointUrl: string;
+```
+
+- *Type:* string
 
 ---
 
@@ -10509,6 +12602,78 @@ public readonly logGroupDataProtection: LogGroupDataProtectionProps;
 ---
 
 
+### LocalStackIntegrationUtils <a name="LocalStackIntegrationUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.Initializer"></a>
+
+```typescript
+import { LocalStackIntegrationUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new LocalStackIntegrationUtils()
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+
+---
+
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.resolveConfig">resolveConfig</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.toLambdaEnvironment">toLambdaEnvironment</a></code> | *No description.* |
+
+---
+
+##### `resolveConfig` <a name="resolveConfig" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.resolveConfig"></a>
+
+```typescript
+import { LocalStackIntegrationUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LocalStackIntegrationUtils.resolveConfig(config?: LocalStackIntegrationConfig)
+```
+
+###### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.resolveConfig.parameter.config"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig">LocalStackIntegrationConfig</a>
+
+---
+
+##### `toLambdaEnvironment` <a name="toLambdaEnvironment" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.toLambdaEnvironment"></a>
+
+```typescript
+import { LocalStackIntegrationUtils } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+LocalStackIntegrationUtils.toLambdaEnvironment(config?: LocalStackIntegrationConfig)
+```
+
+###### `config`<sup>Optional</sup> <a name="config" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.toLambdaEnvironment.parameter.config"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationConfig">LocalStackIntegrationConfig</a>
+
+---
+
+
+#### Constants <a name="Constants" id="Constants"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.property.DEFAULT_ENDPOINT_URL">DEFAULT_ENDPOINT_URL</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `DEFAULT_ENDPOINT_URL`<sup>Required</sup> <a name="DEFAULT_ENDPOINT_URL" id="@cdklabs/cdk-appmod-catalog-blueprints.LocalStackIntegrationUtils.property.DEFAULT_ENDPOINT_URL"></a>
+
+```typescript
+public readonly DEFAULT_ENDPOINT_URL: string;
+```
+
+- *Type:* string
+
+---
+
 ### LogGroupDataProtectionUtils <a name="LogGroupDataProtectionUtils" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils"></a>
 
 #### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.LogGroupDataProtectionUtils.Initializer"></a>
@@ -11810,7 +13975,7 @@ the set of knowledge bases configured for an agent.
 
 ### IObservable <a name="IObservable" id="@cdklabs/cdk-appmod-catalog-blueprints.IObservable"></a>
 
-- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing">AgenticDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing">BaseDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing">BedrockDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IObservable">IObservable</a>
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgenticDocumentProcessing">AgenticDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BaseDocumentProcessing">BaseDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.BedrockDocumentProcessing">BedrockDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackAgenticDocumentProcessing">LocalStackAgenticDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.LocalStackBedrockDocumentProcessing">LocalStackBedrockDocumentProcessing</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.IObservable">IObservable</a>
 
 Interface providing configuration parameters for constructs that support Observability.
 
