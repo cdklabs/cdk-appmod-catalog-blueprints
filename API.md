@@ -2449,8 +2449,11 @@ Any object.
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.adapter">adapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.cfnRuntime">cfnRuntime</a></code> | <code>aws-cdk-lib.aws_bedrockagentcore.CfnRuntime</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.cognitoAuthorizer">cognitoAuthorizer</a></code> | <code>aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer</code> | The Cognito User Pools authorizer (only available when using LambdaHostingAdapter with CognitoAuthenticator). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.restApi">restApi</a></code> | <code>aws-cdk-lib.aws_apigateway.RestApi</code> | The REST API Gateway (only available when using LambdaHostingAdapter with StreamingHttpAdapter). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionIndex">sessionIndex</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a></code> | The session index for fast user to session lookups. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionStore">sessionStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a></code> | *No description.* |
 
 ---
@@ -2551,6 +2554,18 @@ public readonly cfnRuntime: CfnRuntime;
 
 ---
 
+##### `cognitoAuthorizer`<sup>Optional</sup> <a name="cognitoAuthorizer" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.cognitoAuthorizer"></a>
+
+```typescript
+public readonly cognitoAuthorizer: CognitoUserPoolsAuthorizer;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer
+
+The Cognito User Pools authorizer (only available when using LambdaHostingAdapter with CognitoAuthenticator).
+
+---
+
 ##### `contextStrategy`<sup>Optional</sup> <a name="contextStrategy" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.contextStrategy"></a>
 
 ```typescript
@@ -2561,6 +2576,18 @@ public readonly contextStrategy: IContextStrategy;
 
 ---
 
+##### `restApi`<sup>Optional</sup> <a name="restApi" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.restApi"></a>
+
+```typescript
+public readonly restApi: RestApi;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.RestApi
+
+The REST API Gateway (only available when using LambdaHostingAdapter with StreamingHttpAdapter).
+
+---
+
 ##### `sessionBucket`<sup>Optional</sup> <a name="sessionBucket" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionBucket"></a>
 
 ```typescript
@@ -2568,6 +2595,18 @@ public readonly sessionBucket: IBucket;
 ```
 
 - *Type:* aws-cdk-lib.aws_s3.IBucket
+
+---
+
+##### `sessionIndex`<sup>Optional</sup> <a name="sessionIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgent.property.sessionIndex"></a>
+
+```typescript
+public readonly sessionIndex: ISessionIndex;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a>
+
+The session index for fast user to session lookups.
 
 ---
 
@@ -7115,6 +7154,85 @@ Storage location type (e.g., 's3').
 
 ---
 
+### DynamoDBSessionIndexProps <a name="DynamoDBSessionIndexProps" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps"></a>
+
+Configuration properties for DynamoDBSessionIndex.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.Initializer"></a>
+
+```typescript
+import { DynamoDBSessionIndexProps } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+const dynamoDBSessionIndexProps: DynamoDBSessionIndexProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.encryptionKey">encryptionKey</a></code> | <code>aws-cdk-lib.aws_kms.IKey</code> | KMS key for table encryption. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.removalPolicy">removalPolicy</a></code> | <code>aws-cdk-lib.RemovalPolicy</code> | Removal policy for the DynamoDB table. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | Time-to-live for session index records. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.table">table</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | Existing DynamoDB table to use. |
+
+---
+
+##### `encryptionKey`<sup>Optional</sup> <a name="encryptionKey" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.encryptionKey"></a>
+
+```typescript
+public readonly encryptionKey: IKey;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.IKey
+- *Default:* AWS managed encryption
+
+KMS key for table encryption.
+
+---
+
+##### `removalPolicy`<sup>Optional</sup> <a name="removalPolicy" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.removalPolicy"></a>
+
+```typescript
+public readonly removalPolicy: RemovalPolicy;
+```
+
+- *Type:* aws-cdk-lib.RemovalPolicy
+- *Default:* RemovalPolicy.DESTROY
+
+Removal policy for the DynamoDB table.
+
+---
+
+##### `sessionTTL`<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.sessionTTL"></a>
+
+```typescript
+public readonly sessionTTL: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* No TTL (sessions persist until explicitly deleted)
+
+Time-to-live for session index records.
+
+When set, expired records are automatically removed by DynamoDB TTL.
+
+---
+
+##### `table`<sup>Optional</sup> <a name="table" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps.property.table"></a>
+
+```typescript
+public readonly table: ITable;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
+- *Default:* Auto-created table
+
+Existing DynamoDB table to use.
+
+Table must have partition key 'user_id' (String) and sort key 'session_id' (String).
+
+---
+
 ### Entity <a name="Entity" id="@cdklabs/cdk-appmod-catalog-blueprints.Entity"></a>
 
 Extracted entity from document processing.
@@ -7714,11 +7832,13 @@ const interactiveAgentProps: InteractiveAgentProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | Communication adapter for client-agent interaction. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.contextStrategy">contextStrategy</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IContextStrategy">IContextStrategy</a></code> | Context strategy for conversation history management. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.corsAllowMethods">corsAllowMethods</a></code> | <code>string[]</code> | HTTP methods to allow in CORS preflight responses. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.hostingAdapter">hostingAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IHostingAdapter">IHostingAdapter</a></code> | Hosting adapter for deploying the agent runtime. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda function memory size in MB. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.messageHistoryLimit">messageHistoryLimit</a></code> | <code>number</code> | Maximum number of messages to keep in conversation history. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions for the Lambda function. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionBucket">sessionBucket</a></code> | <code>aws-cdk-lib.aws_s3.IBucket</code> | S3 bucket for session storage (shorthand for S3SessionManager). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionIndex">sessionIndex</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a></code> | Session index for fast user to session lookups. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionStore">sessionStore</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore">ISessionStore</a></code> | Session store for persisting conversation state. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | Time-to-live for sessions. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Lambda function timeout. |
@@ -7948,6 +8068,22 @@ Context strategy for conversation history management.
 
 ---
 
+##### `corsAllowMethods`<sup>Optional</sup> <a name="corsAllowMethods" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.corsAllowMethods"></a>
+
+```typescript
+public readonly corsAllowMethods: string[];
+```
+
+- *Type:* string[]
+- *Default:* ['POST', 'OPTIONS']
+
+HTTP methods to allow in CORS preflight responses.
+
+Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+added to the REST API.
+
+---
+
 ##### `hostingAdapter`<sup>Optional</sup> <a name="hostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.hostingAdapter"></a>
 
 ```typescript
@@ -8025,6 +8161,21 @@ public readonly sessionBucket: IBucket;
 S3 bucket for session storage (shorthand for S3SessionManager).
 
 Ignored if sessionStore is provided.
+
+---
+
+##### `sessionIndex`<sup>Optional</sup> <a name="sessionIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.InteractiveAgentProps.property.sessionIndex"></a>
+
+```typescript
+public readonly sessionIndex: ISessionIndex;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a>
+- *Default:* DynamoDBSessionIndex (auto-created)
+
+Session index for fast user to session lookups.
+
+Provides efficient querying of a user's sessions for listing and management.
 
 ---
 
@@ -8241,6 +8392,7 @@ const lambdaHostingAdapterProps: LambdaHostingAdapterProps = { ... }
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.architecture">architecture</a></code> | <code>aws-cdk-lib.aws_lambda.Architecture</code> | Lambda function architecture. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.communicationAdapter">communicationAdapter</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ICommunicationAdapter">ICommunicationAdapter</a></code> | Communication adapter for client-agent interaction. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.corsAllowMethods">corsAllowMethods</a></code> | <code>string[]</code> | HTTP methods to allow in CORS preflight responses. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.memorySize">memorySize</a></code> | <code>number</code> | Lambda function memory size in MB. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.reservedConcurrentExecutions">reservedConcurrentExecutions</a></code> | <code>number</code> | Reserved concurrent executions for the Lambda function. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.timeout">timeout</a></code> | <code>aws-cdk-lib.Duration</code> | Lambda function timeout. |
@@ -8283,6 +8435,22 @@ public readonly communicationAdapter: ICommunicationAdapter;
 - *Default:* StreamingHttpAdapter
 
 Communication adapter for client-agent interaction.
+
+---
+
+##### `corsAllowMethods`<sup>Optional</sup> <a name="corsAllowMethods" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapterProps.property.corsAllowMethods"></a>
+
+```typescript
+public readonly corsAllowMethods: string[];
+```
+
+- *Type:* string[]
+- *Default:* ['POST', 'OPTIONS']
+
+HTTP methods to allow in CORS preflight responses.
+
+Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+added to the REST API.
 
 ---
 
@@ -9116,6 +9284,7 @@ const streamingHttpAdapterProps: StreamingHttpAdapterProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.authenticator">authenticator</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.IAuthenticator">IAuthenticator</a></code> | Authenticator for securing API endpoints. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.corsAllowMethods">corsAllowMethods</a></code> | <code>string[]</code> | HTTP methods to allow in CORS preflight responses. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.stageName">stageName</a></code> | <code>string</code> | REST API stage name. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.throttle">throttle</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ThrottleSettings">ThrottleSettings</a></code> | Throttle settings for REST API. |
 
@@ -9131,6 +9300,22 @@ public readonly authenticator: IAuthenticator;
 - *Default:* Uses authenticator from InteractiveAgent
 
 Authenticator for securing API endpoints.
+
+---
+
+##### `corsAllowMethods`<sup>Optional</sup> <a name="corsAllowMethods" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapterProps.property.corsAllowMethods"></a>
+
+```typescript
+public readonly corsAllowMethods: string[];
+```
+
+- *Type:* string[]
+- *Default:* ['POST', 'OPTIONS']
+
+HTTP methods to allow in CORS preflight responses.
+
+Use this to enable additional methods (GET, DELETE, PUT) for custom routes
+added to the REST API.
 
 ---
 
@@ -9976,6 +10161,148 @@ public readonly PYTHON_FUNCTION_BUNDLING: BundlingOptions;
 Default bundling arguments for Python function.
 
 ---
+
+### DynamoDBSessionIndex <a name="DynamoDBSessionIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex"></a>
+
+- *Implements:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a>
+
+DynamoDB-based session index for fast user to session lookups.
+
+Creates a DynamoDB table indexed by user_id (partition key) and session_id (sort key)
+for efficient querying of a user's sessions. The table stores session metadata
+including creation time, last update time, and optional TTL for automatic cleanup.
+
+## Table Schema
+
+- **Partition Key**: user_id (String) - User identifier from authentication
+- **Sort Key**: session_id (String) - Unique session identifier
+- **Attributes**: created_at, updated_at, last_message, expires_at (optional)
+
+## Features
+
+- **Fast Lookups**: Query all sessions for a user in O(1) using partition key
+- **Automatic Expiration**: Optional TTL removes stale sessions automatically
+- **On-Demand Capacity**: Pay-per-request billing, no capacity planning needed
+- **Encryption**: AWS managed or customer-managed KMS encryption
+
+## Usage
+
+```typescript
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { Duration } from 'aws-cdk-lib';
+import { InteractiveAgent, DynamoDBSessionIndex } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const myPrompt = new Asset(this, 'Prompt', { path: './prompt.txt' });
+const sessionIndex = new DynamoDBSessionIndex(this, 'SessionIndex', {
+  sessionTTL: Duration.days(7)
+});
+
+const agent = new InteractiveAgent(this, 'Agent', {
+  agentName: 'ChatAgent',
+  agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
+  sessionIndex
+});
+```
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer"></a>
+
+```typescript
+import { DynamoDBSessionIndex } from '@cdklabs/cdk-appmod-catalog-blueprints'
+
+new DynamoDBSessionIndex(scope: Construct, id: string, props?: DynamoDBSessionIndexProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps">DynamoDBSessionIndexProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Optional</sup> <a name="props" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndexProps">DynamoDBSessionIndexProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.grantReadWrite">grantReadWrite</a></code> | Grant read/write permissions to a grantee. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(grantee: IGrantable): void
+```
+
+Grant read/write permissions to a grantee.
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.grantReadWrite.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.property.table">table</a></code> | <code>aws-cdk-lib.aws_dynamodb.ITable</code> | The DynamoDB table used for session index storage. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.property.sessionTTL">sessionTTL</a></code> | <code>aws-cdk-lib.Duration</code> | The session TTL duration (if configured). |
+
+---
+
+##### `table`<sup>Required</sup> <a name="table" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.property.table"></a>
+
+```typescript
+public readonly table: ITable;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.ITable
+
+The DynamoDB table used for session index storage.
+
+---
+
+##### `sessionTTL`<sup>Optional</sup> <a name="sessionTTL" id="@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex.property.sessionTTL"></a>
+
+```typescript
+public readonly sessionTTL: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+
+The session TTL duration (if configured).
+
+---
+
 
 ### LambdaHostingAdapter <a name="LambdaHostingAdapter" id="@cdklabs/cdk-appmod-catalog-blueprints.LambdaHostingAdapter"></a>
 
@@ -11320,6 +11647,7 @@ For REST API streaming, no additional permissions are needed beyond the invoke p
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.apiEndpoint">apiEndpoint</a></code> | <code>string</code> | The API endpoint URL. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.cognitoAuthorizer">cognitoAuthorizer</a></code> | <code>aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer</code> | The Cognito User Pools authorizer (if Cognito authentication is enabled). |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.restApi">restApi</a></code> | <code>aws-cdk-lib.aws_apigateway.RestApi</code> | The REST API Gateway. |
 
 ---
@@ -11333,6 +11661,18 @@ public readonly apiEndpoint: string;
 - *Type:* string
 
 The API endpoint URL.
+
+---
+
+##### `cognitoAuthorizer`<sup>Optional</sup> <a name="cognitoAuthorizer" id="@cdklabs/cdk-appmod-catalog-blueprints.StreamingHttpAdapter.property.cognitoAuthorizer"></a>
+
+```typescript
+public readonly cognitoAuthorizer: CognitoUserPoolsAuthorizer;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer
+
+The Cognito User Pools authorizer (if Cognito authentication is enabled).
 
 ---
 
@@ -11867,6 +12207,49 @@ public readonly metricServiceName: string;
 - *Type:* string
 
 ---
+
+### ISessionIndex <a name="ISessionIndex" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex"></a>
+
+- *Implemented By:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.DynamoDBSessionIndex">DynamoDBSessionIndex</a>, <a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex">ISessionIndex</a>
+
+Strategy interface for session index storage.
+
+Session indexes provide fast user to session lookups for listing and managing sessions.
+The default implementation (DynamoDBSessionIndex) uses DynamoDB for efficient queries.
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex.environmentVariables">environmentVariables</a></code> | Get environment variables for Lambda configuration. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex.grantReadWrite">grantReadWrite</a></code> | Grant read/write permissions to a grantee. |
+
+---
+
+##### `environmentVariables` <a name="environmentVariables" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex.environmentVariables"></a>
+
+```typescript
+public environmentVariables(): {[ key: string ]: string}
+```
+
+Get environment variables for Lambda configuration.
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(grantee: IGrantable): void
+```
+
+Grant read/write permissions to a grantee.
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionIndex.grantReadWrite.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+The principal that needs access to the session index.
+
+---
+
 
 ### ISessionStore <a name="ISessionStore" id="@cdklabs/cdk-appmod-catalog-blueprints.ISessionStore"></a>
 
