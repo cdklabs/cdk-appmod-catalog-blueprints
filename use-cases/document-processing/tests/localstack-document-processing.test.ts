@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Network } from '../../framework/foundation/network';
 import {
   DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
   DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
@@ -61,6 +62,41 @@ describe('LocalStackBedrockDocumentProcessing', () => {
         }),
       },
     });
+  });
+
+  test('does not create AWS Bedrock VPC endpoints when network is enabled', () => {
+    const app = createTestApp();
+    const stack = new Stack(app, 'LocalStackBedrockNetworkStack');
+    const network = new Network(stack, 'Network');
+
+    new LocalStackBedrockDocumentProcessing(stack, 'LocalStackBedrockNetwork', {
+      network,
+      classificationBedrockModel: {
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+      },
+      processingBedrockModel: {
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+      },
+      localStack: {
+        endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const vpcEndpoints = template.findResources('AWS::EC2::VPCEndpoint');
+
+    expect(Object.keys(vpcEndpoints)).toHaveLength(5);
+
+    const serviceNames = Object.values(vpcEndpoints)
+      .map((endpoint: any) => JSON.stringify(endpoint.Properties?.ServiceName ?? ''))
+      .join(' ');
+
+    expect(serviceNames).toContain('states');
+    expect(serviceNames).toContain('events');
+    expect(serviceNames).toContain('sqs');
+    expect(serviceNames).toContain('s3');
+    expect(serviceNames).not.toContain('bedrock');
+    expect(serviceNames).not.toContain('bedrock-runtime');
   });
 
   test('uses the LocalStack invoke runtime entry', () => {

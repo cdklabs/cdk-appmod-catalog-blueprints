@@ -15,7 +15,10 @@ export interface LocalStackBedrockDocumentProcessingProps extends BedrockDocumen
 
 export class LocalStackBedrockDocumentProcessing extends BedrockDocumentProcessing {
   constructor(scope: Construct, id: string, props: LocalStackBedrockDocumentProcessingProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      _skipBedrockVpcEndpoints: true,
+    } as BedrockDocumentProcessingProps);
     this.applyLocalStackEnvironment(props.localStack);
   }
 
