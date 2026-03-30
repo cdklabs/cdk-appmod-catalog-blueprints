@@ -21,7 +21,10 @@ export class LocalStackAgenticDocumentProcessing extends AgenticDocumentProcessi
   private _localStackProcessingStepCounter?: number;
 
   constructor(scope: Construct, id: string, props: LocalStackAgenticDocumentProcessingProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      _skipBedrockVpcEndpoints: true,
+    } as AgenticDocumentProcessingProps);
     this.applyLocalStackEnvironment(props.localStack || {});
   }
 
