@@ -208,7 +208,7 @@
       "description": "Run integration snapshot tests",
       "steps": [
         {
-          "exec": "yarn integ-runner --language typescript",
+          "exec": "integ-runner --language typescript",
           "receiveArgs": true
         }
       ]
@@ -218,7 +218,7 @@
       "description": "Run and update integration snapshot tests",
       "steps": [
         {
-          "exec": "yarn integ-runner --language typescript --update-on-failed",
+          "exec": "integ-runner --language typescript --update-on-failed",
           "receiveArgs": true
         }
       ]
@@ -364,7 +364,7 @@
       "description": "Test rosetta extract",
       "steps": [
         {
-          "exec": "yarn --silent jsii-rosetta extract --strict"
+          "exec": "jsii-rosetta extract --strict"
         }
       ]
     },
