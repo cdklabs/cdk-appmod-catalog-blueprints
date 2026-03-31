@@ -24,34 +24,15 @@ Application Modernization (AppMod) Catalog Blueprints is a comprehensive library
 
 ---
 
-## MCP Server for AI-Assisted Development
-
-Use the AppMod Catalog Blueprints directly from your AI coding assistant. The [MCP Server](./mcp-appmod-catalog-blueprints/) exposes construct scaffolding, composition, and example discovery via the [Model Context Protocol](https://modelcontextprotocol.io/), so tools like Kiro, Claude Code, and Codex can generate CDK code with the right props, defaults, and dependency wiring.
-
-See the [MCP Server README](./mcp-appmod-catalog-blueprints/README.md) for setup instructions.
-
-
-## Deploy in 3 Commands
-
 ## How to Use This Library
-Pick any solution from [the catalog below](#what-you-can-build) and deploy:
-
-```bash
-git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
-cd cdk-appmod-catalog-blueprints/examples/chatbot/customer-service-chatbot  # or any other example
-npm install && npm run deploy
-```
-
-**That's it.** In this example, you now have a well-architected AI chatbot with streaming, authentication, and a React frontend. Swap the path for any other solution — fraud detection, document processing, RAG support, and more.
-
----
-
-## Two Ways to Use This Library
 
 | Approach | Best For | Get Started |
 |----------|----------|-------------|
-| **🚀 Deploy a Solution** | Quick evaluation, immediate value, proof-of-concepts | Pick from [ready-to-deploy solutions](#what-you-can-build) below — deploy in minutes with sensible defaults |
-| **🔧 Build Custom** | Specific requirements, enterprise integration, tailored applications | Use [individual constructs](#building-blocks) — import into your CDK project, override defaults, inject custom logic |
+| **Deploy a Solution** | Quick evaluation, proof-of-concepts | Pick from [ready-to-deploy examples](#what-you-can-build) — deploy in minutes with 3 commands |
+| **Build Custom** | Enterprise integration, tailored applications | Use [individual constructs](#building-blocks) — override defaults, extend and inject custom logic |
+| **AI-Assisted** | Faster development with AI coding assistants | Use the [MCP Server](./mcp-appmod-catalog-blueprints/) + [Skills](./skills/) with genAI coding agents (Kiro, Claude Code, Codex etc.) |
+
+Refer to [Getting Started](#getting-started) for more details.
 
 ---
 
@@ -76,6 +57,12 @@ npm install && npm run deploy
 | [**Agentic Document Processing**](./examples/document-processing/agentic-document-processing/) | Advanced document processing with AI reasoning | [AgenticDocumentProcessing](./use-cases/document-processing/) |
 | [**Bedrock Document Processing**](./examples/document-processing/bedrock-document-processing/) | Document classification and extraction pipeline | [BedrockDocumentProcessing](./use-cases/document-processing/) |
 | [**Minimal Document Processing**](./examples/document-processing/minimal-bedrock-doc-processing/) | Zero-config document processing starter | [BedrockDocumentProcessing](./use-cases/document-processing/) |
+
+### Data Generation
+
+| Solution | What It Does | Constructs Used |
+|----------|--------------|-----------------|
+| [**Synthetic Dataset Generator**](./examples/synthetic-dataset-generator/) | AI-powered synthetic data generation through conversation | [InteractiveAgent](./use-cases/framework/agents/), [BatchAgent](./use-cases/framework/agents/), [Frontend](./use-cases/webapp/) |
 
 ---
 
@@ -148,8 +135,6 @@ new InteractiveAgent(this, 'MyChatbot', {
 
 ### Multi-Layered Design
 
-The library uses a multi-layered architecture that bridges business requirements and technical implementation:
-
 | Layer | What It Is | Purpose |
 |-------|------------|---------|
 | **Infrastructure Foundation** | Abstract base classes (`BaseAgent`, `BaseDocumentProcessing`) | Standardized interfaces and contracts — extend for custom implementations |
@@ -180,7 +165,9 @@ aws configure
 npx cdk bootstrap
 ```
 
-### Option 1: Deploy a Solution
+### Deploy a Solution
+
+Clone the repo, pick an example from [the catalog](#what-you-can-build), and deploy:
 
 ```bash
 git clone https://github.com/cdklabs/cdk-appmod-catalog-blueprints.git
@@ -188,7 +175,11 @@ cd cdk-appmod-catalog-blueprints/examples/chatbot/customer-service-chatbot
 npm install && npm run deploy
 ```
 
-### Option 2: Use Constructs in Your Project
+That's it — you now have a well-architected AI chatbot with streaming, authentication, and a React frontend. Swap the path for any other solution.
+
+### Build Custom
+
+Import constructs into your own CDK project:
 
 ```bash
 npm install @cdklabs/cdk-appmod-catalog-blueprints
@@ -206,6 +197,14 @@ new InteractiveAgent(this, 'MyChatbot', {
   },
 });
 ```
+
+Override defaults, extend base classes, and inject custom logic as needed. See [Building Blocks](#building-blocks) for available constructs.
+
+### AI-Assisted
+
+Use AI coding assistants to scaffold and compose constructs with correct props and dependency wiring. The [MCP Server](./mcp-appmod-catalog-blueprints/) exposes tools for genAI coding agents (Kiro, Claude Code, Codex etc.) via the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+See the [MCP Server README](./mcp-appmod-catalog-blueprints/README.md) for setup, or install the [appmod-blueprints-builder skill](./skills/appmod-blueprints-builder/) for guided workflows.
 
 ---
 
@@ -229,6 +228,8 @@ All constructs include enterprise-grade security by default:
 - [**Construct Hub**](https://constructs.dev/packages/@cdklabs/cdk-appmod-catalog-blueprints/) — API reference
 - [**Examples**](./examples/) — Complete deployable solutions
 - [**Building Blocks**](./use-cases/) — Individual construct documentation
+- [**MCP Server**](./mcp-appmod-catalog-blueprints/) — AI-assisted development tools
+- [**Agent Skills**](./skills/) — AI assistant skills
 
 ---
 

@@ -47,9 +47,10 @@ const config = {
               'examples/README',
               'use-cases/README',
               'use-cases/document-processing/README',
-              'use-cases/webapp/README', 
+              'use-cases/webapp/README',
               'use-cases/framework/README',
-              'use-cases/utilities/README'
+              'use-cases/utilities/README',
+              'skills/README',
             ];
             return sidebarItems.filter(item => !categoryLinkIds.includes(item.id));
           },
