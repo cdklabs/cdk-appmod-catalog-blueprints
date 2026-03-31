@@ -112,6 +112,32 @@ const sidebars = {
         },
       ],
     },
+    {
+      type: 'category',
+      label: 'AI-Assisted Development',
+      items: [
+        {
+          type: 'doc',
+          id: 'mcp-appmod-catalog-blueprints/README',
+          label: 'MCP Server',
+        },
+        {
+          type: 'category',
+          label: 'Agent Skills',
+          link: {
+            type: 'doc',
+            id: 'skills/README',
+          },
+          items: [
+            {
+              type: 'doc',
+              id: 'skills/appmod-blueprints-builder/README',
+              label: 'AppMod Blueprints Builder',
+            },
+          ],
+        },
+      ],
+    },
   ],
 };
 
