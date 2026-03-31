@@ -41,6 +41,14 @@ npm run deploy
 
 ---
 
+## Data Generation
+
+| Solution | What It Does | Constructs Used |
+|----------|--------------|-----------------|
+| [**Synthetic Dataset Generator**](./synthetic-dataset-generator/) | AI-powered synthetic data generation through conversation | [InteractiveAgent](../use-cases/framework/agents/), [BatchAgent](../use-cases/framework/agents/), [Frontend](../use-cases/webapp/) |
+
+---
+
 ## Solution Structure
 
 All solutions follow a consistent pattern:
