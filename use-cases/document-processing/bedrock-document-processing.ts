@@ -131,6 +131,10 @@ export interface BedrockDocumentProcessingProps extends BaseDocumentProcessingPr
   readonly chunkingConfig?: ChunkingConfig;
 }
 
+interface BedrockDocumentProcessingInternalProps extends BedrockDocumentProcessingProps {
+  readonly _skipBedrockVpcEndpoints?: boolean;
+}
+
 /**
  * Document processing workflow powered by Amazon Bedrock foundation models.
  *
@@ -254,13 +258,14 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
    */
   constructor(scope: Construct, id: string, props: BedrockDocumentProcessingProps) {
     super(scope, id, props);
+    const internalProps = props as BedrockDocumentProcessingInternalProps;
 
     // Validate chunking configuration if provided
     if (props.enableChunking && props.chunkingConfig) {
       this.validateChunkingConfig(props.chunkingConfig);
     }
 
-    if (props.network) {
+    if (props.network && !internalProps._skipBedrockVpcEndpoints) {
       props.network.createServiceEndpoint('vpce-bedrock', InterfaceVpcEndpointAwsService.BEDROCK);
       props.network.createServiceEndpoint('vpce-bedrock-runtime', InterfaceVpcEndpointAwsService.BEDROCK_RUNTIME);
     }
@@ -383,7 +388,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         architecture: Architecture.X86_64,
         runtime: DefaultRuntimes.PYTHON,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 512,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),
@@ -459,7 +464,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         runtime: DefaultRuntimes.PYTHON,
         architecture: Architecture.X86_64,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 512,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),
@@ -518,6 +523,10 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         }),
       },
     });
+  }
+
+  protected resolveBedrockInvokeEntry(): string {
+    return path.join(__dirname, 'resources/default-bedrock-invoke');
   }
 
   /**
@@ -965,7 +974,7 @@ export class BedrockDocumentProcessing extends BaseDocumentProcessing {
         functionName: generatedLogPermissions.uniqueFunctionName,
         architecture: Architecture.X86_64,
         runtime: DefaultRuntimes.PYTHON,
-        entry: path.join(__dirname, 'resources/default-bedrock-invoke'),
+        entry: this.resolveBedrockInvokeEntry(),
         role,
         memorySize: 1024,
         timeout: this.bedrockDocumentProcessingProps.stepTimeouts || Duration.minutes(5),
