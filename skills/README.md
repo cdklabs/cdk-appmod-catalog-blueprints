@@ -22,6 +22,13 @@ cp -r skills/appmod-blueprints-builder ~/.claude/skills/
 cp -r skills/appmod-blueprints-builder ~/.kiro/skills/
 ```
 
+Then add the steering doc to your CDK project to activate the skill:
+
+```bash
+mkdir -p .kiro/steering
+cp skills/appmod-blueprints-builder/sample-kiro-steering.md .kiro/steering/appmod-blueprints-skill.md
+```
+
 ### Codex
 
 ```bash

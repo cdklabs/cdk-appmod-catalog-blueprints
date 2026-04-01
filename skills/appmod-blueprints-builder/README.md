@@ -59,7 +59,22 @@ mkdir -p ~/.kiro/skills
 cp -r skills/appmod-blueprints-builder ~/.kiro/skills/
 ```
 
-**3. Restart Kiro**
+**3. Add a steering doc** to your CDK project to activate the skill:
+
+```bash
+mkdir -p .kiro/steering
+curl -o .kiro/steering/appmod-blueprints-skill.md \
+  https://raw.githubusercontent.com/cdklabs/cdk-appmod-catalog-blueprints/main/skills/appmod-blueprints-builder/sample-kiro-steering.md
+```
+
+Or copy from a local clone:
+
+```bash
+cp path/to/cdk-appmod-catalog-blueprints/skills/appmod-blueprints-builder/sample-kiro-steering.md \
+  .kiro/steering/appmod-blueprints-skill.md
+```
+
+> **Why a steering doc?** Ensure Kiro auto-triggers the skills from the SKILL.md description. The steering doc with `inclusion: always` tells Kiro to activate the skill whenever you're working on relevant topics (CDK, chatbots, AI agents, etc.).
 
 ---
 
