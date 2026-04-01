@@ -5,61 +5,64 @@ An AI-powered application that generates realistic synthetic datasets through na
 ## Architecture
 
 ```mermaid
-flowchart TB
-    subgraph Frontend["Frontend (CloudFront + S3)"]
-        React["React App"]
-        Chat["Chat Panel"]
-        Schema["Schema/Preview Panel"]
-        Sessions["Session Management"]
+flowchart TD
+    subgraph UI["Frontend"]
+        FE["React App<br/>(CloudFront + S3)"]
     end
 
-    subgraph API["API Gateway + Cognito Auth"]
-        POST_chat["POST /chat"]
-        GET_sessions["GET /sessions"]
-        DELETE_session["DELETE /sessions/{id}"]
-        PATCH_session["PATCH /sessions/{id}"]
-        GET_history["GET /history/{id}"]
+    subgraph API["API Layer"]
+        GW["API Gateway<br/>+ Cognito Auth"]
     end
 
-    subgraph Agents["Agent Layer"]
-        Interactive["InteractiveAgent<br/>(Chat Agent)<br/>- Claude Sonnet<br/>- SSE streaming<br/>- 3 tools"]
-        History["History Lambda<br/>- List sessions<br/>- Delete session<br/>- Rename session<br/>- Get history"]
+    subgraph Agents["Two-Agent Pattern"]
+        direction LR
+        IA["InteractiveAgent<br/>• Conversation<br/>• SSE streaming<br/>• Tool orchestration"]
+        BA["BatchAgent<br/>• Script generation<br/>• JSON output"]
+        IA -->|generate_script| BA
     end
 
-    subgraph Storage["Session Storage"]
-        SessionIndex["Session Index<br/>(DynamoDB)<br/>- PK: user_id<br/>- SK: session_id"]
-        SessionBucket["Session Bucket<br/>(S3)<br/>- Chat history"]
+    subgraph Execution["Execution Layer"]
+        direction LR
+        EX["Executor Lambda<br/>(Sandboxed)<br/>No AWS perms"]
+        EXP["Export Lambda<br/>Full dataset gen"]
     end
 
-    subgraph Tools["Agent Tools"]
-        direction TB
-        subgraph GenTool["generate_script"]
-            Batch["BatchAgent<br/>(Script Gen)<br/>- Claude Sonnet<br/>- JSON output"]
-        end
-        subgraph ExecTool["execute_script"]
-            Exec["Execution Lambda<br/>(Isolated!)<br/>- No AWS perms<br/>- Runs pandas<br/>- Returns preview"]
-        end
-        subgraph ExportTool["export_dataset"]
-            Export["Export Lambda<br/>- Writes to S3<br/>- Presigned URL"]
-        end
+    subgraph Storage["Storage Layer"]
+        direction LR
+        DDB["DynamoDB<br/>Session Index"]
+        S3S["S3<br/>Chat History"]
+        S3E["S3 + KMS<br/>Exports (7d TTL)"]
     end
 
-    subgraph ExportStorage["Export Storage"]
-        ExportBucket["Export Bucket<br/>(S3 + KMS)<br/>- 7-day TTL"]
-    end
+    UI --> API
+    API --> Agents
+    IA -->|execute_script| EX
+    IA -->|export_dataset| EXP
+    IA --> DDB
+    IA --> S3S
+    EXP --> S3E
+```
 
-    Frontend --> API
-    POST_chat --> Interactive
-    GET_sessions --> History
-    DELETE_session --> History
-    PATCH_session --> History
-    GET_history --> History
-    History --> SessionIndex
-    History --> SessionBucket
-    Interactive --> SessionIndex
-    Interactive --> SessionBucket
-    Interactive --> Tools
-    Export --> ExportBucket
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant IA as InteractiveAgent
+    participant BA as BatchAgent
+    participant EX as Executor (sandboxed)
+    participant S3 as S3
+
+    U->>IA: "Generate customer data with name, email..."
+    IA->>BA: generate_script(fields, use_case)
+    BA-->>IA: {script, schema}
+    IA->>EX: execute_script(script, 100 rows)
+    EX-->>IA: {preview, schema}
+    IA-->>U: Schema panel + Preview panel (100 rows)
+
+    U->>IA: "Export the full dataset"
+    IA->>S3: export_dataset(script, 10000 rows)
+    S3-->>U: Presigned download URLs (24hr expiry)
 ```
 
 ## Components
