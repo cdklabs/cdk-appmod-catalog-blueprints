@@ -4,7 +4,7 @@ name: retry-automerge
 on:
   pull_request:
     types:
-      - dequeued
+      - auto_merge_disabled
 jobs:
   retry-automerge:
     runs-on: ubuntu-latest
