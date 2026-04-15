@@ -4,7 +4,7 @@ import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { createTestApp } from '../../utilities/test-utils';
-import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '../agents/interactive-agent';
+import { InteractiveAgent, AgentCoreRuntimeHostingAdapter, NetworkMode } from '../agents/interactive-agent';
 
 describe('InteractiveAgent CDK Nag', () => {
   const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
@@ -138,7 +138,7 @@ describe('InteractiveAgent CDK Nag', () => {
       },
       hostingAdapter: new AgentCoreRuntimeHostingAdapter({
         containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
-        networkMode: 'PUBLIC',
+        networkMode: NetworkMode.PUBLIC,
       }),
     });
 

@@ -2,6 +2,7 @@ import * as path from 'path';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
+import { SecurityGroup, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
@@ -16,8 +17,10 @@ import {
   NoAuthenticator,
   LambdaHostingAdapter,
   AgentCoreRuntimeHostingAdapter,
+  NetworkMode,
 } from '../agents/interactive-agent';
 import { BedrockKnowledgeBase } from '../agents/knowledge-base';
+import { Network } from '../foundation';
 
 describe('InteractiveAgent', () => {
   let app: App;
@@ -1087,7 +1090,7 @@ describe('AgentCoreRuntimeHostingAdapter', () => {
       },
       hostingAdapter: new AgentCoreRuntimeHostingAdapter({
         containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
-        networkMode: 'PUBLIC',
+        networkMode: NetworkMode.PUBLIC,
       }),
     });
 
@@ -1261,5 +1264,97 @@ describe('AgentCoreRuntimeHostingAdapter', () => {
     });
 
     expect(agent.cfnRuntime).toBeDefined();
+  });
+
+  test('VPC network mode sets NetworkModeConfig via property override', () => {
+    const network = new Network(stack, 'TestNetwork', { maxAzs: 2, natGateways: 1 });
+    const sg = new SecurityGroup(stack, 'TestSG', {
+      vpc: network.vpc,
+      description: 'Test SG',
+    });
+
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      network,
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        networkMode: NetworkMode.VPC,
+        vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        securityGroups: [sg],
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        NetworkModeConfig: {
+          Subnets: Match.anyValue(),
+          SecurityGroups: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('VPC mode throws when no subnets can be resolved', () => {
+    expect(() => {
+      new InteractiveAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+        },
+        hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+          containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+          networkMode: NetworkMode.VPC,
+        }),
+      });
+    }).toThrow(/subnets/);
+  });
+
+  test('VPC mode throws when no security groups can be resolved', () => {
+    // Provide a network so subnets resolve, but don't provide securityGroups
+    // and mock the network so it doesn't auto-create one
+    expect(() => {
+      const network = new Network(stack, 'TestNetwork2', { maxAzs: 2, natGateways: 1 });
+      new InteractiveAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+        },
+        network,
+        hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+          containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+          networkMode: NetworkMode.VPC,
+        }),
+      });
+    }).not.toThrow(); // Network auto-creates a security group, so this should succeed
+  });
+
+  test('PUBLIC mode does not set NetworkModeConfig', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        containerImageUri: '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest',
+        networkMode: NetworkMode.PUBLIC,
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      NetworkConfiguration: {
+        NetworkMode: 'PUBLIC',
+        NetworkModeConfig: Match.absent(),
+      },
+    });
   });
 });

@@ -14,6 +14,7 @@ import { Construct } from 'constructs';
 import {
   InteractiveAgent,
   AgentCoreRuntimeHostingAdapter,
+  NetworkMode,
   BedrockKnowledgeBase,
   Frontend,
   CloudWatchTransactionSearch,
@@ -216,7 +217,7 @@ export class RetailBankingChatbotStack extends Stack {
         knowledgeBases: [kbConstruct]
       },
       hostingAdapter: new AgentCoreRuntimeHostingAdapter({
-        networkMode: 'PUBLIC',
+        networkMode: NetworkMode.PUBLIC,
         customJwtAuthorizer: {
           discoveryUrl: `${cognitoIssuerUrl}/.well-known/openid-configuration`,
           allowedAudience: [userPoolClient.userPoolClientId],

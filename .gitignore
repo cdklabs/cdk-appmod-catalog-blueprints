@@ -59,6 +59,7 @@ Thumbs.db
 **/.pytest_cache
 **/cdk.out
 **/cdk.out.test
+.vscode
 /test-reports/
 junit.xml
 /coverage/

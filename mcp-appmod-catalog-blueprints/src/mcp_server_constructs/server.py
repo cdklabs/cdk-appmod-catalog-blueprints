@@ -149,7 +149,7 @@ _ALIAS_USAGE_GUIDANCE: dict[str, str] = {
         "    agentName: 'MyAgent',\n"
         "    agentDefinition: { bedrockModel: {}, systemPrompt },\n"
         "    hostingAdapter: new AgentCoreRuntimeHostingAdapter({\n"
-        "      networkMode: 'PUBLIC',  // or 'VPC'\n"
+        "      networkMode: NetworkMode.PUBLIC,  // or NetworkMode.VPC\n"
         "      // containerImageUri: '...',  // optional custom image\n"
         "      // endpointName: '...',       // optional endpoint name\n"
         "    }),\n"
