@@ -63,7 +63,7 @@ const project = new CdklabsConstructLibrary({
     '**/.pytest_cache',
     '**/cdk.out',
     '**/cdk.out.test',
-    '.vscode'
+    '.vscode',
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
