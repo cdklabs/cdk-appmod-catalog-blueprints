@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-amplify/ui-react": "^6.1.0",
+    "@aws-amplify/ui-react": "^6.15.3",
     "@tanstack/react-table": "^8.11.0",
     "aws-amplify": "^6.16.2",
     "class-variance-authority": "^0.7.0",
