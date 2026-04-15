@@ -38,44 +38,44 @@ class StockmarketAnalysisPrivateVpcStack(cdk.Stack):
 
         # --- VPC Endpoints for AWS service access ---
         # These replace the NAT gateway for reaching AWS services.
-        # S3 (gateway + interface for ECR image layers and asset uploads)
-        network.create_service_endpoint(
-            "S3", ec2.InterfaceVpcEndpointAwsService.S3
+        # Note: create_service_endpoint() is typed as InterfaceVpcEndpointService
+        # in JSII, but InterfaceVpcEndpointAwsService is not a subclass in Python
+        # bindings, so we construct InterfaceVpcEndpointService with the full
+        # region-qualified name (com.amazonaws.<region>.<service>).
+        region = self.region
+
+        def _svc(name: str) -> ec2.InterfaceVpcEndpointService:
+            return ec2.InterfaceVpcEndpointService(f"com.amazonaws.{region}.{name}", port=443)
+
+        # S3: gateway endpoint (for isolated subnets) + interface endpoint
+        network.vpc.add_gateway_endpoint(
+            "S3Gateway",
+            service=ec2.GatewayVpcEndpointAwsService.S3,
+            subnets=[network.application_subnet_selection()],
         )
+        network.create_service_endpoint("S3", _svc("s3"))
 
         # ECR endpoints (for pulling the AgentCore container image)
-        network.create_service_endpoint(
-            "ECR", ec2.InterfaceVpcEndpointAwsService.ECR
-        )
-        network.create_service_endpoint(
-            "ECRDocker", ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER
-        )
+        network.create_service_endpoint("ECR", _svc("ecr.api"))
+        network.create_service_endpoint("ECRDocker", _svc("ecr.dkr"))
 
         # Bedrock endpoints (for model invocation)
-        network.create_service_endpoint(
-            "Bedrock", ec2.InterfaceVpcEndpointAwsService.BEDROCK
-        )
-        network.create_service_endpoint(
-            "BedrockRuntime", ec2.InterfaceVpcEndpointAwsService.BEDROCK_RUNTIME
-        )
+        network.create_service_endpoint("Bedrock", _svc("bedrock"))
+        network.create_service_endpoint("BedrockRuntime", _svc("bedrock-runtime"))
+
+        # Bedrock AgentCore endpoints (for runtime data/control plane)
+        network.create_service_endpoint("BedrockAgentCore", _svc("bedrock-agentcore"))
+        network.create_service_endpoint("BedrockAgentCoreControl", _svc("bedrock-agentcore-control"))
 
         # CloudWatch / Logs (for observability)
-        network.create_service_endpoint(
-            "CloudWatchLogs", ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS
-        )
-        network.create_service_endpoint(
-            "CloudWatch", ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_MONITORING
-        )
+        network.create_service_endpoint("CloudWatchLogs", _svc("logs"))
+        network.create_service_endpoint("CloudWatch", _svc("monitoring"))
 
         # STS (for assuming roles)
-        network.create_service_endpoint(
-            "STS", ec2.InterfaceVpcEndpointAwsService.STS
-        )
+        network.create_service_endpoint("STS", _svc("sts"))
 
         # KMS (for encryption operations)
-        network.create_service_endpoint(
-            "KMS", ec2.InterfaceVpcEndpointAwsService.KMS
-        )
+        network.create_service_endpoint("KMS", _svc("kms"))
 
         # System prompt as an S3 asset
         system_prompt_asset = s3_assets.Asset(

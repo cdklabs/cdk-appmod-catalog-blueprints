@@ -1,10 +1,10 @@
 {
   "StockmarketAnalysisStack": {
-    "UserPoolClientId": "4tprgqkc4r44e7fu30p7qgpsa1",
-    "UserPoolId": "us-east-1_qMES8L8Mr",
-    "FrontendBucketName": "stockmarketanalysisstack-frontendfrontendbucket428-hjwvdssjf4mb",
-    "AgentApiEndpoint": "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A284546856933%3Aruntime%2Fstock_market_analyst_runtime-3plaPNGvG4/invocations?qualifier=stock_market_analyst",
-    "DistributionId": "E23D19KL8RBESE",
-    "FrontendUrl": "https://d1ts3g9aokko8h.cloudfront.net"
+    "UserPoolClientId": "7vnk3tg2la50opejkbrb5se0q1",
+    "UserPoolId": "us-east-1_Ep0kGcuVF",
+    "FrontendBucketName": "stockmarketanalysisstack-frontendfrontendbucket428-54or5zpg4wbt",
+    "AgentApiEndpoint": "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A284546856933%3Aruntime%2Fstock_market_analyst_runtime-g3XxCXGCbH/invocations?qualifier=stock_market_analyst",
+    "DistributionId": "E3LAZH3I0FGQA0",
+    "FrontendUrl": "https://d1dhnws8u4k56z.cloudfront.net"
   }
 }

@@ -78,7 +78,7 @@ export class Network extends Construct {
     }
   }
 
-  public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, peer?: IPeer): InterfaceVpcEndpoint {
+  public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, peer?: IPeer, privateDnsEnabled?: boolean): InterfaceVpcEndpoint {
     if (service === InterfaceVpcEndpointAwsService.S3) {
       this.vpc.addGatewayEndpoint(`${id}-gateway`, {
         service: GatewayVpcEndpointAwsService.S3,
@@ -92,10 +92,16 @@ export class Network extends Construct {
 
     securityGroup.addIngressRule(peer || Peer.anyIpv4(), Port.HTTPS);
 
+    // Default to true for private VPCs (isolated subnets have no internet
+    // access, so private DNS is required for AWS SDK calls to resolve to
+    // the VPC endpoint), false otherwise to preserve existing behaviour.
+    const enablePrivateDns = privateDnsEnabled ?? !!this.props.private;
+
     return this.vpc.addInterfaceEndpoint(`interface-endpoint-for-${id}`, {
       service,
       securityGroups: [securityGroup],
       subnets: this.applicationSubnetSelection(),
+      privateDnsEnabled: enablePrivateDns,
     });
   }
 

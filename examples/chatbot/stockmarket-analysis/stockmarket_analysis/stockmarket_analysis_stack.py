@@ -70,7 +70,6 @@ class StockmarketAnalysisStack(cdk.Stack):
         # AgentCore Runtime hosting adapter with Cognito JWT auth
         hosting_adapter = AgentCoreRuntimeHostingAdapter(
             endpoint_name="stock_market_analyst",
-            network_mode="PUBLIC",
             protocol_configuration="HTTP",
             custom_jwt_authorizer={
                 "discovery_url": cognito_discovery_url,
