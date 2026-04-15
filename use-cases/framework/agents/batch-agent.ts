@@ -8,12 +8,12 @@ import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Architecture, IFunction, ILayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
+import { DefaultAgentConfig } from './default-agent-config';
 import { InvokeType } from './invoke-type';
+import { KnowledgeBaseRuntimeConfig } from './knowledge-base';
 import { DefaultObservabilityConfig, LambdaIamUtils, PowertoolsConfig } from '../../utilities';
 import { BedrockModelUtils } from '../bedrock';
 import { DefaultRuntimes } from '../custom-resource';
-import { DefaultAgentConfig } from './default-agent-config';
-import { KnowledgeBaseRuntimeConfig } from './knowledge-base';
 
 export interface BatchAgentProps extends BaseAgentProps {
   readonly prompt: string;
@@ -147,7 +147,7 @@ export class BatchAgent extends BaseAgent {
     this.agentFunction = new PythonFunction(this, 'BatchAgentFunction', {
       functionName: agentLambdaLogPermissionsResult.uniqueFunctionName,
       architecture: lambdaArchitecture,
-      entry: path.join(__dirname, 'resources/default-strands-agent'),
+      entry: this.resolveAgentRuntimeEntry(),
       role: this.agentRole,
       index: 'batch.py',
       runtime: DefaultRuntimes.PYTHON,
@@ -163,5 +163,9 @@ export class BatchAgent extends BaseAgent {
     for (const s of agentLambdaLogPermissionsResult.policyStatements) {
       this.agentRole.addToPrincipalPolicy(s);
     }
+  }
+
+  protected resolveAgentRuntimeEntry(): string {
+    return path.join(__dirname, 'resources/default-strands-agent');
   }
 }
