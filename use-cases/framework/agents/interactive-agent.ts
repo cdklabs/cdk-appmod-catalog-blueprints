@@ -16,6 +16,7 @@ import {
 import { CfnRuntime, CfnRuntimeEndpoint } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { UserPool, UserPoolClient, Mfa, AccountRecovery, UserPoolClientIdentityProvider } from 'aws-cdk-lib/aws-cognito';
 import { AttributeType, BillingMode, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import { ISecurityGroup, SecurityGroup, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { IGrantable, Role, ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { IKey, Key } from 'aws-cdk-lib/aws-kms';
@@ -1263,6 +1264,34 @@ export interface AgentCoreJwtAuthorizerConfig {
 /**
  * Configuration properties for AgentCoreRuntimeHostingAdapter.
  */
+/**
+ * Network mode for AgentCore Runtime hosting.
+ *
+ * Determines whether the AgentCore Runtime runs on the public internet
+ * or inside a VPC with private networking.
+ */
+export enum NetworkMode {
+  /**
+   * Runtime is publicly accessible (default).
+   * No VPC configuration required.
+   */
+  PUBLIC = 'PUBLIC',
+
+  /**
+   * Runtime runs inside a VPC.
+   *
+   * AgentCore creates ENIs in the specified subnets. You must provide
+   * either explicit `vpcSubnets` and `securityGroups`, or pass a
+   * `Network` construct via `InteractiveAgent.network`.
+   *
+   * Use private subnets with a NAT Gateway for internet access.
+   * Public subnets do NOT provide internet access to AgentCore ENIs.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html
+   */
+  VPC = 'VPC',
+}
+
 export interface AgentCoreRuntimeHostingAdapterProps {
   /**
    * ECR container image URI. If not provided, builds from the bundled handler source.
@@ -1272,11 +1301,51 @@ export interface AgentCoreRuntimeHostingAdapterProps {
   readonly containerImageUri?: string;
 
   /**
-   * Network mode: 'PUBLIC' or 'VPC'.
+   * Network mode for the AgentCore Runtime.
    *
-   * @default 'PUBLIC'
+   * When set to `NetworkMode.VPC`, the runtime runs inside a VPC and AgentCore creates
+   * ENIs in the specified subnets. You must provide either explicit `vpcSubnets`
+   * and `securityGroups`, or pass a `Network` construct via `AgentHostingConfig.network`
+   * (which is set automatically by `InteractiveAgent` when `network` is provided).
+   *
+   * For VPC mode, use private subnets with a NAT Gateway for internet access.
+   * Public subnets do NOT provide internet access to AgentCore ENIs.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html
+   * @default NetworkMode.PUBLIC
    */
-  readonly networkMode?: string;
+  readonly networkMode?: NetworkMode;
+
+  /**
+   * Subnet selection for VPC network mode.
+   *
+   * Selects which subnets the AgentCore Runtime ENIs are placed in.
+   * Requires a VPC to be provided via `AgentHostingConfig.network`
+   * (set automatically by `InteractiveAgent` when `network` is provided)
+   * so that subnets can be resolved.
+   *
+   * Best practice is to select private subnets with a NAT Gateway
+   * in at least 2 Availability Zones. Maximum 16 subnets.
+   *
+   * When both `vpcSubnets` and `AgentHostingConfig.network` are provided,
+   * `vpcSubnets` takes precedence over the network's default application subnets.
+   *
+   * @default - Derived from AgentHostingConfig.network.applicationSubnetSelection() if available
+   */
+  readonly vpcSubnets?: SubnetSelection;
+
+  /**
+   * Security groups for VPC network mode.
+   *
+   * Attached to the AgentCore Runtime ENIs. Maximum 16 security groups.
+   *
+   * When both `securityGroups` and `AgentHostingConfig.network` are provided,
+   * `securityGroups` takes precedence.
+   *
+   * @default - A new security group allowing all outbound traffic is created
+   * from AgentHostingConfig.network if available
+   */
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
    * Custom JWT authorizer configuration.
@@ -1318,12 +1387,13 @@ export interface AgentCoreRuntimeHostingAdapterProps {
  * - **Managed Infrastructure**: No Lambda cold starts or timeout limits
  * - **Multiple Protocols**: HTTP, MCP, or A2A protocol support
  * - **Container-Based**: Standard Docker image deployment
+ * - **VPC Support**: Run inside a VPC with private subnets for network isolation
  *
  * ## Usage
  *
  * ```typescript
  * import { Asset } from 'aws-cdk-lib/aws-s3-assets';
- * import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+ * import { InteractiveAgent, AgentCoreRuntimeHostingAdapter, NetworkMode } from '@cdklabs/cdk-appmod-catalog-blueprints';
  *
  * declare const myPrompt: Asset;
  *
@@ -1331,7 +1401,7 @@ export interface AgentCoreRuntimeHostingAdapterProps {
  *   agentName: 'MyChatbot',
  *   agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
  *   hostingAdapter: new AgentCoreRuntimeHostingAdapter({
- *     networkMode: 'PUBLIC',
+ *     networkMode: NetworkMode.PUBLIC,
  *   }),
  * });
  * ```
@@ -1350,7 +1420,50 @@ export class AgentCoreRuntimeHostingAdapter implements IHostingAdapter {
    */
   deploy(config: AgentHostingConfig): AgentHostingResult {
     const scope = config.scope;
-    const networkMode = this.props.networkMode || 'PUBLIC';
+    const networkMode = this.props.networkMode || NetworkMode.PUBLIC;
+
+    // Resolve VPC configuration for VPC network mode
+    let resolvedSubnetIds: string[] | undefined;
+    let resolvedSecurityGroupIds: string[] | undefined;
+
+    if (networkMode === NetworkMode.VPC) {
+      // Explicit props take precedence over Network construct
+      if (this.props.vpcSubnets && config.network) {
+        resolvedSubnetIds = config.network.vpc.selectSubnets(this.props.vpcSubnets).subnetIds;
+      } else if (config.network) {
+        const subnets = config.network.vpc.selectSubnets(
+          config.network.applicationSubnetSelection(),
+        ).subnetIds;
+        resolvedSubnetIds = subnets;
+      }
+
+      if (this.props.securityGroups) {
+        resolvedSecurityGroupIds = this.props.securityGroups.map(sg => sg.securityGroupId);
+      } else if (config.network) {
+        // Create a security group for the AgentCore runtime ENIs
+        const sg = new SecurityGroup(scope, 'AgentCoreRuntimeSG', {
+          vpc: config.network.vpc,
+          description: 'Security group for AgentCore Runtime ENIs',
+          allowAllOutbound: true,
+        });
+        resolvedSecurityGroupIds = [sg.securityGroupId];
+      }
+
+      if (!resolvedSubnetIds || resolvedSubnetIds.length === 0) {
+        throw new Error(
+          'VPC network mode requires subnets to be provided either via ' +
+          'AgentCoreRuntimeHostingAdapterProps.vpcSubnets (with a Network construct) ' +
+          'or via a Network construct in AgentHostingConfig.network.',
+        );
+      }
+      if (!resolvedSecurityGroupIds || resolvedSecurityGroupIds.length === 0) {
+        throw new Error(
+          'VPC network mode requires security groups to be provided either via ' +
+          'AgentCoreRuntimeHostingAdapterProps.securityGroups or via a Network construct ' +
+          'in AgentHostingConfig.network.',
+        );
+      }
+    }
 
     // Build or reference container image
     let containerUri: string;
@@ -1456,6 +1569,17 @@ export class AgentCoreRuntimeHostingAdapter implements IHostingAdapter {
     if (this.props.customJwtAuthorizer) {
       runtime.addPropertyOverride('RequestHeaderConfiguration', {
         RequestHeaderAllowlist: ['Authorization'],
+      });
+    }
+
+    // When VPC mode is configured, set the NetworkModeConfig with subnets and
+    // security groups via property override. This is needed because CDK 2.218.0
+    // does not yet have typed support for NetworkModeConfig (added in 2.240.0).
+    // See: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html
+    if (networkMode === NetworkMode.VPC && resolvedSubnetIds && resolvedSecurityGroupIds) {
+      runtime.addPropertyOverride('NetworkConfiguration.NetworkModeConfig', {
+        Subnets: resolvedSubnetIds,
+        SecurityGroups: resolvedSecurityGroupIds,
       });
     }
 

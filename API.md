@@ -3055,8 +3055,6 @@ Allowed client IDs.
 
 ### AgentCoreRuntimeHostingAdapterProps <a name="AgentCoreRuntimeHostingAdapterProps" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps"></a>
 
-Configuration properties for AgentCoreRuntimeHostingAdapter.
-
 #### Initializer <a name="Initializer" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.Initializer"></a>
 
 ```typescript
@@ -3072,8 +3070,10 @@ const agentCoreRuntimeHostingAdapterProps: AgentCoreRuntimeHostingAdapterProps =
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.containerImageUri">containerImageUri</a></code> | <code>string</code> | ECR container image URI. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.customJwtAuthorizer">customJwtAuthorizer</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreJwtAuthorizerConfig">AgentCoreJwtAuthorizerConfig</a></code> | Custom JWT authorizer configuration. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.endpointName">endpointName</a></code> | <code>string</code> | Runtime endpoint name. |
-| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.networkMode">networkMode</a></code> | <code>string</code> | Network mode: 'PUBLIC' or 'VPC'. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.networkMode">networkMode</a></code> | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode">NetworkMode</a></code> | Network mode for the AgentCore Runtime. |
 | <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.protocolConfiguration">protocolConfiguration</a></code> | <code>string</code> | Protocol configuration: 'HTTP' \| 'MCP' \| 'A2A'. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.securityGroups">securityGroups</a></code> | <code>aws-cdk-lib.aws_ec2.ISecurityGroup[]</code> | Security groups for VPC network mode. |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.vpcSubnets">vpcSubnets</a></code> | <code>aws-cdk-lib.aws_ec2.SubnetSelection</code> | Subnet selection for VPC network mode. |
 
 ---
 
@@ -3122,13 +3122,23 @@ Runtime endpoint name.
 ##### `networkMode`<sup>Optional</sup> <a name="networkMode" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.networkMode"></a>
 
 ```typescript
-public readonly networkMode: string;
+public readonly networkMode: NetworkMode;
 ```
 
-- *Type:* string
-- *Default:* 'PUBLIC'
+- *Type:* <a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode">NetworkMode</a>
+- *Default:* NetworkMode.PUBLIC
 
-Network mode: 'PUBLIC' or 'VPC'.
+Network mode for the AgentCore Runtime.
+
+When set to `NetworkMode.VPC`, the runtime runs inside a VPC and AgentCore creates
+ENIs in the specified subnets. You must provide either explicit `vpcSubnets`
+and `securityGroups`, or pass a `Network` construct via `AgentHostingConfig.network`
+(which is set automatically by `InteractiveAgent` when `network` is provided).
+
+For VPC mode, use private subnets with a NAT Gateway for internet access.
+Public subnets do NOT provide internet access to AgentCore ENIs.
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html)
 
 ---
 
@@ -3142,6 +3152,48 @@ public readonly protocolConfiguration: string;
 - *Default:* 'HTTP'
 
 Protocol configuration: 'HTTP' | 'MCP' | 'A2A'.
+
+---
+
+##### `securityGroups`<sup>Optional</sup> <a name="securityGroups" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.securityGroups"></a>
+
+```typescript
+public readonly securityGroups: ISecurityGroup[];
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.ISecurityGroup[]
+- *Default:* A new security group allowing all outbound traffic is created from AgentHostingConfig.network if available
+
+Security groups for VPC network mode.
+
+Attached to the AgentCore Runtime ENIs. Maximum 16 security groups.
+
+When both `securityGroups` and `AgentHostingConfig.network` are provided,
+`securityGroups` takes precedence.
+
+---
+
+##### `vpcSubnets`<sup>Optional</sup> <a name="vpcSubnets" id="@cdklabs/cdk-appmod-catalog-blueprints.AgentCoreRuntimeHostingAdapterProps.property.vpcSubnets"></a>
+
+```typescript
+public readonly vpcSubnets: SubnetSelection;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.SubnetSelection
+- *Default:* Derived from AgentHostingConfig.network.applicationSubnetSelection() if available
+
+Subnet selection for VPC network mode.
+
+Selects which subnets the AgentCore Runtime ENIs are placed in.
+Requires a VPC to be provided via `AgentHostingConfig.network`
+(set automatically by `InteractiveAgent` when `network` is provided)
+so that subnets can be resolved.
+
+Best practice is to select private subnets with a NAT Gateway
+in at least 2 Availability Zones. Maximum 16 subnets.
+
+When both `vpcSubnets` and `AgentHostingConfig.network` are provided,
+`vpcSubnets` takes precedence over the network's default application subnets.
 
 ---
 
@@ -9632,12 +9684,13 @@ Client → AgentCore Runtime Endpoint → Container (FastAPI on port 8080) → B
 - **Managed Infrastructure**: No Lambda cold starts or timeout limits
 - **Multiple Protocols**: HTTP, MCP, or A2A protocol support
 - **Container-Based**: Standard Docker image deployment
+- **VPC Support**: Run inside a VPC with private subnets for network isolation
 
 ## Usage
 
 ```typescript
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { InteractiveAgent, AgentCoreRuntimeHostingAdapter } from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { InteractiveAgent, AgentCoreRuntimeHostingAdapter, NetworkMode } from '@cdklabs/cdk-appmod-catalog-blueprints';
 
 declare const myPrompt: Asset;
 
@@ -9645,7 +9698,7 @@ new InteractiveAgent(this, 'Agent', {
   agentName: 'MyChatbot',
   agentDefinition: { bedrockModel: {}, systemPrompt: myPrompt },
   hostingAdapter: new AgentCoreRuntimeHostingAdapter({
-    networkMode: 'PUBLIC',
+    networkMode: NetworkMode.PUBLIC,
   }),
 });
 ```
@@ -12466,6 +12519,47 @@ Used in document processing workflows for extraction/processing phase.
 Document aggregation step.
 
 Used in document processing workflows for aggregating chunked results.
+
+---
+
+
+### NetworkMode <a name="NetworkMode" id="@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode"></a>
+
+Network mode for AgentCore Runtime hosting.
+
+Determines whether the AgentCore Runtime runs on the public internet
+or inside a VPC with private networking.
+
+#### Members <a name="Members" id="Members"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode.PUBLIC">PUBLIC</a></code> | Runtime is publicly accessible (default). |
+| <code><a href="#@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode.VPC">VPC</a></code> | Runtime runs inside a VPC. |
+
+---
+
+##### `PUBLIC` <a name="PUBLIC" id="@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode.PUBLIC"></a>
+
+Runtime is publicly accessible (default).
+
+No VPC configuration required.
+
+---
+
+
+##### `VPC` <a name="VPC" id="@cdklabs/cdk-appmod-catalog-blueprints.NetworkMode.VPC"></a>
+
+Runtime runs inside a VPC.
+
+AgentCore creates ENIs in the specified subnets. You must provide
+either explicit `vpcSubnets` and `securityGroups`, or pass a
+`Network` construct via `InteractiveAgent.network`.
+
+Use private subnets with a NAT Gateway for internet access.
+Public subnets do NOT provide internet access to AgentCore ENIs.
+
+> [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html)
 
 ---
 

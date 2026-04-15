@@ -277,7 +277,7 @@ const agent = new InteractiveAgent(this, 'Agent', {
     systemPrompt,
   },
   hostingAdapter: new AgentCoreRuntimeHostingAdapter({
-    networkMode: 'PUBLIC',
+    networkMode: NetworkMode.PUBLIC,
   }),
 });
 ```
@@ -287,7 +287,9 @@ const agent = new InteractiveAgent(this, 'Agent', {
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `containerImageUri` | `string` | Builds from handler | ECR container image URI |
-| `networkMode` | `string` | `'PUBLIC'` | Network mode: `'PUBLIC'` or `'VPC'` |
+| `networkMode` | `NetworkMode` | `NetworkMode.PUBLIC` | Network mode: `NetworkMode.PUBLIC` or `NetworkMode.VPC` |
+| `vpcSubnets` | `SubnetSelection` | Network's application subnets | Subnet selection for VPC mode |
+| `securityGroups` | `ISecurityGroup[]` | Auto-created from Network | Security groups for VPC mode |
 | `customJwtAuthorizer` | `object` | IAM auth | Custom JWT authorizer config |
 | `protocolConfiguration` | `string` | `'HTTP'` | Protocol: `'HTTP'`, `'MCP'`, or `'A2A'` |
 | `endpointName` | `string` | Auto-generated | Runtime endpoint name |
