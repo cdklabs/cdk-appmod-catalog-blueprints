@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as path from 'path';
-import { Duration, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { CustomResource, Duration, Fn, Names, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
@@ -20,7 +20,7 @@ import { ISecurityGroup, SecurityGroup, SubnetSelection } from 'aws-cdk-lib/aws-
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 import { IGrantable, Role, ServicePrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { IKey, Key } from 'aws-cdk-lib/aws-kms';
-import { IFunction, Architecture, ILayerVersion, LayerVersion, Function, Code } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, Architecture, ILayerVersion, LayerVersion, Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IBucket, Bucket, BucketEncryption, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { BaseAgent, BaseAgentProps } from './base-agent';
@@ -1592,6 +1592,83 @@ export class AgentCoreRuntimeHostingAdapter implements IHostingAdapter {
       runtime.node.addDependency(ecrPolicyResult.policyDependable);
     }
 
+    // In VPC mode, the AgentCore runtime takes longer to provision (ENI creation,
+    // subnet attachment) but CloudFormation marks CfnRuntime as CREATE_COMPLETE
+    // before the runtime reaches READY status. Insert a custom resource waiter
+    // that polls GetAgentRuntime until status is READY before creating the endpoint.
+    let runtimeWaiter: CustomResource | undefined;
+    if (networkMode === NetworkMode.VPC) {
+      const uniqueSuffix = Names.uniqueId(runtime).slice(-8).toLowerCase();
+
+      const waiterFn = new Function(scope, 'RuntimeReadyWaiterFn', {
+        functionName: `${config.agentName}-rt-waiter-${uniqueSuffix}`,
+        runtime: Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: Code.fromInline([
+          'const https = require("https");',
+          'const url = require("url");',
+          'const { BedrockAgentCoreControlClient, GetAgentRuntimeCommand } = require("@aws-sdk/client-bedrock-agentcore-control");',
+          'function sendResponse(event, context, status, data, reason) {',
+          '  const body = JSON.stringify({',
+          '    Status: status,',
+          '    Reason: reason || "See CloudWatch Log Stream: " + context.logStreamName,',
+          '    PhysicalResourceId: event.ResourceProperties.AgentRuntimeId || event.LogicalResourceId,',
+          '    StackId: event.StackId,',
+          '    RequestId: event.RequestId,',
+          '    LogicalResourceId: event.LogicalResourceId,',
+          '    Data: data || {},',
+          '  });',
+          '  const parsed = url.parse(event.ResponseURL);',
+          '  return new Promise((resolve, reject) => {',
+          '    const req = https.request({ hostname: parsed.hostname, path: parsed.path, method: "PUT",',
+          '      headers: { "content-type": "", "content-length": body.length } }, resolve);',
+          '    req.on("error", reject);',
+          '    req.write(body);',
+          '    req.end();',
+          '  });',
+          '}',
+          'exports.handler = async (event, context) => {',
+          '  try {',
+          '    if (event.RequestType === "Delete") { await sendResponse(event, context, "SUCCESS", {}); return; }',
+          '    const client = new BedrockAgentCoreControlClient();',
+          '    const runtimeId = event.ResourceProperties.AgentRuntimeId;',
+          '    for (let i = 0; i < 40; i++) {',
+          '      const resp = await client.send(new GetAgentRuntimeCommand({ agentRuntimeId: runtimeId }));',
+          '      const status = resp.status || resp.agentRuntimeStatus;',
+          '      console.log(`Attempt ${i + 1}: runtime status = ${status}`);',
+          '      if (status === "READY") { await sendResponse(event, context, "SUCCESS", { Status: status }); return; }',
+          '      if (status === "FAILED") { await sendResponse(event, context, "FAILED", {}, "Runtime entered FAILED status"); return; }',
+          '      await new Promise(r => setTimeout(r, 15000));',
+          '    }',
+          '    await sendResponse(event, context, "FAILED", {}, "Timed out waiting for runtime READY status");',
+          '  } catch (e) {',
+          '    console.error(e);',
+          '    await sendResponse(event, context, "FAILED", {}, e.message);',
+          '  }',
+          '};',
+        ].join('\n')),
+        timeout: Duration.minutes(12),
+      });
+
+      waiterFn.addToRolePolicy(new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['bedrock-agentcore:GetAgentRuntime'],
+        resources: [Stack.of(scope).formatArn({
+          service: 'bedrock-agentcore',
+          resource: 'runtime',
+          resourceName: '*',
+        })],
+      }));
+
+      runtimeWaiter = new CustomResource(scope, 'RuntimeReadyWaiter', {
+        serviceToken: waiterFn.functionArn,
+        properties: {
+          AgentRuntimeId: runtime.ref,
+        },
+      });
+      runtimeWaiter.node.addDependency(runtime);
+    }
+
     // Create CfnRuntimeEndpoint
     const endpointName = this.props.endpointName || `${config.agentName.replace(/-/g, '_')}_endpoint`;
     const runtimeEndpoint = new CfnRuntimeEndpoint(scope, 'AgentCoreRuntimeEndpoint', {
@@ -1605,6 +1682,11 @@ export class AgentCoreRuntimeHostingAdapter implements IHostingAdapter {
       }),
     });
     runtimeEndpoint.applyRemovalPolicy(config.removalPolicy || RemovalPolicy.DESTROY);
+
+    // Ensure the endpoint waits for the runtime to be READY in VPC mode
+    if (runtimeWaiter) {
+      runtimeEndpoint.node.addDependency(runtimeWaiter);
+    }
 
     // Construct the full invocation URL for direct HTTPS access (required for JWT auth).
     // Format: https://bedrock-agentcore.{region}.amazonaws.com/runtimes/{URL-encoded-ARN}/invocations?qualifier={endpointName}

@@ -16,7 +16,7 @@ source .venv/bin/activate
 # Build frontend
 echo "Building frontend..."
 cd frontend
-npm ci --silent
+npm install --silent
 npm run build
 cd ..
 

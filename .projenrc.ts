@@ -64,6 +64,7 @@ const project = new CdklabsConstructLibrary({
     '**/cdk.out',
     '**/cdk.out.test',
     '.vscode',
+    'cdk-outputs.json',
   ],
   packageName: '@cdklabs/cdk-appmod-catalog-blueprints',
   majorVersion: 1,
@@ -204,6 +205,7 @@ project.addTask('build:no-test', {
     { spawn: 'compile' },
     { spawn: 'post-compile' },
     { spawn: 'package:js' }, // Only JS package for speed
+    { spawn: 'package:python' }, // Only JS package for speed
   ],
 });
 

@@ -66,6 +66,15 @@ export function signIn(
     user.authenticateUser(authDetails, {
       onSuccess: (session) => resolve(session),
       onFailure: (err) => reject(err),
+      newPasswordRequired: (userAttributes) => {
+        // Remove non-mutable attributes returned by Cognito
+        delete userAttributes.email_verified;
+        delete userAttributes.email;
+        user.completeNewPasswordChallenge(password, userAttributes, {
+          onSuccess: (session) => resolve(session),
+          onFailure: (err) => reject(err),
+        });
+      },
     });
   });
 }

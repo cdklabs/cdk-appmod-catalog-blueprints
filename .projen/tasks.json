@@ -66,6 +66,9 @@
         },
         {
           "spawn": "package:js"
+        },
+        {
+          "spawn": "package:python"
         }
       ]
     },

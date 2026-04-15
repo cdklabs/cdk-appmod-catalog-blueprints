@@ -60,6 +60,7 @@ Thumbs.db
 **/cdk.out
 **/cdk.out.test
 .vscode
+cdk-outputs.json
 /test-reports/
 junit.xml
 /coverage/

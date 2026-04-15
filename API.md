@@ -2684,7 +2684,7 @@ public applicationSubnetSelection(): SubnetSelection
 ##### `createServiceEndpoint` <a name="createServiceEndpoint" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.createServiceEndpoint"></a>
 
 ```typescript
-public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, peer?: IPeer): InterfaceVpcEndpoint
+public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, peer?: IPeer, privateDnsEnabled?: boolean): InterfaceVpcEndpoint
 ```
 
 ###### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.createServiceEndpoint.parameter.id"></a>
@@ -2702,6 +2702,12 @@ public createServiceEndpoint(id: string, service: InterfaceVpcEndpointService, p
 ###### `peer`<sup>Optional</sup> <a name="peer" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.createServiceEndpoint.parameter.peer"></a>
 
 - *Type:* aws-cdk-lib.aws_ec2.IPeer
+
+---
+
+###### `privateDnsEnabled`<sup>Optional</sup> <a name="privateDnsEnabled" id="@cdklabs/cdk-appmod-catalog-blueprints.Network.createServiceEndpoint.parameter.privateDnsEnabled"></a>
+
+- *Type:* boolean
 
 ---
 
