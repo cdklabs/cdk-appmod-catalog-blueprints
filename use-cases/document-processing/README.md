@@ -14,6 +14,8 @@ You can leverage the following constructs:
 - **BaseDocumentProcessing**: Abstract foundation requiring custom step implementations
 - **BedrockDocumentProcessing**: Ready-to-use genAI document processing implementation with Amazon Bedrock 
 - **AgenticDocumentProcessing**: Advanced agentic capabilities powered by the [Agents Framework](../framework/agents/) with BatchAgent integration
+- **LocalStackBedrockDocumentProcessing**: LocalStack-enabled BedrockDocumentProcessing variant
+- **LocalStackAgenticDocumentProcessing**: LocalStack-enabled AgenticDocumentProcessing variant
 
 All implementations share common infrastructure: Step Functions workflow, DynamoDB metadata storage, EventBridge integration, and built-in observability.
 
@@ -209,6 +211,79 @@ interface AgenticDocumentProcessingProps extends BedrockDocumentProcessingProps 
 - [Full-Stack Insurance Claims Processing](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/doc-processing-fullstack-webapp)
 - [Fraud Detection](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/fraud-detection)
 - [Document Summarization Pipeline](https://github.com/cdklabs/cdk-appmod-catalog-blueprints/tree/main/examples/document-processing/summarization-pipeline)
+
+### LocalStack Usage
+
+Use LocalStack variants to route runtime AWS SDK calls to LocalStack endpoints without changing the default AWS-native constructs.
+
+The `localStack` property enables endpoint routing and swaps in the LocalStack-aware runtime entrypoints. Those runtimes still default `MODEL_PROVIDER` to `bedrock`. If you want direct Ollama inference, you must also set `MODEL_PROVIDER=ollama` and provide an Ollama base URL on the generated Lambda functions:
+
+```typescript
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+  LocalStackBedrockDocumentProcessing,
+  LocalStackAgenticDocumentProcessing
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+const localDocProcessor = new LocalStackBedrockDocumentProcessing(this, 'LocalDocProcessor', {
+  localStack: {
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
+  },
+  classificationBedrockModel: {
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+  },
+  processingBedrockModel: {
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+  }
+});
+
+for (const child of localDocProcessor.node.findAll()) {
+  if (!(child instanceof LambdaFunction)) {
+    continue;
+  }
+  child.addEnvironment('MODEL_PROVIDER', 'ollama');
+  child.addEnvironment('OLLAMA_BASE_URL', DEFAULT_LOCALSTACK_OLLAMA_BASE_URL);
+}
+```
+
+The same pattern applies to `LocalStackAgenticDocumentProcessing`:
+
+```typescript
+const agenticProcessor = new LocalStackAgenticDocumentProcessing(this, 'LocalAgenticDocProcessor', {
+  classificationBedrockModel: {
+    customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+  },
+  processingAgentParameters: {
+    agentName: 'LocalAgenticProcessor',
+    prompt: 'Extract the required fields from the input document.',
+    agentDefinition: {
+      bedrockModel: {
+        customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+      },
+      systemPrompt: new Asset(this, 'AgentSystemPrompt', {
+        path: './prompts/local-agentic-system-prompt.txt'
+      })
+    }
+  },
+  localStack: {
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
+  }
+});
+
+for (const child of agenticProcessor.node.findAll()) {
+  if (!(child instanceof LambdaFunction)) {
+    continue;
+  }
+  child.addEnvironment('MODEL_PROVIDER', 'ollama');
+  child.addEnvironment('OLLAMA_BASE_URL', DEFAULT_LOCALSTACK_OLLAMA_BASE_URL);
+}
+```
+
+Current direct Ollama mode works best for text and PDF-oriented flows. In the LocalStack invoke runtime, PDFs are converted to extracted text for Ollama, while image files are not attached as raw image bytes in this workflow.
 
 ## PDF Chunking for Large Documents
 

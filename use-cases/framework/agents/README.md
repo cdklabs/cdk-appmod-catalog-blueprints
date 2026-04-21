@@ -16,6 +16,7 @@ You can leverage the following constructs:
 - **BaseAgent**: Abstract foundation requiring custom agent implementations
 - **BatchAgent**: Ready-to-use agent for batch processing with Bedrock integration
 - **InteractiveAgent**: Real-time conversational AI with SSE streaming, session management, and Cognito authentication
+- **LocalStackBatchAgent**: Batch agent variant that routes runtime SDK calls to LocalStack endpoints
 
 All implementations share common infrastructure from `BaseAgent` and integrate with the [Strands agent framework](https://github.com/awslabs/strands-agents) for tool execution and model interaction.
 
@@ -168,6 +169,49 @@ const agent = new BatchAgent(this, 'DocumentAnalysisAgent', {
   expectJson: true,
   enableObservability: true
 });
+```
+
+### LocalStack Usage
+
+Use `LocalStackBatchAgent` when you want the batch-agent runtime entrypoint and AWS SDK endpoint routing to target your local sandbox.
+
+The `localStack` property only injects the LocalStack endpoint environment variables. The runtime still defaults `MODEL_PROVIDER` to `bedrock`. If you want direct Ollama inference, you must also set `MODEL_PROVIDER=ollama` and provide an Ollama base URL on the generated Lambda function:
+
+```typescript
+import {
+  DEFAULT_LOCALSTACK_OLLAMA_BASE_URL,
+  DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID,
+  DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL,
+  LocalStackBatchAgent
+} from '@cdklabs/cdk-appmod-catalog-blueprints';
+import { Architecture } from 'aws-cdk-lib/aws-lambda';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+
+const agent = new LocalStackBatchAgent(this, 'LocalAgent', {
+  agentName: 'LocalAgent',
+  prompt: 'Analyze the input document.',
+  agentDefinition: {
+    bedrockModel: {
+      customModelId: DEFAULT_LOCALSTACK_OLLAMA_MODEL_ID
+    },
+    systemPrompt: new Asset(this, 'SystemPrompt', {
+      path: './prompts/local-agent-system-prompt.txt'
+    })
+  },
+  localStack: {
+    endpointUrl: DEFAULT_LOCALSTACK_SANDBOX_ENDPOINT_URL
+  },
+  agentArchitecture: Architecture.X86_64
+});
+
+agent.agentFunction?.addEnvironment('MODEL_PROVIDER', 'ollama');
+agent.agentFunction?.addEnvironment('OLLAMA_BASE_URL', DEFAULT_LOCALSTACK_OLLAMA_BASE_URL);
+```
+
+If you want to override the Ollama model name explicitly, you can also set:
+
+```typescript
+agent.agentFunction?.addEnvironment('OLLAMA_MODEL_ID', 'qwen3.5:9b');
 ```
 
 ### Tool Development
