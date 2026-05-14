@@ -16,6 +16,131 @@ import { IKnowledgeBase, KnowledgeBaseRuntimeConfig } from './knowledge-base';
 // Re-export InvokeType for convenience
 export { InvokeType };
 
+/**
+ * Transport types for MCP server connections.
+ *
+ * MCP (Model Context Protocol) supports multiple transport mechanisms
+ * for communicating with remote tool servers.
+ */
+export enum McpTransportType {
+  /** Modern HTTP request/response with optional streaming */
+  STREAMABLE_HTTP = 'STREAMABLE_HTTP',
+  /** Server-Sent Events transport (widely supported by existing MCP servers) */
+  SSE = 'SSE',
+}
+
+/**
+ * Authentication flow types for AgentCore Identity credential providers.
+ *
+ * These flows determine how the agent obtains OAuth access tokens
+ * from a pre-configured AgentCore Identity credential provider.
+ */
+export enum McpAuthFlow {
+  /** Machine-to-machine OAuth 2.0 client credentials grant */
+  M2M = 'M2M',
+  /** User-delegated OAuth 2.0 authorization code grant */
+  USER_FEDERATION = 'USER_FEDERATION',
+}
+
+/**
+ * Configuration for a single MCP server connection.
+ *
+ * Supports three authentication tiers:
+ * 1. Plain string headers (dev/testing)
+ * 2. Secrets Manager ARN references in header values (production static secrets)
+ * 3. AgentCore Identity credential providers (OAuth with automatic token management)
+ *
+ * When `credentialProviderName` is set, it takes precedence over `headers`
+ * for authentication purposes.
+ *
+ * @example Plain headers
+ * ```typescript
+ * {
+ *   name: 'dev-server',
+ *   url: 'https://mcp.example.com/mcp',
+ *   transportType: McpTransportType.STREAMABLE_HTTP,
+ *   headers: { 'Authorization': 'Bearer dev-token' },
+ * }
+ * ```
+ *
+ * @example Secrets Manager reference
+ * ```typescript
+ * {
+ *   name: 'prod-server',
+ *   url: 'https://mcp.example.com/mcp',
+ *   transportType: McpTransportType.SSE,
+ *   headers: { 'Authorization': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-api-key' },
+ * }
+ * ```
+ *
+ * @example AgentCore Identity
+ * ```typescript
+ * {
+ *   name: 'oauth-server',
+ *   url: 'https://mcp.example.com/mcp',
+ *   transportType: McpTransportType.STREAMABLE_HTTP,
+ *   credentialProviderName: 'my-credential-provider',
+ *   authScopes: ['read', 'write'],
+ *   authFlow: McpAuthFlow.M2M,
+ * }
+ * ```
+ */
+export interface McpServerConfig {
+  /** Human-readable name identifying this MCP server (used in logs and error messages) */
+  readonly name: string;
+
+  /** MCP server endpoint URL */
+  readonly url: string;
+
+  /** Transport protocol for the MCP connection */
+  readonly transportType: McpTransportType;
+
+  /**
+   * Custom HTTP headers for the MCP connection.
+   *
+   * Header values starting with `arn:aws:secretsmanager:` are treated as
+   * Secrets Manager ARN references and resolved at runtime.
+   *
+   * Ignored for authentication when `credentialProviderName` is set.
+   *
+   * @default - No custom headers
+   */
+  readonly headers?: Record<string, string>;
+
+  /**
+   * Name of a pre-configured AgentCore Identity credential provider.
+   *
+   * When set, the runtime obtains an OAuth access token from this provider
+   * and injects it as an Authorization: Bearer header.
+   *
+   * Takes precedence over `headers` for authentication.
+   *
+   * @default - No credential provider (use headers for auth)
+   */
+  readonly credentialProviderName?: string;
+
+  /**
+   * OAuth scopes to request when using AgentCore Identity.
+   *
+   * Only used when `credentialProviderName` is set.
+   *
+   * @default - No specific scopes requested
+   */
+  readonly authScopes?: string[];
+
+  /**
+   * Authentication flow for AgentCore Identity.
+   *
+   * Only used when `credentialProviderName` is set.
+   * If not specified, defaults to the agent-type default:
+   * - BatchAgent: M2M (machine-to-machine)
+   * - InteractiveAgent: USER_FEDERATION (user-delegated)
+   *
+   * @default - Agent-type default (M2M for batch, USER_FEDERATION for interactive)
+   */
+  readonly authFlow?: McpAuthFlow;
+}
+
 export interface AgentToolsLocationDefinition {
   readonly bucketName: string;
   readonly key: string;
@@ -81,6 +206,20 @@ export interface AgentDefinitionProps {
    * @default - Only auto-generated permissions from knowledge bases
    */
   readonly additionalPolicyStatementsForKnowledgeBases?: PolicyStatement[];
+
+  /**
+   * MCP servers available to the agent for remote tool access.
+   *
+   * When configured, the agent connects to these MCP servers at invocation
+   * time, discovers available tools via `list_tools_sync()`, and merges
+   * them with S3-based tools and knowledge base tools.
+   *
+   * Each MCP server must implement the MCP protocol over HTTP
+   * (Streamable HTTP or SSE transport).
+   *
+   * @default - No MCP servers configured
+   */
+  readonly mcpServers?: McpServerConfig[];
 }
 
 export interface BaseAgentProps extends ObservableProps {
@@ -228,6 +367,15 @@ export abstract class BaseAgent extends Construct {
    */
   protected readonly knowledgeBaseLayers: LayerVersion[];
 
+  /**
+   * MCP server configurations for runtime use.
+   *
+   * This array contains the MCP server configurations from the agent definition.
+   * Subclasses use this to set the `MCP_SERVERS_CONFIG` and `MCP_DEFAULT_AUTH_FLOW`
+   * environment variables on the agent Lambda function or container.
+   */
+  protected readonly mcpServerConfigs: McpServerConfig[];
+
   constructor(scope: Construct, id: string, props: BaseAgentProps) {
     super(scope, id);
     this.bedrockModel = props.agentDefinition.bedrockModel;
@@ -365,6 +513,27 @@ export abstract class BaseAgent extends Construct {
         resources: ['*'], // CloudWatch Logs and X-Ray require wildcard resources
       }));
     }
+
+    // Store MCP server configurations for subclass access
+    this.mcpServerConfigs = props.agentDefinition.mcpServers ?? [];
+
+    // Grant Secrets Manager permissions for ARN references in MCP server headers
+    const secretArns = this.extractSecretArns(this.mcpServerConfigs);
+    if (secretArns.length > 0) {
+      this.agentRole.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: secretArns,
+      }));
+    }
+
+    // Grant AgentCore Identity permissions when credential providers are configured
+    const hasCredentialProviders = this.mcpServerConfigs.some(s => s.credentialProviderName);
+    if (hasCredentialProviders) {
+      this.agentRole.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['bedrock-agentcore:*'],
+        resources: ['*'],
+      }));
+    }
   }
 
   /**
@@ -431,5 +600,25 @@ export abstract class BaseAgent extends Construct {
     }
 
     return LayerVersion.fromLayerVersionArn(this, 'AdotLayer', adotLayerArn);
+  }
+
+  /**
+   * Extract Secrets Manager ARNs from MCP server header values.
+   *
+   * Scans all header values across all MCP server configurations and
+   * returns unique ARNs that start with `arn:aws:secretsmanager:`.
+   */
+  private extractSecretArns(configs: McpServerConfig[]): string[] {
+    const arns: string[] = [];
+    for (const config of configs) {
+      if (config.headers) {
+        for (const value of Object.values(config.headers)) {
+          if (value.startsWith('arn:aws:secretsmanager:')) {
+            arns.push(value);
+          }
+        }
+      }
+    }
+    return [...new Set(arns)];
   }
 }

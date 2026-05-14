@@ -6,3 +6,5 @@ aws-lambda-powertools
 aws-xray-sdk
 pydantic
 aws-opentelemetry-distro
+mcp
+bedrock-agentcore-identity

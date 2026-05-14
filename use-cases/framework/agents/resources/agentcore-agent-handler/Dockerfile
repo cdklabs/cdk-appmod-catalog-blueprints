@@ -11,6 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy handler code
 COPY main.py .
+COPY models.py .
+COPY mcp_utils.py .
 
 # AgentCore Runtime HTTP protocol: listen on port 8080
 EXPOSE 8080

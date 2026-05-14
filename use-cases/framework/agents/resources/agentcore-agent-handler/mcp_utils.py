@@ -1,70 +1,22 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+"""
+MCP (Model Context Protocol) utility functions for the AgentCore handler.
+
+Provides parsing, secret resolution, token retrieval, and MCPClient creation
+for MCP server configurations passed via the MCP_SERVERS_CONFIG env var.
+"""
+
 import asyncio
-import logging
-import os
-import boto3
 import json
-import zipfile
-import glob
-from models import McpServerConfig, ToolLocationDefinition
+import logging
+
+import boto3
+
+from models import McpServerConfig
 
 logger = logging.getLogger(__name__)
-
-s3 = boto3.client('s3')
-
-def convert_tools_config_into_model(config: str) -> list[ToolLocationDefinition]:
-    definitions: list[ToolLocationDefinition] = []
-    
-    tools_raw = json.loads(config)
-    
-    for t in tools_raw:
-        definitions.append(ToolLocationDefinition.model_validate_json(json.dumps(t)))
-    
-    return definitions
-
-def download_tools(tools: list[ToolLocationDefinition]) -> list[str]:
-    local_tools_location: list[str] = []
-    
-    for t in tools:
-        if t.isFile:
-            # Single file tool - download directly
-            local_location = f"/tmp/{os.path.basename(t.key)}"
-            s3.download_file(t.bucketName, t.key, local_location)
-            local_tools_location.append(local_location)
-        elif t.isZipArchive:
-            # Directory tool packaged as zip - download and extract
-            zip_location = f"/tmp/{os.path.basename(t.key)}"
-            s3.download_file(t.bucketName, t.key, zip_location)
-            
-            # Extract to a directory based on the zip name (without .zip extension)
-            extract_dir = zip_location.replace('.zip', '')
-            os.makedirs(extract_dir, exist_ok=True)
-            
-            with zipfile.ZipFile(zip_location, 'r') as zip_ref:
-                zip_ref.extractall(extract_dir)
-            
-            # Find all Python files in the extracted directory (excluding test files)
-            for py_file in glob.glob(f"{extract_dir}/**/*.py", recursive=True):
-                if not os.path.basename(py_file).startswith('test_'):
-                    local_tools_location.append(py_file)
-            
-            # Clean up the zip file
-            os.remove(zip_location)
-    
-    return local_tools_location
-
-def download_and_load_system_prompt(bucketName, key) -> str:
-    local_location = '/tmp/system_prompt.txt'
-    s3.download_file(bucketName, key, local_location)
-    
-    with open(local_location, 'r') as file:
-        data = file.read()
-        
-    return data
-
-
-# ---------------------------------------------------------------------------
-# MCP utility functions
-# ---------------------------------------------------------------------------
 
 SECRETS_MANAGER_ARN_PREFIX = 'arn:aws:secretsmanager:'
 
@@ -143,7 +95,7 @@ def resolve_secrets_manager_headers(
     All other header values are passed through unchanged.
 
     If resolution fails for a specific header, a warning is logged and the
-    header value is set to ``None`` (effectively removing it from the map).
+    header is omitted from the result.
 
     Args:
         headers: Header name-value mapping, potentially containing ARN references.
@@ -167,7 +119,6 @@ def resolve_secrets_manager_headers(
                     'error_type': type(exc).__name__,
                     'error': str(exc),
                 })
-                # Omit the header — caller will see it missing
         else:
             resolved[key] = value
 
@@ -201,8 +152,6 @@ def resolve_agentcore_identity_token(
 
     scopes = auth_scopes or []
 
-    # The SDK uses an async decorator that injects ``access_token`` as a kwarg.
-    # We wrap a minimal async function, decorate it, and run it synchronously.
     @requires_access_token(
         provider_name=credential_provider_name,
         scopes=scopes,
@@ -273,7 +222,6 @@ def create_mcp_client_for_config(
                 return None
 
         # Build the transport factory based on transport type.
-        # Use default-arg binding to capture current values in the closure.
         resolved_headers = headers if headers else None
         server_url = config.url
 

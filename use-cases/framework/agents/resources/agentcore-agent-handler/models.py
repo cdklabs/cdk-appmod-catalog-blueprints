@@ -1,11 +1,7 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from pydantic import BaseModel
-
-
-class ToolLocationDefinition(BaseModel):
-    bucketName: str
-    key: str
-    isFile: bool
-    isZipArchive: bool
 
 
 class McpServerConfig(BaseModel):

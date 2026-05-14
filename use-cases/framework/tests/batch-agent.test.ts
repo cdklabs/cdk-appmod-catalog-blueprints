@@ -4,6 +4,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { createTestApp } from '../../utilities/test-utils';
+import { McpTransportType, McpAuthFlow, McpServerConfig } from '../agents/base-agent';
 import { BatchAgent, generateKnowledgeBaseSystemPromptAddition } from '../agents/batch-agent';
 import { InvokeType } from '../agents/invoke-type';
 import { BedrockKnowledgeBase } from '../agents/knowledge-base';
@@ -380,6 +381,365 @@ describe('BatchAgent', () => {
       // Verify Lambda function has KMS key for environment encryption
       template.hasResourceProperties('AWS::Lambda::Function', {
         KmsKeyArn: Match.anyValue(),
+      });
+    });
+  });
+
+  describe('MCP Server Support', () => {
+    const mcpServerPlainHeaders: McpServerConfig = {
+      name: 'dev-server',
+      url: 'https://mcp.example.com/mcp',
+      transportType: McpTransportType.STREAMABLE_HTTP,
+      headers: { Authorization: 'Bearer dev-token' },
+    };
+
+    const mcpServerSecretsManager: McpServerConfig = {
+      name: 'prod-server',
+      url: 'https://mcp.example.com/sse',
+      transportType: McpTransportType.SSE,
+      headers: {
+        Authorization: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-api-key',
+      },
+    };
+
+    const mcpServerAgentCoreIdentity: McpServerConfig = {
+      name: 'oauth-server',
+      url: 'https://oauth-mcp.example.com/mcp',
+      transportType: McpTransportType.STREAMABLE_HTTP,
+      credentialProviderName: 'my-credential-provider',
+      authScopes: ['read', 'write'],
+      authFlow: McpAuthFlow.M2M,
+    };
+
+    test('sets MCP_SERVERS_CONFIG env var with correct JSON when mcpServers is provided', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerPlainHeaders],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: Match.objectLike({
+            MCP_SERVERS_CONFIG: Match.anyValue(),
+          }),
+        },
+      });
+    });
+
+    test('sets MCP_DEFAULT_AUTH_FLOW=M2M when mcpServers is provided', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerPlainHeaders],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: Match.objectLike({
+            MCP_DEFAULT_AUTH_FLOW: 'M2M',
+          }),
+        },
+      });
+    });
+
+    test('does NOT set MCP_SERVERS_CONFIG when mcpServers is absent', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const envVars = lambdaFunction.Properties.Environment.Variables;
+
+      expect(envVars.MCP_SERVERS_CONFIG).toBeUndefined();
+      expect(envVars.MCP_DEFAULT_AUTH_FLOW).toBeUndefined();
+    });
+
+    test('does NOT set MCP_SERVERS_CONFIG when mcpServers is empty array', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const envVars = lambdaFunction.Properties.Environment.Variables;
+
+      expect(envVars.MCP_SERVERS_CONFIG).toBeUndefined();
+      expect(envVars.MCP_DEFAULT_AUTH_FLOW).toBeUndefined();
+    });
+
+    test('MCP_SERVERS_CONFIG JSON contains all fields including optional ones', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerAgentCoreIdentity],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const mcpConfig = JSON.parse(lambdaFunction.Properties.Environment.Variables.MCP_SERVERS_CONFIG);
+
+      expect(mcpConfig).toHaveLength(1);
+      expect(mcpConfig[0].name).toBe('oauth-server');
+      expect(mcpConfig[0].url).toBe('https://oauth-mcp.example.com/mcp');
+      expect(mcpConfig[0].transportType).toBe('STREAMABLE_HTTP');
+      expect(mcpConfig[0].credentialProviderName).toBe('my-credential-provider');
+      expect(mcpConfig[0].authScopes).toEqual(['read', 'write']);
+      expect(mcpConfig[0].authFlow).toBe('M2M');
+    });
+
+    test('MCP_SERVERS_CONFIG JSON omits optional fields when not set', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [{
+            name: 'minimal-server',
+            url: 'https://mcp.example.com/mcp',
+            transportType: McpTransportType.STREAMABLE_HTTP,
+          }],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const mcpConfig = JSON.parse(lambdaFunction.Properties.Environment.Variables.MCP_SERVERS_CONFIG);
+
+      expect(mcpConfig).toHaveLength(1);
+      expect(mcpConfig[0].name).toBe('minimal-server');
+      expect(mcpConfig[0].url).toBe('https://mcp.example.com/mcp');
+      expect(mcpConfig[0].transportType).toBe('STREAMABLE_HTTP');
+      expect(mcpConfig[0].headers).toBeUndefined();
+      expect(mcpConfig[0].credentialProviderName).toBeUndefined();
+      expect(mcpConfig[0].authScopes).toBeUndefined();
+      expect(mcpConfig[0].authFlow).toBeUndefined();
+    });
+
+    test('Secrets Manager IAM policy is scoped to specific ARNs detected in headers', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerSecretsManager],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+              Resource: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-api-key',
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('AgentCore Identity IAM policy is granted when credentialProviderName is present', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerAgentCoreIdentity],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'bedrock-agentcore:*',
+              Effect: 'Allow',
+              Resource: '*',
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('no Secrets Manager or AgentCore Identity IAM policies when no MCP servers configured', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const policies = template.findResources('AWS::IAM::Policy');
+
+      // Verify no policy contains secretsmanager:GetSecretValue
+      for (const policy of Object.values(policies) as any[]) {
+        const statements = policy.Properties.PolicyDocument.Statement;
+        for (const stmt of statements) {
+          const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+          expect(actions).not.toContain('secretsmanager:GetSecretValue');
+          expect(actions).not.toContain('bedrock-agentcore:*');
+        }
+      }
+    });
+
+    test('backward compatibility — no MCP env vars when mcpServers is not provided', () => {
+      // Create agent without MCP servers
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const envVars = lambdaFunction.Properties.Environment.Variables;
+
+      // Core env vars should still be present
+      expect(envVars.MODEL_ID).toBeDefined();
+      expect(envVars.INVOKE_TYPE).toBe(InvokeType.BATCH);
+      expect(envVars.PROMPT).toBe('Test prompt');
+
+      // MCP env vars should NOT be present
+      expect(envVars.MCP_SERVERS_CONFIG).toBeUndefined();
+      expect(envVars.MCP_DEFAULT_AUTH_FLOW).toBeUndefined();
+    });
+
+    test('MCP servers coexist with S3 tools and knowledge bases', () => {
+      const tool = new Asset(stack, 'Tool', {
+        path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+      });
+
+      const kb = new BedrockKnowledgeBase(stack, 'TestKB', {
+        name: 'test-kb',
+        description: 'Test knowledge base',
+        knowledgeBaseId: 'KB123456',
+      });
+
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          tools: [tool],
+          knowledgeBases: [kb],
+          mcpServers: [mcpServerPlainHeaders],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const envVars = lambdaFunction.Properties.Environment.Variables;
+
+      // All three env vars should be present
+      expect(envVars.TOOLS_CONFIG).toBeDefined();
+      expect(envVars.KNOWLEDGE_BASES_CONFIG).toBeDefined();
+      expect(envVars.MCP_SERVERS_CONFIG).toBeDefined();
+      expect(envVars.MCP_DEFAULT_AUTH_FLOW).toBe('M2M');
+    });
+
+    test('supports multiple MCP servers in config', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerPlainHeaders, mcpServerSecretsManager, mcpServerAgentCoreIdentity],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      const lambdaFunctions = template.findResources('AWS::Lambda::Function');
+      const lambdaFunction = Object.values(lambdaFunctions)[0] as any;
+      const mcpConfig = JSON.parse(lambdaFunction.Properties.Environment.Variables.MCP_SERVERS_CONFIG);
+
+      expect(mcpConfig).toHaveLength(3);
+      expect(mcpConfig[0].name).toBe('dev-server');
+      expect(mcpConfig[1].name).toBe('prod-server');
+      expect(mcpConfig[2].name).toBe('oauth-server');
+    });
+
+    test('Secrets Manager and AgentCore Identity IAM policies both granted when both are configured', () => {
+      new BatchAgent(stack, 'Agent', {
+        agentName: 'TestAgent',
+        prompt: 'Test prompt',
+        agentDefinition: {
+          bedrockModel: { fmModelId: testModel },
+          systemPrompt,
+          mcpServers: [mcpServerSecretsManager, mcpServerAgentCoreIdentity],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+
+      // Secrets Manager policy
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'secretsmanager:GetSecretValue',
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+
+      // AgentCore Identity policy
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'bedrock-agentcore:*',
+              Effect: 'Allow',
+              Resource: '*',
+            }),
+          ]),
+        },
       });
     });
   });

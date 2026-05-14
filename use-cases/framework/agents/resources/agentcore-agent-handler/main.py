@@ -12,6 +12,7 @@ Architecture:
     AgentCore Runtime → Container (port 8080) → AgentCore SDK → Strands Agent → Bedrock
 """
 
+import contextlib
 import os
 import json
 import uuid
@@ -32,6 +33,8 @@ from strands.models import BedrockModel
 from strands.agent.conversation_manager import SlidingWindowConversationManager
 from strands.session.s3_session_manager import S3SessionManager as StrandsS3SessionManager
 
+from mcp_utils import create_mcp_client_for_config, parse_mcp_servers_config
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -44,6 +47,10 @@ SYSTEM_PROMPT_KEY = os.getenv('SYSTEM_PROMPT_S3_KEY')
 TOOLS_CONFIG = os.getenv('TOOLS_CONFIG', '[]')
 KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = os.getenv('KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION', '')
 SESSION_BUCKET = os.getenv('SESSION_BUCKET')
+
+# MCP server configuration (read at cold start, connections created per-invocation)
+MCP_SERVERS_CONFIG_RAW = os.getenv('MCP_SERVERS_CONFIG', '')
+MCP_DEFAULT_AUTH_FLOW = os.getenv('MCP_DEFAULT_AUTH_FLOW', 'USER_FEDERATION')
 
 
 def load_system_prompt() -> str:
@@ -198,18 +205,43 @@ async def handle_invocation(payload, context):
         conversation_manager = SlidingWindowConversationManager(window_size=20)
         model = BedrockModel(model_id=MODEL_ID, streaming=True)
 
-        agent = Agent(
-            model=model,
-            system_prompt=system_prompt,
-            tools=AGENT_TOOLS if AGENT_TOOLS else None,
-            session_manager=session_manager,
-            conversation_manager=conversation_manager,
-            callback_handler=None,
-        )
+        # Discover MCP tools (per-invocation lifecycle)
+        mcp_tools: list = []
+        mcp_configs = parse_mcp_servers_config(MCP_SERVERS_CONFIG_RAW)
 
-        async for event in agent.stream_async(user_message):
-            if 'data' in event:
-                yield {'text': event['data']}
+        with contextlib.ExitStack() as stack:
+            for config in mcp_configs:
+                try:
+                    client = create_mcp_client_for_config(
+                        config, MCP_DEFAULT_AUTH_FLOW,
+                    )
+                    if client is None:
+                        continue
+                    stack.enter_context(client)
+                    tools = client.list_tools_sync()
+                    mcp_tools.extend(tools)
+                    logger.info('MCP server connected: name=%s, tools=%d', config.name, len(tools))
+                except Exception as e:
+                    logger.warning('MCP server connection failed: name=%s, url=%s, error=%s: %s',
+                                   config.name, config.url, type(e).__name__, e)
+
+            # Merge all tool sources: S3 tools + MCP tools
+            all_tools = (AGENT_TOOLS + mcp_tools) if (AGENT_TOOLS or mcp_tools) else None
+
+            agent = Agent(
+                model=model,
+                system_prompt=system_prompt,
+                tools=all_tools,
+                session_manager=session_manager,
+                conversation_manager=conversation_manager,
+                callback_handler=None,
+            )
+
+            async for event in agent.stream_async(user_message):
+                if 'data' in event:
+                    yield {'text': event['data']}
+
+        # ExitStack closes all MCP clients here
 
         yield {'done': True}
 

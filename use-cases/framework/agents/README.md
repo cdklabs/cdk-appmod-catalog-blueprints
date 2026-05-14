@@ -546,6 +546,206 @@ const kb = new BedrockKnowledgeBase(this, 'AdvancedKB', {
 
 For detailed documentation on knowledge base configuration, ACL, guardrails, and custom implementations, see the [Knowledge Base README](./knowledge-base/README.md).
 
+## MCP Server Support
+
+Agents can connect to remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers to discover and use tools hosted externally. MCP is an open protocol that enables AI agents to interact with tool servers over HTTP, expanding agent capabilities beyond locally-defined S3-based tools.
+
+MCP tools are discovered at invocation time via `list_tools_sync()` and merged with any S3-based tools and knowledge base tools already configured on the agent. If an MCP server is unreachable, the agent continues with the remaining tools — no single server outage breaks the agent.
+
+### Transport Types
+
+| Enum Value | Description |
+|---|---|
+| `McpTransportType.STREAMABLE_HTTP` | Modern HTTP request/response with optional streaming. Recommended for new MCP servers. |
+| `McpTransportType.SSE` | Server-Sent Events transport. Widely supported by existing MCP servers. |
+
+### Authentication Tiers
+
+MCP server connections support three authentication tiers, from simplest to most secure:
+
+**Tier 1 — Plain Headers** (development and testing)
+
+Pass static header values directly. Suitable for local development or servers that don't require authentication.
+
+```typescript
+import { BatchAgent, McpTransportType } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const agent = new BatchAgent(this, 'Agent', {
+  agentName: 'McpAgent',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+    mcpServers: [
+      {
+        name: 'dev-tools',
+        url: 'https://mcp.example.com/mcp',
+        transportType: McpTransportType.STREAMABLE_HTTP,
+        headers: { 'Authorization': 'Bearer dev-token' },
+      },
+    ],
+  },
+  prompt: 'Use available tools to complete the task.',
+});
+```
+
+**Tier 2 — Secrets Manager ARN References** (production static secrets)
+
+Reference a Secrets Manager secret ARN as a header value. The construct automatically grants `secretsmanager:GetSecretValue` scoped to the referenced ARNs, and the Python runtime resolves them at invocation time.
+
+```typescript
+const agent = new BatchAgent(this, 'Agent', {
+  agentName: 'McpAgent',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+    mcpServers: [
+      {
+        name: 'prod-tools',
+        url: 'https://mcp.example.com/mcp',
+        transportType: McpTransportType.SSE,
+        headers: {
+          'Authorization': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-api-key',
+        },
+      },
+    ],
+  },
+  prompt: 'Use available tools to complete the task.',
+});
+```
+
+**Tier 3 — AgentCore Identity Credential Providers** (OAuth-protected servers)
+
+Use a pre-configured AgentCore Identity credential provider for automatic OAuth token management. The construct grants `bedrock-agentcore:*` permissions, and the runtime obtains and injects a Bearer token before connecting.
+
+```typescript
+import { BatchAgent, McpTransportType, McpAuthFlow } from '@cdklabs/cdk-appmod-catalog-blueprints';
+
+const agent = new BatchAgent(this, 'Agent', {
+  agentName: 'McpAgent',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+    mcpServers: [
+      {
+        name: 'oauth-tools',
+        url: 'https://mcp.example.com/mcp',
+        transportType: McpTransportType.STREAMABLE_HTTP,
+        credentialProviderName: 'my-credential-provider',
+        authScopes: ['read', 'write'],
+        authFlow: McpAuthFlow.M2M,
+      },
+    ],
+  },
+  prompt: 'Use available tools to complete the task.',
+});
+```
+
+When `credentialProviderName` is set, it takes precedence over any `Authorization` header in `headers`.
+
+### Auth Flow Defaults
+
+| Agent Type | Default `authFlow` | Rationale |
+|---|---|---|
+| `BatchAgent` | `McpAuthFlow.M2M` | Batch processing operates without user context |
+| `InteractiveAgent` | `McpAuthFlow.USER_FEDERATION` | Interactive agents operate within an authenticated user session |
+
+You can override the default by setting `authFlow` explicitly on any `McpServerConfig`. The `McpAuthFlow` enum provides two values:
+
+| Enum Value | Description |
+|---|---|
+| `McpAuthFlow.M2M` | Machine-to-machine OAuth 2.0 client credentials grant |
+| `McpAuthFlow.USER_FEDERATION` | User-delegated OAuth 2.0 authorization code grant |
+
+### Multiple MCP Servers
+
+Configure multiple MCP servers on a single agent. Tools from all successfully connected servers are merged together:
+
+```typescript
+const agent = new BatchAgent(this, 'Agent', {
+  agentName: 'MultiMcpAgent',
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+    tools: [localTool],  // S3-based tools still work alongside MCP
+    knowledgeBases: [productDocs],  // Knowledge bases work alongside MCP
+    mcpServers: [
+      {
+        name: 'code-tools',
+        url: 'https://code-mcp.example.com/mcp',
+        transportType: McpTransportType.STREAMABLE_HTTP,
+      },
+      {
+        name: 'data-tools',
+        url: 'https://data-mcp.example.com/sse',
+        transportType: McpTransportType.SSE,
+        headers: {
+          'X-Api-Key': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:data-api-key',
+        },
+      },
+    ],
+  },
+  prompt: 'Use all available tools to complete the task.',
+});
+```
+
+### Graceful Degradation
+
+MCP connections are created per invocation and managed via Python context managers. If any MCP server is unreachable or fails during tool discovery:
+
+- A structured warning is logged with the server name, URL, and error details
+- The agent continues with tools from all other successfully connected servers
+- S3-based tools and knowledge base tools are always available regardless of MCP server status
+- If all MCP servers fail, the agent operates with only its local tools
+
+This means a single MCP server outage never prevents the agent from functioning.
+
+### Networking Considerations
+
+MCP servers on the public internet are accessible without additional configuration. For MCP servers on private networks, use the existing `network` prop to place the agent in a VPC:
+
+```typescript
+const agent = new BatchAgent(this, 'Agent', {
+  agentName: 'VpcMcpAgent',
+  network: myVpc,  // Enables connectivity to private MCP servers
+  agentDefinition: {
+    bedrockModel: { useCrossRegionInference: true },
+    systemPrompt,
+    mcpServers: [
+      {
+        name: 'internal-tools',
+        url: 'https://mcp.internal.example.com/mcp',
+        transportType: McpTransportType.STREAMABLE_HTTP,
+      },
+    ],
+  },
+  prompt: 'Use available tools to complete the task.',
+});
+```
+
+No MCP-specific networking resources (VPC endpoints, security group rules) are created by the construct. Standard VPC routing and security group configuration apply.
+
+### McpServerConfig Reference
+
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `name` | `string` | Yes | Human-readable name for the MCP server (used in logs) |
+| `url` | `string` | Yes | MCP server endpoint URL |
+| `transportType` | `McpTransportType` | Yes | Transport protocol (`STREAMABLE_HTTP` or `SSE`) |
+| `headers` | `Record<string, string>` | No | Custom HTTP headers. Values starting with `arn:aws:secretsmanager:` are resolved at runtime. |
+| `credentialProviderName` | `string` | No | AgentCore Identity credential provider name for OAuth token management |
+| `authScopes` | `string[]` | No | OAuth scopes to request (only with `credentialProviderName`) |
+| `authFlow` | `McpAuthFlow` | No | Auth flow override (`M2M` or `USER_FEDERATION`). Defaults to agent-type default. |
+
+### IAM Permissions
+
+The construct automatically manages IAM permissions based on your MCP configuration:
+
+| Condition | Permission Granted | Scope |
+|---|---|---|
+| Header value starts with `arn:aws:secretsmanager:` | `secretsmanager:GetSecretValue` | Scoped to the specific secret ARNs |
+| Any server has `credentialProviderName` set | `bedrock-agentcore:*` | `*` (AgentCore Identity API) |
+| No MCP servers configured | No additional permissions | — |
+
 ## Security & Best Practices
 
 IAM Permissions

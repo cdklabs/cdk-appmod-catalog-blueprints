@@ -1999,6 +1999,12 @@ export class InteractiveAgent extends BaseAgent {
       env.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = generateKnowledgeBaseSystemPromptAddition(this.knowledgeBaseConfigs);
     }
 
+    // Add MCP server configuration if MCP servers are configured
+    if (this.mcpServerConfigs.length > 0) {
+      env.MCP_SERVERS_CONFIG = JSON.stringify(this.mcpServerConfigs);
+      env.MCP_DEFAULT_AUTH_FLOW = 'USER_FEDERATION';
+    }
+
     // Deploy via hosting adapter
     const hostingResult = hostingAdapter.deploy({
       scope: this,

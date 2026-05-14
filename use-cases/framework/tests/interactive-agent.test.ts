@@ -7,6 +7,7 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { createTestApp } from '../../utilities/test-utils';
+import { McpTransportType } from '../agents/base-agent';
 import {
   InteractiveAgent,
   StreamingHttpAdapter,
@@ -979,6 +980,133 @@ describe('InteractiveAgent Knowledge Base Integration', () => {
 
     expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASES_CONFIG).toBeUndefined();
     expect(fn.Properties.Environment.Variables.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION).toBeUndefined();
+  });
+});
+
+
+describe('InteractiveAgent MCP Server Support', () => {
+  let app: App;
+  let stack: Stack;
+  let systemPrompt: Asset;
+  const testModel = FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0;
+
+  beforeEach(() => {
+    app = createTestApp();
+    stack = new Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    systemPrompt = new Asset(stack, 'SystemPrompt', {
+      path: path.join(__dirname, '../agents/resources/default-strands-agent/batch.py'),
+    });
+  });
+
+  test('sets MCP_SERVERS_CONFIG and MCP_DEFAULT_AUTH_FLOW=USER_FEDERATION', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+        mcpServers: [{
+          name: 'test-server',
+          url: 'https://mcp.example.com/mcp',
+          transportType: McpTransportType.STREAMABLE_HTTP,
+        }],
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Environment: {
+        Variables: Match.objectLike({
+          MCP_SERVERS_CONFIG: Match.anyValue(),
+          MCP_DEFAULT_AUTH_FLOW: 'USER_FEDERATION',
+        }),
+      },
+    });
+  });
+
+  test('does NOT set MCP env vars when mcpServers is absent', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const functions = template.findResources('AWS::Lambda::Function');
+    const fn = Object.values(functions).find((f: any) =>
+      f.Properties?.FunctionName?.includes('TestAgent'),
+    ) as any;
+
+    expect(fn.Properties.Environment.Variables.MCP_SERVERS_CONFIG).toBeUndefined();
+    expect(fn.Properties.Environment.Variables.MCP_DEFAULT_AUTH_FLOW).toBeUndefined();
+  });
+
+  test('MCP_SERVERS_CONFIG contains correct JSON structure', () => {
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+        mcpServers: [{
+          name: 'oauth-server',
+          url: 'https://mcp.example.com/mcp',
+          transportType: McpTransportType.STREAMABLE_HTTP,
+          credentialProviderName: 'my-provider',
+          authScopes: ['read'],
+        }],
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const functions = template.findResources('AWS::Lambda::Function');
+    const fn = Object.values(functions).find((f: any) =>
+      f.Properties?.FunctionName?.includes('TestAgent'),
+    ) as any;
+    const mcpConfig = JSON.parse(fn.Properties.Environment.Variables.MCP_SERVERS_CONFIG);
+
+    expect(mcpConfig).toHaveLength(1);
+    expect(mcpConfig[0].name).toBe('oauth-server');
+    expect(mcpConfig[0].url).toBe('https://mcp.example.com/mcp');
+    expect(mcpConfig[0].transportType).toBe('STREAMABLE_HTTP');
+    expect(mcpConfig[0].credentialProviderName).toBe('my-provider');
+    expect(mcpConfig[0].authScopes).toEqual(['read']);
+  });
+
+  test('MCP env vars are set on AgentCore Runtime hosting path', () => {
+    const network = new Network(stack, 'Network');
+
+    new InteractiveAgent(stack, 'Agent', {
+      agentName: 'TestAgent',
+      network,
+      agentDefinition: {
+        bedrockModel: { fmModelId: testModel },
+        systemPrompt,
+        mcpServers: [{
+          name: 'test-server',
+          url: 'https://mcp.example.com/mcp',
+          transportType: McpTransportType.SSE,
+        }],
+      },
+      hostingAdapter: new AgentCoreRuntimeHostingAdapter({
+        networkMode: NetworkMode.PUBLIC,
+      }),
+    });
+
+    const template = Template.fromStack(stack);
+
+    // AgentCore Runtime uses CfnRuntime — verify the runtime resource exists
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+
+    // Verify the runtime has the MCP env vars in its EnvironmentVariables
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      EnvironmentVariables: Match.objectLike({
+        MCP_SERVERS_CONFIG: Match.anyValue(),
+        MCP_DEFAULT_AUTH_FLOW: 'USER_FEDERATION',
+      }),
+    });
   });
 });
 

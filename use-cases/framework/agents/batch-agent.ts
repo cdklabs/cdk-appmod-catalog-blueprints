@@ -108,6 +108,12 @@ export class BatchAgent extends BaseAgent {
       env.KNOWLEDGE_BASE_SYSTEM_PROMPT_ADDITION = kbSystemPromptAddition;
     }
 
+    // Add MCP server configuration if MCP servers are configured
+    if (this.mcpServerConfigs.length > 0) {
+      env.MCP_SERVERS_CONFIG = JSON.stringify(this.mcpServerConfigs);
+      env.MCP_DEFAULT_AUTH_FLOW = 'M2M';
+    }
+
     // Add AgentCore observability environment variables when enabled
     if (props.enableObservability) {
       env.AGENT_OBSERVABILITY_ENABLED = 'true';

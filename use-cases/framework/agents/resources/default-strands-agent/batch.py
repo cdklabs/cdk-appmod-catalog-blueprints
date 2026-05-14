@@ -5,6 +5,7 @@ This module provides the Lambda handler for batch processing of documents
 using Amazon Bedrock agents with tool integration.
 """
 
+import contextlib
 import json
 import os
 import re
@@ -19,8 +20,10 @@ from strands_tools import file_read
 
 from utils import (
     convert_tools_config_into_model,
+    create_mcp_client_for_config,
     download_and_load_system_prompt,
     download_tools,
+    parse_mcp_servers_config,
 )
 
 
@@ -71,6 +74,10 @@ SYSTEM_PROMPT = download_and_load_system_prompt(
     os.environ['SYSTEM_PROMPT_S3_BUCKET_NAME'],
     os.environ['SYSTEM_PROMPT_S3_KEY']
 )
+
+# MCP server configuration (read at cold start, connections created per-invocation)
+MCP_SERVERS_CONFIG_RAW = os.getenv('MCP_SERVERS_CONFIG', '')
+MCP_DEFAULT_AUTH_FLOW = os.getenv('MCP_DEFAULT_AUTH_FLOW', 'M2M')
 
 
 def extract_json_from_text(text: str) -> Optional[Dict[str, Any]]:
@@ -267,15 +274,50 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Build complete prompt (validates content_type and structure)
         prompt = build_agent_prompt(base_prompt, event, invoke_type)
         
-        # Initialize and invoke agent
-        agent = Agent(
-            model=model_id,
-            tools=AGENT_TOOLS + [file_read],
-            system_prompt=SYSTEM_PROMPT
-        )
+        # Discover MCP tools (per-invocation lifecycle)
+        mcp_tools: list = []
+        mcp_configs = parse_mcp_servers_config(MCP_SERVERS_CONFIG_RAW)
         
-        logger.info("Invoking agent", extra={"prompt_length": len(prompt)})
-        response = agent(prompt)
+        with contextlib.ExitStack() as stack:
+            for config in mcp_configs:
+                try:
+                    client = create_mcp_client_for_config(
+                        config, MCP_DEFAULT_AUTH_FLOW,
+                    )
+                    if client is None:
+                        continue
+                    stack.enter_context(client)
+                    tools = client.list_tools_sync()
+                    mcp_tools.extend(tools)
+                    logger.info("MCP server connected", extra={
+                        "server_name": config.name,
+                        "tools_discovered": len(tools),
+                    })
+                except Exception as e:
+                    logger.warning("MCP server connection failed", extra={
+                        "server_name": config.name,
+                        "server_url": config.url,
+                        "error_type": type(e).__name__,
+                        "error": str(e),
+                    })
+            
+            # Merge all tool sources: S3 tools + file_read + MCP tools
+            all_tools = AGENT_TOOLS + [file_read] + mcp_tools
+            
+            # Initialize and invoke agent
+            agent = Agent(
+                model=model_id,
+                tools=all_tools,
+                system_prompt=SYSTEM_PROMPT
+            )
+            
+            logger.info("Invoking agent", extra={
+                "prompt_length": len(prompt),
+                "mcp_tools_count": len(mcp_tools),
+            })
+            response = agent(prompt)
+        
+        # ExitStack closes all MCP clients here
         
         # Extract response text
         response_text = response.message["content"][0]["text"]  # type: ignore
