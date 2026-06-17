@@ -22,7 +22,7 @@
     "typescript": "~4.9.5"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.218.0",
+    "aws-cdk-lib": "^2.260.0",
     "constructs": "^10.0.5",
     "@cdklabs/cdk-appmod-catalog-blueprints": "^1.0.0",
     "source-map-support": "^0.5.21"
