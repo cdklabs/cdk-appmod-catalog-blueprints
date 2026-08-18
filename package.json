@@ -10,6 +10,7 @@
     "build:fast": "projen build:fast",
     "build:no-test": "projen build:no-test",
     "bump": "projen bump",
+    "bump:releasable-commits": "projen bump:releasable-commits",
     "clobber": "projen clobber",
     "compat": "projen compat",
     "compile": "projen compile",
@@ -66,7 +67,7 @@
     "@typescript-eslint/parser": "^8",
     "aws-cdk-lib": "2.218.0",
     "cdk-nag": "^2.38.2",
-    "cdklabs-projen-project-types": "^0.5.1",
+    "cdklabs-projen-project-types": "^0.6.10",
     "commit-and-tag-version": "^12",
     "constructs": "10.5.1",
     "eslint": "^9",
@@ -79,7 +80,7 @@
     "jsii-docgen": "^10.11.12",
     "jsii-pacmak": "^1.134.0",
     "jsii-rosetta": "~5.9.49",
-    "projen": "^0.99.71",
+    "projen": "^0.101.31",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
@@ -97,6 +98,7 @@
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
+  "stability": "experimental",
   "publishConfig": {
     "access": "public"
   },
@@ -141,13 +143,12 @@
       "^.+\\.[t]sx?$": [
         "ts-jest",
         {
-          "tsconfig": "tsconfig.dev.json"
+          "tsconfig": "test/tsconfig.json"
         }
       ]
     }
   },
   "types": "lib/index.d.ts",
-  "stability": "experimental",
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -167,10 +168,8 @@
         "packageId": "CdklabsAppmodCatalogBlueprints"
       }
     },
-    "tsc": {
-      "outDir": "lib",
-      "rootDir": "use-cases"
-    }
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "strict"
   },
   "files": [
     "lib/",
