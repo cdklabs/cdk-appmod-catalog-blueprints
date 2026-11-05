@@ -88,10 +88,3 @@ junit.xml
 !/.github/workflows/upgrade-main.yml
 !/.github/workflows/upgrade-dev-deps-main.yml
 !/.projenrc.ts
-
-# Beads / Dolt files (added by bd init)
-.dolt/
-*.db
-.beads-credential-key
-.beads/proxieddb/
-*.gate.lock*
