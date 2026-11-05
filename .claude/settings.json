@@ -1,1 +1,26 @@
-{}
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "quinn-suite hook session-start",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "quinn-suite hook session-stop",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
