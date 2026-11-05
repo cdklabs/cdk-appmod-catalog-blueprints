@@ -1,0 +1,62 @@
+# Fleet policy for cdk-appmod-catalog-blueprints, written by `quinn-suite setup --repo` (ADR 041 rule 6). The one per-repo policy file:
+# the box's fleet loop (dispatch, merge sweep, watchdog, patrol, security scan, frontline runner)
+# reads it through quinn-suite skills/validate/scripts/fleet_repos.py. Every key is spelled out;
+# null inherits the fleet default (else the built-in in the comment) and a value set here ranks
+# above both (rule 3). Change a value here, never in quinn-suite's own file. A key no consumer
+# reads is reported by `quinn-suite doctor` (rule 6).
+fleet:
+  enabled: true                 # false leaves the repo out of every fleet timer
+  paused: false                 # true stops dispatch, merge sweep and patrol at the next tick (rule 5); the watchdog still runs
+  paused_reason: null           # why, written to the autonomy log and shown on the dashboard
+  seat: false                   # true: only the seat deploys; workers still merge (GitHub and GitLab) and the GitHub merge sweep lands green PRs (no-automerge on the bead holds a PR or MR for the seat on every path; on the PR or MR it holds only while the forge API is readable)
+  focus: false                  # true makes this a priority project: dispatch offers its ready beads before every non-focus repo's inside each lane, whatever the caps are
+dispatch:
+  max_concurrent: null          # workers in flight for this repo; 0 pauses it (rule 5); box-wide limits always win; built-in 0
+  max_spawns: null              # spawns per dispatch tick for this repo; built-in 3
+  admit_priority_max: null      # admit beads down to this priority (P0..P4); built-in 1
+  lanes: null                   # path prefixes per lane, e.g. {infra: [infra/, systemd/]}; built-in {}
+  model_by_type: null           # model tier per bead type, e.g. {chore: m-fleet}; merged over the fleet's map; built-in {}
+  hot_files: null               # top conflict files; a bead whose touches name one is leased like a hot:<file> label; built-in []
+merge:
+  hot_files: null               # paths whose PRs are merged one at a time, added to the fleet's list; built-in []
+  pipeline_policy: null         # any = one green pipeline suffices (temporary); unset = every check green
+  test_command: null            # the one pinned test command CI and the release check both run
+  train: null                   # open PRs at which merge_train.py lands the conflicting tail in order; unset = no train
+  batch_size: null              # green PRs the train stacks and tests once before landing them all; 1 = one at a time; built-in 5
+  required_statuses: null       # commit-status contexts merge_slot waits green before merge, e.g. [frontline/crawl]; built-in []
+  pr_retire: null               # {conflict_kind: true} lets pr_retire.py retire a PR the train handed back for a conflict; unset = off
+  integrator: null              # {enabled: true, batch_size: 5, max_wait_minutes: 30, max_batches: 3, no_retry: [secrets, sast, lint, ruff, typecheck], exclude_paths: [web3d/scripts/], derived_paths: [docs/screenshots/*.png], no_union_paths: [plans/decisions/008-*.md], runner_brake_minutes: 45}: workers push bead/<id>, the train batches them (ADR 046), a bead whose diff touches an exclude_paths prefix lands by its own PR (qs-u36tvc), a red of only no_retry jobs skips its rerun (each entry one word, prefix-matched against job-name words, else the list is ignored), a derived_paths file's stack conflict keeps the stack's copy, a no_union_paths plans/ file merges as plain text and counts in the lanes' overlap (qs-9u4ozm), a batch waiting for a runner past runner_brake_minutes turns the integrator off (qs-t6wkr3), stall_brake_hours (default 3) is how long no landing with branches waiting may run before the stall brake does (qs-4zjcwx), rearm_cooldown_minutes (default 30) is the least time before the train re-arms a trip whose cause cleared (qs-76sbhs); unset = the fleet's forge row (github: on), else off; {enabled: false} = off
+  ssh_fallback: null            # refuse = no GitLab merge over SSH while the API window is closed (no pipeline colour); unset = allow
+  lane_gate: null               # true: a PR's own CI runs a fast job and the merge-train lane run is the full-suite gate (qs-01iip); unset = off
+  derived_files: null           # regenerated paths (globs, * within one segment) whose GitLab merge conflicts are resolved by regen_command (qs-opq5w); unset = none; built-in []
+  regen_command: null           # command run in the merged tree after a derived_files-only conflict resolves, and on an integrator stack that touches derived_files (qs-hdkono); unset = off
+  regenerated_paths: null       # [docs/architecture/render.stamp, ...]: generated files (globs, * within one segment) that join no outage-train lane, hold no lane behind a rework, and whose stack conflict keeps the stack's copy, integrator on or off (qs-8e08ss); unset = none; built-in []
+  regenerated_command: null     # command run on an integrator or outage-train stack whose members touch regenerated_paths, its rewrites committed on the stack (qs-8e08ss); it runs on a single-parent stack head, so a HEAD^2 restamp is no fit; unset = the batch's CI regenerates them
+  seat_lands_all: false         # true: the seat lands every MR and PR, so no merge sweep, train, integrator or worker merges one (as merge:seat on each bead, qs-p30gk7); false = seat repos are swept like any other
+  review_timeout: null          # false = a green PR/MR never lands on the 30 min Fable-review SKIPPED (timeout); it holds for a verdict, the repo staying non-core for the reviewer model; unset = true
+  cancel_red_schedules: null    # false = the GitLab merge sweep never cancels a scheduled pipeline on the sha the default branch reads red at (qs-w9n7gw); repo file only; unset = cancel it
+  red_schedule_keep_jobs: null  # [aaa-judge, ...]: a red schedule running or queueing one of these job names is not cancelled whole; the GitLab merge sweep cancels its other pending or running jobs and leaves these (qs-crixto); repo file only; unset = cancel the whole pipeline; built-in []
+  worker_merge: false           # true: a dispatched worker merges its own GitLab MR in-session again (the pre-ADR 051 phase 4 step, qs-qp4bap); unset = the merge sweep lands it
+  direct_ssh_key: null          # true = a GitLab pool worker keeps its own SSH key instead of git over the credential broker's /ssh (ADR 051 phase 4 rollback, qs-rl2es4); unset = brokered
+  stale_base: null              # overlap = a green GitLab MR whose head lacks a target commit touching one of its paths or .gitlab-ci.yml, package.json, package-lock.json or .claude/quinn.yaml gets the target merged in and a fresh pipeline before it merges, one MR per repo at a time (qs-qvz6hn); any = on any target commit it lacks; repo file only; unset = off (GitHub always retests)
+  stale_base_parallel: null     # GitLab MRs merge.stale_base may retest at once per repo, each with its own 90 min timeout (qs-vhq4x8); a further stale MR waits retest-serialized; repo file only; unset = 1
+  expedite_requeue: null        # false = the GitLab merge sweep never cancels the pending jobs queued ahead of an expedite or why:broken-main MR (qs-iimc0p); repo file only; unset = requeue them
+  gitlab_api_lockout_merge: null # false = the GitLab merge sweep never merges over the API on a checkout whose ls-remote the dead Midway SSH cert refused (qs-duwkyo); repo file only; unset = it merges the MRs GitLab reads mergeable on closed beads there, sha-pinned
+  gitlab_api_lockout_rebase: null # false = the GitLab merge sweep never rebases over the API on a checkout whose ls-remote the dead Midway SSH cert refused (qs-m6ybtw); repo file only; unset = it rebases the closed-bead MRs only behind their target, conflict-free, up to 3 a sweep
+watchdog:
+  enabled: true                 # hourly stuck-session and red-CI sweep
+  ci: github                    # github | gitlab (detected from origin)
+  max_runners: null             # CI runners this repo may hold at once
+patrol:
+  enabled: true                 # weekday-morning inventory and triage
+  ci: github                    # github | gitlab (detected from origin)
+  max_autonomous_actions: null  # actions a patrol fire may take without a decision bead
+  keep_branches: null           # branches (exact names or globs) patrol Pass A never reports as stale; unset = none
+security:
+  enabled: true                 # twice-daily secrets and dependency scan
+  actions_patterns_allowed: null # workflow patterns a needs:human ruling allowed (ADR 020 rule 1); unset = none
+landing:
+  stale_hours: null             # hours a landing PR, MR or queued branch waits before it is redone on fresh master; built-in 8.0
+frontline: {}                   # UI crawl enrolment (ADR 033), scaffolded by skills/frontline; {} = no UI
+units: []                       # repo-product systemd units shipped in systemd/ (rule 2), e.g. [my-publish.timer];
+                                # `quinn-suite setup --repo <path>` links and enables them, `--remove` reverses it
