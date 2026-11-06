@@ -21,7 +21,7 @@ import os
 from typing import Dict, Any
 
 # Import handler
-from handler import lambda_handler
+from handler import handler as lambda_handler
 
 
 class TestIntegrationChunking(unittest.TestCase):

@@ -18,11 +18,7 @@ Requirements: 7.4
 
 import unittest
 from unittest.mock import Mock, patch, MagicMock
-import os
 import time
-
-# Set ENABLE_METRICS before importing metrics module
-os.environ['ENABLE_METRICS'] = 'true'
 
 from metrics import (
     emit_chunking_operation,
@@ -37,6 +33,19 @@ from metrics import (
     get_metrics,
     _is_metrics_enabled
 )
+
+# METRICS_ENABLED is read from ENABLE_METRICS once, at import, so setting the
+# env var here would race other test modules that import metrics (e.g. via
+# handler). Patch the flag for this module only instead.
+_metrics_enabled_patcher = patch('metrics.METRICS_ENABLED', True)
+
+
+def setUpModule():
+    _metrics_enabled_patcher.start()
+
+
+def tearDownModule():
+    _metrics_enabled_patcher.stop()
 
 
 class TestEmitChunkingOperation(unittest.TestCase):
@@ -428,7 +437,7 @@ class TestMetricsGating(unittest.TestCase):
     
     def test_is_metrics_enabled_returns_true_when_enabled(self):
         """Test that _is_metrics_enabled returns True when ENABLE_METRICS=true."""
-        # ENABLE_METRICS is set to 'true' at module import time
+        # METRICS_ENABLED is patched to True in setUpModule
         self.assertTrue(_is_metrics_enabled())
     
     @patch('metrics.METRICS_ENABLED', False)
