@@ -27,10 +27,9 @@ def test_load_system_prompt_success(mock_s3_client):
         'Body': Mock(read=Mock(return_value=b'You are a helpful assistant.'))
     }
 
-    with patch.dict('os.environ', {
-        'SYSTEM_PROMPT_S3_BUCKET_NAME': 'test-bucket',
-        'SYSTEM_PROMPT_S3_KEY': 'prompts/system.txt'
-    }):
+    # index.py reads the env vars into module constants at import, so patch the constants
+    with patch('index.SYSTEM_PROMPT_BUCKET', 'test-bucket'), \
+         patch('index.SYSTEM_PROMPT_KEY', 'prompts/system.txt'):
         from index import load_system_prompt
         prompt = load_system_prompt()
 
@@ -43,7 +42,8 @@ def test_load_system_prompt_success(mock_s3_client):
 
 def test_load_system_prompt_missing_config():
     """Test system prompt loading with missing configuration"""
-    with patch.dict('os.environ', {}, clear=True):
+    with patch('index.SYSTEM_PROMPT_BUCKET', None), \
+         patch('index.SYSTEM_PROMPT_KEY', None):
         from index import load_system_prompt
         prompt = load_system_prompt()
 
@@ -54,14 +54,13 @@ def test_load_system_prompt_s3_error(mock_s3_client):
     """Test system prompt loading with S3 error"""
     mock_s3_client.get_object.side_effect = Exception('S3 error')
 
-    with patch.dict('os.environ', {
-        'SYSTEM_PROMPT_S3_BUCKET_NAME': 'test-bucket',
-        'SYSTEM_PROMPT_S3_KEY': 'prompts/system.txt'
-    }):
+    with patch('index.SYSTEM_PROMPT_BUCKET', 'test-bucket'), \
+         patch('index.SYSTEM_PROMPT_KEY', 'prompts/system.txt'):
         from index import load_system_prompt
         prompt = load_system_prompt()
 
     assert prompt == "You are a helpful AI assistant."
+    mock_s3_client.get_object.assert_called_once()
 
 
 # Tests for load_tools_from_s3
@@ -131,7 +130,7 @@ async def test_chat_creates_strands_session_manager():
         # Verify Strands S3SessionManager was created with correct params
         mock_session_cls.assert_called_once_with(
             session_id='test-session-123',
-            bucket_name='test-bucket',
+            bucket='test-bucket',
         )
 
         # Verify SlidingWindowConversationManager was created
