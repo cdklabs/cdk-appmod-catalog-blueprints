@@ -83,7 +83,7 @@ ci:
     e2e:
       # Playwright journeys against the locally started app with side effects stubbed, plus the
       # frontline fixture crawl (ADR 033). A repo with a UI and no journeys is not done.
-      skip: "library has no UI of its own; website/ is static docs; example frontends are not run in CI (appmod-6kn)"
+      skip: "library has no UI of its own; website/ is static docs; example frontends are not run in CI (appmod-tjc)"
     post_deploy:
       # Runs inside the deploy path and nightly, the Midway-only smoke (qinfra-qluv): sha-pinned
       # health at the origin, the anonymous edge refused or redirected to Midway sign-in, live
@@ -92,16 +92,8 @@ ci:
       skip: "no deploy target: the library publishes packages; the only deploy is the static docs site (deploy-docs.yml, GitHub Pages)"
   # Test material no lane runs, each entry against an OPEN bead (ADR 035 rule 2). The check
   # fails an entry whose bead is closed or whose path is gone.
-  orphans_allowed:
-    - path: mcp-appmod-catalog-blueprints/tests
-      reason: pytest suite; CI runs only jest (projen build), no workflow runs pytest yet
-      bead: appmod-6kn
-    - path: use-cases/document-processing/resources
-      reason: Lambda pytest files; CI runs only jest (projen build), no workflow runs pytest yet
-      bead: appmod-6kn
-    - path: use-cases/framework/agents/resources
-      reason: Lambda and agent tool pytest files; CI runs only jest (projen build), no workflow runs pytest yet
-      bead: appmod-6kn
+  # The Python Lambda/tool and MCP pytest suites run in python-tests.yml job pytest (on pull_request).
+  orphans_allowed: []
   #  - path: tests/manual
   #    reason: needs a GPU box; runs from the box timer
   #    bead: <prefix>-xxxxx

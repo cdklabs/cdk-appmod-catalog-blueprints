@@ -9,6 +9,7 @@
 /.github/workflows/build.yml linguist-generated
 /.github/workflows/dependency-review.yml linguist-generated
 /.github/workflows/pull-request-lint.yml linguist-generated
+/.github/workflows/python-tests.yml linguist-generated
 /.github/workflows/release.yml linguist-generated
 /.github/workflows/retry-automerge.yml linguist-generated
 /.github/workflows/upgrade-cdklabs-projen-project-types-main.yml linguist-generated

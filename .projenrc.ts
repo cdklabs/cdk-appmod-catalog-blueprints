@@ -1,5 +1,6 @@
 import { CdklabsConstructLibrary, JsiiLanguage } from 'cdklabs-projen-project-types';
 import { DependencyType } from 'projen';
+import { JobPermission } from 'projen/lib/github/workflows-model';
 import { NpmAccess } from 'projen/lib/javascript';
 
 const CDK_VERSION = '2.218.0';
@@ -207,6 +208,47 @@ project.addTask('build:no-test', {
     { spawn: 'package:js' }, // Only JS package for speed
     { spawn: 'package:python' }, // Only JS package for speed
   ],
+});
+
+// Python Lambda/tool and MCP server pytest suites, which projen build (jest) does not run.
+// Each Lambda directory imports its sibling module ('handler', 'index'), so each gets its own
+// venv and pytest run from its own directory: one run over all of them collides on module names.
+const pythonTestSuites = [
+  { dir: 'use-cases/document-processing/resources/aggregation', install: '-r requirements.txt pytest' },
+  { dir: 'use-cases/document-processing/resources/cleanup', install: '-r requirements.txt pytest' },
+  { dir: 'use-cases/document-processing/resources/default-bedrock-invoke', install: '-r requirements.txt pytest' },
+  { dir: 'use-cases/document-processing/resources/pdf-chunking', install: '-r requirements.txt pytest' },
+  { dir: 'use-cases/framework/agents/resources/interactive-agent-handler', install: '-r requirements.txt -r requirements-dev.txt' },
+  { dir: 'use-cases/framework/agents/resources/knowledge-base-tool', install: '-r requirements.txt pytest' },
+  { dir: 'mcp-appmod-catalog-blueprints', install: '-e ".[dev]"' },
+];
+const pythonTestsWorkflow = project.github?.addWorkflow('python-tests');
+pythonTestsWorkflow?.on({ pullRequest: {}, workflowDispatch: {} });
+pythonTestsWorkflow?.addJobs({
+  pytest: {
+    name: 'pytest',
+    runsOn: ['ubuntu-latest'],
+    permissions: { contents: JobPermission.READ },
+    timeoutMinutes: 30,
+    // Placeholder AWS settings: the handlers create boto3 clients at import; the tests mock every call.
+    env: {
+      AWS_DEFAULT_REGION: 'us-east-1',
+      AWS_ACCESS_KEY_ID: 'testing',
+      AWS_SECRET_ACCESS_KEY: 'testing',
+      AWS_EC2_METADATA_DISABLED: 'true',
+    },
+    steps: [
+      { name: 'Checkout', uses: 'actions/checkout@v6' },
+      { name: 'Setup Python', id: 'setup_python', uses: 'actions/setup-python@v6', with: { 'python-version': '3.13' } },
+      // Every suite runs even when an earlier one fails, so one red suite does not hide the others.
+      ...pythonTestSuites.map(({ dir, install }) => ({
+        name: `pytest ${dir.split('/').pop()}`,
+        if: "!cancelled() && steps.setup_python.outcome == 'success'",
+        workingDirectory: dir,
+        run: ['python -m venv .venv', `.venv/bin/pip install ${install}`, '.venv/bin/python -m pytest'].join('\n'),
+      })),
+    ],
+  },
 });
 
 project.addFields({
