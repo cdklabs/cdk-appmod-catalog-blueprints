@@ -18,7 +18,7 @@ from botocore.exceptions import ClientError
 
 # Import handler functions
 from handler import (
-    lambda_handler,
+    handler as lambda_handler,
     _merge_configuration,
     _get_no_chunking_reason,
     _calculate_chunk_boundaries,

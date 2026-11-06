@@ -121,7 +121,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with 30 pages, ~1500 tokens per page
         mock_pages = []
@@ -152,7 +152,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with 150 pages
         mock_pages = []
@@ -179,7 +179,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with 80 pages but very high density (~5000 tokens per page)
         mock_pages = []
@@ -213,7 +213,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with 50 pages
         mock_pages = []
@@ -244,7 +244,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with mix of empty and content pages
         mock_pages = []
@@ -279,7 +279,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with variable density pages
         mock_pages = []
@@ -329,7 +329,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF reader to raise error
         mock_pdf_reader.side_effect = Exception("Invalid PDF format")
@@ -347,7 +347,7 @@ class TestAnalyzePdfTokens(unittest.TestCase):
         # Mock S3 client
         mock_s3 = Mock()
         mock_boto_client.return_value = mock_s3
-        mock_s3.get_object.return_value = {'Body': BytesIO(b'fake pdf')}
+        mock_s3.get_object.return_value = {'Body': BytesIO(b'%PDF-fake pdf')}
         
         # Mock PDF with 50 pages
         mock_pages = []
