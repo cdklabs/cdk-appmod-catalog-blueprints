@@ -60,3 +60,48 @@ landing:
 frontline: {}                   # UI crawl enrolment (ADR 033), scaffolded by skills/frontline; {} = no UI
 units: []                       # repo-product systemd units shipped in systemd/ (rule 2), e.g. [my-publish.timer];
                                 # `quinn-suite setup --repo <path>` links and enables them, `--remove` reverses it
+
+# CI testing contract — scaffolded by quinn-suite skills/ci-contract (ADR 035) on 2026-11-06.
+# Four lanes, each `command` or `workflow_job` (`<workflow file>:<job>` or `<job>`) plus a
+# `trigger` (pr, deploy, deploy+nightly, box), or `skip: <reason a reviewer can check>`
+# ("not yet" is an open bead named in the skip, not a reason). Checked per PR by
+# `ci_contract.py check --repo .` and fleet-wide by patrol. This repo owns this block, its
+# orphan allow list, journeys and fixtures; the job templates are regenerated from quinn-suite.
+ci:
+  lanes:
+    fast:
+      # `npx projen build` (build.yml job build) spawns the projen `test` task: `jest --passWithNoTests
+      # --updateSnapshot`, then eslint and integ-runner snapshots. The command is that jest step without
+      # --updateSnapshot (ci_contract does not resolve projen tasks); the workflow_job runs the whole task.
+      command: "npx jest --passWithNoTests"
+      workflow_job: ".github/workflows/build.yml:build"
+      trigger: pr
+    integration:
+      # Real dependencies as containers on the runner (Postgres, MinIO, Redis, the repo's own
+      # API image); terraform validate + test for *.tftest.hcl. Mocked clouds are the fast lane.
+      skip: "CDK construct library: no runtime dependency of its own; integ-runner snapshot tests already run in build"
+    e2e:
+      # Playwright journeys against the locally started app with side effects stubbed, plus the
+      # frontline fixture crawl (ADR 033). A repo with a UI and no journeys is not done.
+      skip: "library has no UI of its own; website/ is static docs; example frontends are not run in CI (appmod-6kn)"
+    post_deploy:
+      # Runs inside the deploy path and nightly, the Midway-only smoke (qinfra-qluv): sha-pinned
+      # health at the origin, the anonymous edge refused or redirected to Midway sign-in, live
+      # journeys and the frontline live crawl at the origin with no sign-in. Blocking: no
+      # allow_failure, continue-on-error, || echo or || true on any step (ADR 035 rule 5).
+      skip: "no deploy target: the library publishes packages; the only deploy is the static docs site (deploy-docs.yml, GitHub Pages)"
+  # Test material no lane runs, each entry against an OPEN bead (ADR 035 rule 2). The check
+  # fails an entry whose bead is closed or whose path is gone.
+  orphans_allowed:
+    - path: mcp-appmod-catalog-blueprints/tests
+      reason: pytest suite; CI runs only jest (projen build), no workflow runs pytest yet
+      bead: appmod-6kn
+    - path: use-cases/document-processing/resources
+      reason: Lambda pytest files; CI runs only jest (projen build), no workflow runs pytest yet
+      bead: appmod-6kn
+    - path: use-cases/framework/agents/resources
+      reason: Lambda and agent tool pytest files; CI runs only jest (projen build), no workflow runs pytest yet
+      bead: appmod-6kn
+  #  - path: tests/manual
+  #    reason: needs a GPU box; runs from the box timer
+  #    bead: <prefix>-xxxxx
