@@ -23,7 +23,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "mcp",
+    # mcp 2.0 removed the lowlevel ReadResourceContents API that server.py uses
+    "mcp>=1.26,<2",
     "jinja2",
 ]
 
